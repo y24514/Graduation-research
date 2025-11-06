@@ -130,7 +130,7 @@ mysqli_close($link);
                     <div class="goal-border">
                         <div class="goal-form">
                             <form action="" method="post">
-                                <h3>今月の目標</h3>
+                                <h3>今月の目</h3>
                                 <input type="text" id="goal" name="goal" value=""><br>
                                 <input type="submit" id="goal-reg" name="submit" value="登録">
                             </form>
@@ -144,16 +144,11 @@ mysqli_close($link);
                     </div>
                 </div>
                 <div class="calendar">
-                    <h2>カレンダー２</h2>
-                    <div class="calendar-area">   
-                        <div class="">
-                            <table>
-                                
-                            </table>
-                        </div>    
-                    </div>
+                    <h2>カレンダー</h2>
+                    <div id="calendar-area" class="calendar-area"></div>
                 </div>
             </div>
         </div>
+    <script src="../js/calendar.js"></script>
     </body>
 </html>

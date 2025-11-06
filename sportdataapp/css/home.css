@@ -39,10 +39,12 @@ body{
     height: 120px;
     display: flex;
 }
+
 form{
     margin: 0px;
     margin-left: 10px;
 }
+
 h3{
     margin: 0px;
     margin-top: 5px;
@@ -117,4 +119,36 @@ p{
 .calendar-area{
     width: 820px;
     height: 616px;
+}
+
+.calendar-table {
+    width: 100%;        
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #ccc;
+    height: 100px;    
+    vertical-align: top;
+    padding: 8px;
+}
+
+.calendar-table .date {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.calendar-table .today {
+    background-color: #fffae6;
+    border: 2px solid #f0c040;
+}
+
+.event {
+    background-color: #e6f7ff;
+    margin-top: 5px;
+    border-radius: 5px;
+    padding: 2px;
+    font-size: 14px;
 }
