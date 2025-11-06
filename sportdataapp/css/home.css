@@ -1,0 +1,120 @@
+body{
+    background-color: #f5f7fb;
+}
+.meny{
+    display: none;
+}
+
+.home {
+    display: flex;
+    margin-left: 250px;
+}
+
+.home-left{
+    display: block;
+    height: 1000px;
+}
+
+.home-right{
+    display: block;
+    height: 1000px;
+}
+
+.user-border, .messege-area, .goal-border, .calendar-area{
+    margin: 10px;
+    border: 1px solid grey;
+    border-radius: 6px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+    margin-left: 20px;
+    background-color: white;      
+}
+
+.user-border{
+    display: flex;
+    width: 820px;
+}
+
+.goal-border{
+    width: 820px;
+    height: 120px;
+    display: flex;
+}
+form{
+    margin: 0px;
+    margin-left: 10px;
+}
+h3{
+    margin: 0px;
+    margin-top: 5px;
+}
+
+p{
+    margin: 7.5px;
+}
+
+.now-goal{
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin: 5px;
+    width: 530px;
+    height: 38px;
+    text-align: center;
+    background-color: rgb(210, 252, 208);
+}
+
+#goal{
+    margin: 5px;
+    margin-left: 5px;
+    width: 250px;
+    height: 40px;
+}
+
+#goal-reg{
+    margin-left: 185px;
+    border: none;
+    width: 70px;
+    height: 30px;
+    border-radius: 2px;
+    box-shadow: 3px 2px 1px rgba(0, 0, 0, 0.2);
+    color: white;
+    background-color: rgb(110, 155, 252);
+}
+
+#goal-reg:hover{
+    background-color: rgb(73, 129,250);
+    box-shadow: 2px 1px 1px rgba(0,0,0,0.2);
+}
+
+.goal{
+    height: 200px;
+}
+
+.photo{
+    padding: 20px;
+}
+
+.user-information th{
+    text-align:left;
+    font-size: 25px;
+}
+
+.user-information td{
+    padding-left: 10px;
+    font-size: 20px;
+}
+
+
+.messege-area{
+    padding: 10px;
+    width: 800px; 
+    height: 400px;
+}
+
+.calendar{
+    height: 700px;
+}
+
+.calendar-area{
+    width: 820px;
+    height: 616px;
+}
