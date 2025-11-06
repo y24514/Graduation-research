@@ -144,7 +144,7 @@ mysqli_close($link);
                     </div>
                 </div>
                 <div class="calendar">
-                    <h2>カレンダー</h2>
+                    <h2>カレンダー２</h2>
                     <div class="calendar-area">   
                         <div class="">
                             <table>
