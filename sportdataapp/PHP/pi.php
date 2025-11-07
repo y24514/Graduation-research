@@ -22,7 +22,7 @@ $host = '127.0.0.1';
             <form action="" method="post">
                 <h3>データ入力</h3>
 
-                <label for="height">height</label>
+                <label for="height">身長</label>
                 <input type="number" id="height" name="height" placeholder="cm" min="50" max="250" step="0.1"><br>
 
                 <label for="weight">体重</label>
