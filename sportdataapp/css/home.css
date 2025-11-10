@@ -2,19 +2,46 @@ body{
     background-color: #f5f7fb;
 }
 
+
 .home {
     display: flex;
-    margin-left: 250px;
 }
 
+.meny{
+    width: 200px;
+}
+
+.meny-nav{
+    display: none;
+}
+
+.meny-nav.show{
+    display: block;
+}
+
+.meny-btn{
+    border : none;
+    background-color: #f5f7fb;
+}
+
+.meny-btn img{
+    border-radius: 40px;
+    box-shadow: 3px 3px 2px rgba(0,0,0,0.2);
+}
+
+.meny-btn img:hover{
+    filter:brightness(0.5);
+}
 .home-left{
     display: block;
     height: 1000px;
+    width: 800px;
 }
 
 .home-right{
     display: block;
     height: 1000px;
+    width: 850px;
 }
 
 .user-border, .messege-area, .goal-border, .calendar-area{
@@ -28,7 +55,7 @@ body{
 
 .user-border{
     display: flex;
-    width: 820px;
+    width: 650px;
 }
 
 .goal-border{
@@ -104,8 +131,7 @@ p{
 
 
 .messege-area{
-    padding: 10px;
-    width: 800px; 
+    width: 650px; 
     height: 400px;
 }
 

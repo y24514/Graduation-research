@@ -75,17 +75,18 @@ mysqli_close($link);
         <link rel="stylesheet" href="../css/home.css">
     </head>
     <body>
-        <div class="meny">
-            <ul>
-                <li>home</li>
-                <li>Biomeric information</li>
-                <li>Data analysis</li>
-                <li>Create</li>
-                <li>Communication room</li>
-                <li>diary</li>
-            </ul>
-        </div>
         <div class="home">
+            <div class="meny">
+                <button class="meny-btn">
+                    <img src="../img/images.png" width="70px" height="70px">
+                </button>
+                <nav class="meny-nav">
+                        <ul>
+                            <li><a href="home.php">ホーム</a></li>
+                            <li><a href="pi.php">身体情報</a></li>
+                        </ul>
+                </nav>
+           </div> 
             <div class="home-left">
                 <div class="user">
                     <h2>ユーザー情報</h2>
@@ -148,5 +149,6 @@ mysqli_close($link);
             </div>
         </div>
     <script src="../js/calendar.js"></script>
+    <script src="../js/home_meny.js"></script>
     </body>
 </html>
