@@ -1,3 +1,5 @@
+//　フォーム入力時のクリックイベント
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('piform');
     form.addEventListener('submit', (e) => {
@@ -18,3 +20,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 })
+
+// 取得した記録を表示する
+
+console.log(records);
+const graph1 = document.querySelector('.graph height-weight-bmi');
+let heights = records.map(r => r.heigh);
+let weights = records.map(r => r.weight);
+
+let BMis = records.map(r => {
+    let h = r.heigh / 100;
+    return (r.weight / (h*h)).toFixed(1);
+})
+
+let sleep_times = records.map(r => r.sleep_time);
+let injurys = records.map(r => r.injury);
+let create_ats = records.map(r => r.create_at);
+
+// グラフ描画
