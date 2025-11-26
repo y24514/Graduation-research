@@ -3,7 +3,7 @@ session_start();
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
-$host = '127.0.0.1';
+$host = 'localhost';
 $dbName = 'sportdata_db';
 
 $link = mysqli_connect($host, $usr, $pwd, $dbName);

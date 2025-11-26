@@ -1,25 +1,18 @@
-$(function(){
+$(function() {
+  // 最初に loader を表示
+  $('.loader').show();
+  $('.spinner').show();
+  $('.txt').hide();
 
-  function end_loader() {
+  // 3秒後にテキストに切り替え
+  setTimeout(function(){
+    $('.spinner').fadeOut(400, function() {
+      $('.txt').fadeIn(400);
+    });
+  }, 3000);
+
+  // さらに1秒後に loader を消す
+  setTimeout(function(){
     $('.loader').fadeOut(800);
-  }
-
-  function show_load() {
-    $('.loader .looping-rhombuses-spinner').fadeIn(400);
-  }
-
-  function hide_load() {
-    $('.loader .looping-rhombuses-spinner').fadeOut(400);
-  }
-
-  function show_txt() {
-    $('.loader .txt').fadeIn(400);
-  }
-
-  $(window).on('load', function () {
-    setTimeout(show_load, 800);
-    setTimeout(hide_load, 3500);
-    setTimeout(show_txt, 4000);
-    setTimeout(end_loader, 5000);
-  });
+  }, 4000);
 });

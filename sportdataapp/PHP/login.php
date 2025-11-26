@@ -3,7 +3,7 @@ session_start();
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
-$host = '127.0.0.1';
+$host = 'localhost';
 
 $link = mysqli_connect($host, $usr, $pwd);
 if(!$link){
@@ -43,6 +43,8 @@ if(isset($_POST['send'])){
                 $_SESSION['height'] = $row['height'];
                 $_SESSION['weight'] = $row['weight'];
                 $_SESSION['position'] = $row['position'];
+
+                $_SESSION['show_loader'] = true;
 
                 header('Location: home.php');
                 exit();

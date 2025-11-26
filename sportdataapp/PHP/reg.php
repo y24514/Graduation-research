@@ -3,7 +3,7 @@ session_start();
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
-$host = '127.0.0.1';
+$host = 'localhost';
 
 $link = mysqli_connect($host, $usr, $pwd);
 if(!$link){

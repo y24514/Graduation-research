@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     select: function(info) {
       var title = prompt('イベント名:');
       var memo = prompt('メモ:');
-      var end = prompt('終了日');
+      
       if (title) {
 
         fetch('../PHP/calendarsave.php', {

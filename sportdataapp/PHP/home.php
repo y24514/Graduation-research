@@ -14,7 +14,7 @@ if(!isset($_SESSION['user_id'], $_SESSION['group_id'])){
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
-$host = '127.0.0.1';
+$host = 'localhost';
 $dbName = 'sportdata_db';
 
 $link = mysqli_connect($host, $usr, $pwd, $dbName);
@@ -70,12 +70,8 @@ mysqli_stmt_close($stmt2);
     </head>
     <body>
         <div class="loader">
-            <div class="looping-rhombuses-spinner">
-                <div class="rhombus"></div>
-                <div class="rhombus"></div>
-                <div class="rhombus"></div>
-            </div>
-            <p class="txt">こんにちは！</p>
+            <div class="spinner"></div>
+            <p class="txt">こんにちは！<?php echo ($_SESSION['name'])?>さん</p>
         </div>
         <div class="home">
             <div class="meny">
