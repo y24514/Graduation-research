@@ -1,0 +1,52 @@
+
+h2{
+    text-align: center;
+}
+
+.login-form{
+    height: 500px;
+    width: 700px;
+    display: flex;
+    justify-content: space-around;
+    margin: auto;
+    background-color: rgb(225, 225, 225);
+    border: solid 1px grey;
+    border-radius: 3px;
+    box-shadow: 5px 5px 2px rgba(0,0,0,0.2);
+}
+
+.left-login-form{
+    margin: 30px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 250px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.sent-box{
+    display: flex;
+    justify-content: space-around; 
+    margin-top: 20px;
+}
+
+input[type="submit"] {
+  width: 40%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: rgb(178, 202, 255);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.right-reg{
+    margin: 30px;
+}
+

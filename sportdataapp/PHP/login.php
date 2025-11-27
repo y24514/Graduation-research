@@ -65,33 +65,35 @@ if(isset($_POST['send'])){
     <head>
         <meta charset="UTF-8">
         <title>スポーツデータ分析可視化アプリ</title>
-        <link rel="stylesheet" href="../css/login.css">
-        <script src="../js/rogin.js"></script>
+        <link rel="stylesheet" href="../css/login2.css">
     </head>
     <body>
-        <h1>ログイン</h1>
-        <form action="" method="post">
-            <!-- 団体ID -->
-            <label for="group-id">団体ID</label>
-            <input type="text" id="group_id" name="group_id" required>
+        <h2>LOGIN</h2>
+        <div class="login-form">
+            <!-- 左側 -->
+            <div class="left-login-form">
+                <form action="" method="post">
+                    <!-- 団体ID -->
+                    <label for="group-id">団体ID</label><br>
+                    <input type="text" id="group_id" name="group_id"  placeholder="団体IDを入力してください" required><br> 
+                    <!-- ユーザーID -->
+                    <label for="user-id">ユーザーID</label><br> 
+                    <input type="text" id="user_id" name="user_id"  placeholder="ユーザーIDを入力してください" required><br>
 
-            <!-- ユーザーID -->
-            <label for="user-id">ユーザーID</label>
-            <input type="text" id="user_id" name="user_id" required>
+                    <!-- パスワード -->
+                    <label for="password">パスワード</label><br> 
+                    <input type="password" id="password" name="password"  placeholder="パスワードIDを入力してください" required><br>
 
-            <!-- パスワード -->
-            <label for="password">パスワード</label>
-            <input type="password" id="password" name="password" required>
-
-            <!-- ログイン -->
-            <div class="send-box">
-               <input type="submit" name="send" value="ログイン">
+                    <!-- ログイン -->
+                    <div class="send-box">
+                       <input type="submit" name="send" value="ログイン">
+                    </div>
+                </form>
             </div>
-
-            <!-- 登録 -->
-            <div class="reg">
-               <a href="reg.php">新規登録はこちら</a>
+            <!-- 右側 -->
+            <div class="right-reg">
+                <a href="reg.php">新規登録はこちら</a>
             </div>
-        </form>            
+        </div>
     </body>
 </html>
