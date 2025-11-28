@@ -17,6 +17,7 @@ h2{
 
 .left-login-form{
     margin: 30px;
+    padding: 30px;
 }
 
 input[type="text"],
@@ -46,7 +47,28 @@ input[type="submit"] {
   transition: background-color 0.3s ease;
 }
 
-.right-reg{
-    margin: 30px;
+input[type="submit"]:hover{
+    background-color: rgb(103, 156, 255);
 }
 
+.right-reg{
+    margin: 30px;
+    padding: 50px;
+    border-left: solid 1px gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;      
+}
+
+.right-reg a{
+    display: inline-block;
+    padding: 10px;
+    background: rgb(178, 202, 255);
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.right-reg a:hover{
+    background: rgb(103, 156, 255);
+}
