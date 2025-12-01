@@ -75,7 +75,7 @@ if(isset($_POST['send'])){
                 <h3>ログイン</h3>
                 <form action="" method="post">
                     <!-- 団体ID -->
-                    <label for="group-id">団体ID</label><br>
+                    <label for="group-id">ID</label><br>
                     <input type="text" id="group_id" name="group_id"  placeholder="団体IDを入力してください" required><br> 
                     <!-- ユーザーID -->
                     <label for="user-id">ユーザーID</label><br> 
