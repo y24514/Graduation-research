@@ -1,20 +1,17 @@
-
 body {
     font-family: "メイリオ", sans-serif;
     height: 100vh;
     margin: 0;
-  }
+}
 
 h1{
     text-align: center;
 }
 
-.login-form{
-    height: 500px;
-    width: 700px;
+.reg-form{
+    height: 600px;
+    width: 800px;
     padding: 30px;
-    display: flex;
-    justify-content: space-around;
     margin: auto;
     background-color: rgb(225, 225, 225);
     border: solid 0px grey;
@@ -22,19 +19,28 @@ h1{
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.left-login-form{
+.inner-reg-form{
+    display: flex;
+    justify-content: space-around;
+    margin: auto;
+}
+
+.left-reg{
     margin: 30px;
+    margin-bottom: 10px;
     padding: 30px;
 }
 
-.left-login-form h3{
+.left-reg h3{
     margin: 0px;
     margin-bottom: 20px;
     text-align: center;
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="number"],
+input[type="date"],
+input[type="password"]{
   width: 250px;
   padding: 10px;
   margin-bottom: 15px;
@@ -51,7 +57,7 @@ input[type="password"] {
 
 input[type="submit"] {
   width: 250px;
-  margin-top: 20px;
+  height: 50px;
   padding: 10px;
   display: block;
   justify-content: center;
@@ -69,9 +75,8 @@ input[type="submit"]:hover{
 
 .right-reg{
     margin: 30px;
+    margin-bottom: 10px;
     padding: 30px;
-    padding-right: 0px;
-    border-left: solid 1px gray;
     display: block;
     justify-content: center;
     align-items: center;      
@@ -81,20 +86,6 @@ input[type="submit"]:hover{
     margin: 0px;
     margin-bottom: 20px;
     text-align: center;
-}
-
-.right-reg a{
-    display: inline-block;
-    padding: 10px;
-    margin-top: 100px;
-    width: 200px;
-    background: rgb(0, 0, 0);
-    color: #fff;
-    text-decoration: none;
-    text-align: center;
-    border: none;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
 }
 
 .right-reg a:hover{
