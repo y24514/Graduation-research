@@ -43,8 +43,8 @@ if(isset($_POST['send'])){
                 $_SESSION['height'] = $row['height'];
                 $_SESSION['weight'] = $row['weight'];
                 $_SESSION['position'] = $row['position'];
-
                 $_SESSION['show_loader'] = true;
+                $_SESSION['first_login'] = true;
 
                 header('Location: home.php');
                 exit();
@@ -74,7 +74,7 @@ if(isset($_POST['send'])){
             <!-- 左側 -->
             <div class="left-login-form">
                 <h2>ログイン</h2>
-                <form action="" method="post">
+                <form action="" method="post" id="login-form">
                     <!-- 団体ID -->
                     <label for="group-id">団体ID</label><br>
                     <input type="text" id="group_id" name="group_id"  placeholder="団体IDを入力してください" required><br> 
