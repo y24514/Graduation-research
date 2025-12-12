@@ -94,7 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <li><button><a href="home.php">ホーム</a></button></li>
                 <li><button><a href="pi.php">身体情報</a></button></li>
                 <li><button><a href="">テニス</a></button></li>
-                <li><button><a href="swim.php">水泳</a></button></li>
+                <li>
+                    <button>
+                        <a href="swim.php">水泳</a>
+                    </button>
+                    <li>
+                        <button>
+                            <a href="swim_analysis">分析</a>
+                        </button>
+                    </li>
+                </li>
                 <li><button><a href="">バスケ</a></button></li>
             </ul>
         </nav>
@@ -149,12 +158,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- ストローク入力欄 -->
                 <div id="stroke_area">
-                    <label for=stroke>ストローク回数</label>
+                    <label>ストローク回数</label><br>
+
+                    <h4 id="base-interval-title">0〜25m のストローク回数</h4>
+                    <input type="number" id="base-stroke" name="stroke_25" min="0" max="200" required><br>
                 </div>
 
                 <!-- ラップタイム -->
                 <div id="lap_time_area">
-                    <label for="lap_time">ラップタイム</label>
+                    <label>ラップタイム</label><br>
+
+                    <h4 id="base-lap-title">0〜25m のラップタイム</h4>
+                    <input type="text" id="base-lap" name="lap_time_25" placeholder="例: 15.23" pattern="\\d{1,2}\\.\\d{1,2}" required><br>
                 </div>
 
 
