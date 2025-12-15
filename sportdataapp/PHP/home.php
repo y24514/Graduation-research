@@ -90,7 +90,7 @@ mysqli_stmt_close($stmt2);
                 <li><button><a href="home.php">ホーム</a></button></li>
                 <li><button><a href="pi.php">身体情報</a></button></li>
                 <li><button><a href="">テニス</a></button></li>
-                <li><button><a href="swim.php">水泳</a></button></li>
+                <li><button><a href="swim/swim.php">水泳</a></button></li>
                 <li><button><a href="">バスケ</a></button></li>
             </ul>
         </nav>
