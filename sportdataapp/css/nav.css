@@ -1,33 +1,39 @@
 /* Shared navigation styles (used by header.php)
-   Improved visual design: clearer spacing, readable typography, accessible focus states,
-   subtle shadows and hover effects. Applied to pages that include header.php (login/reg excluded).
+   Improved visual design: clearer spacing, readable typography,
+   accessible focus states, subtle shadows and hover effects.
+   Applied to pages that include header.php (login/reg excluded).
 */
+
 :root{
-    --nav-bg: #ffffff;
-    --nav-accent: #1976d2;
-    --nav-text: #111827;
-    --nav-muted: #6b7280;
-    --nav-contrast: #000000;
-    --nav-radius: 6px;
-    --nav-height: 84px;
+    --nav-bg:#ffffff;
+    --nav-accent:#1976d2;
+    --nav-text:#111827;
+    --nav-muted:#6b7280;
+    --nav-contrast:#000000;
+    --nav-radius:6px;
+    --nav-height:84px;
 }
+
+/* =====================
+   Header / Navigation
+===================== */
 
 .meny{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    background: var(--nav-bg);
-    height: var(--nav-height);
-    padding: 0 18px;
-    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-    border-bottom: 1px solid rgba(15,23,42,0.04);
+    height:var(--nav-height);
+    padding:0 18px;
+    background:var(--nav-bg);
+    border-bottom:1px solid rgba(15,23,42,.04);
+    box-shadow:0 6px 18px rgba(15,23,42,.06);
 }
 
 .meny .brand{
+    margin-right:18px;
+    font-size:1.15rem;
     font-weight:800;
     color:var(--nav-accent);
-    font-size:1.15rem;
-    margin-right:18px;
 }
 
 /* center container to avoid full-width buttons on large screens */
@@ -40,11 +46,25 @@
     justify-content:space-between;
 }
 
-.meny-nav{display:flex;align-items:center}
-.meny-nav ul{display:flex;gap:10px;margin:0;padding:0;list-style:none}
+.meny-nav{
+    display:flex;
+    align-items:center;
+}
+
+.meny-nav ul{
+    display:flex;
+    gap:10px;
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
 .meny-nav li{margin:0}
 
-/* Menu buttons (clean, high-contrast, slightly rounded) */
+/* =====================
+   Menu buttons
+===================== */
+
 .menu-root li button{
     display:inline-flex;
     align-items:center;
@@ -52,63 +72,127 @@
     padding:10px 14px;
     border-radius:var(--nav-radius);
     border:1px solid transparent;
-    background: linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.95));
-    color: #fff;
+    background:linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.95));
+    color:#fff;
+    font-size:.95rem;
     font-weight:600;
-    font-size:0.95rem;
     cursor:pointer;
     transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
-    box-shadow: 0 2px 6px rgba(2,6,23,0.08);
+    box-shadow:0 2px 6px rgba(2,6,23,.08);
 }
-.menu-root li button:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,23,42,0.12)}
-.menu-root li button:focus{outline:3px solid rgba(25,118,210,0.18);outline-offset:3px}
-.menu-root li button a{color:inherit;text-decoration:none}
 
-.menu-root li.active button{background:var(--nav-accent);border-color:var(--nav-accent);color:#fff}
+.menu-root li button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(15,23,42,.12);
+}
 
-/* Submenu */
+.menu-root li button:focus{
+    outline:3px solid rgba(25,118,210,.18);
+    outline-offset:3px;
+}
+
+.menu-root li button a{
+    color:inherit;
+    text-decoration:none;
+}
+
+.menu-root li.active button{
+    background:var(--nav-accent);
+    border-color:var(--nav-accent);
+    color:#fff;
+}
+
+/* =====================
+   Sub menu
+===================== */
+
 .has-sub{position:relative}
+
 .sub-menu{
-    /* keep hidden by default even if other styles try to override */
-    display:none !important;
+    display:none !important; /* hidden by default */
     position:absolute;
     top:calc(100% + 8px);
     left:0;
     min-width:180px;
-    background:var(--nav-bg);
     padding:6px;
+    background:var(--nav-bg);
     border-radius:8px;
-    box-shadow:0 10px 30px rgba(2,6,23,0.08);
-    border:1px solid rgba(15,23,42,0.04);
+    border:1px solid rgba(15,23,42,.04);
+    box-shadow:0 10px 30px rgba(2,6,23,.08);
     z-index:60;
 }
-.sub-menu li a{display:block;padding:8px 12px;border-radius:6px;color:var(--nav-text);text-decoration:none}
-.sub-menu li a:hover{background:rgba(15,23,42,0.03);color:var(--nav-accent)}
-.has-sub:hover .sub-menu{display:block !important}
-/* Also show submenu when the button inside .has-sub is hovered or focused
-   and when an item inside receives focus (accessibility / keyboard support) */
-.has-sub > button:hover + .sub-menu,
-.has-sub > button:focus + .sub-menu,
-.has-sub:focus-within .sub-menu {
-    display: block !important;
+
+.sub-menu li a{
+    display:block;
+    padding:8px 12px;
+    border-radius:6px;
+    color:var(--nav-text);
+    text-decoration:none;
 }
 
-/* compact variant for small screens */
+.sub-menu li a:hover{
+    background:rgba(15,23,42,.03);
+    color:var(--nav-accent);
+}
+
+/* hover / focus states (mouse + keyboard accessibility) */
+.has-sub:hover .sub-menu,
+.has-sub > button:hover + .sub-menu,
+.has-sub > button:focus + .sub-menu,
+.has-sub:focus-within .sub-menu{
+    display:block !important;
+}
+
+/* =====================
+   Responsive
+===================== */
+
 @media (max-width:900px){
-    .meny{padding:0 12px;height:76px}
-    .menu-root li button{padding:8px 12px;font-size:0.92rem}
+    .meny{
+        height:76px;
+        padding:0 12px;
+    }
+    .menu-root li button{
+        padding:8px 12px;
+        font-size:.92rem;
+    }
 }
 
 @media (max-width:700px){
-    .meny{flex-direction:column;align-items:stretch;height:auto;padding:10px}
-    .meny-inner{flex-direction:column;gap:8px}
-    .meny-nav ul{flex-direction:column;gap:8px}
-    .menu-root li button{width:100%;justify-content:flex-start}
-    .sub-menu{position:static;box-shadow:none;padding-left:12px}
+    .meny{
+        flex-direction:column;
+        align-items:stretch;
+        height:auto;
+        padding:10px;
+    }
+    .meny-inner{
+        flex-direction:column;
+        gap:8px;
+    }
+    .meny-nav ul{
+        flex-direction:column;
+        gap:8px;
+    }
+    .menu-root li button{
+        width:100%;
+        justify-content:flex-start;
+    }
+    .sub-menu{
+        position:static;
+        box-shadow:none;
+        padding-left:12px;
+    }
 }
 
-/* utility: visually-hidden for accessible labels */
-.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+/* =====================
+   Utilities
+===================== */
 
-/* small tweak to ensure links inside buttons inherit color */
-.menu-root li button a{color:inherit}
+.visually-hidden{
+    position:absolute !important;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(1px,1px,1px,1px);
+    white-space:nowrap;
+}
