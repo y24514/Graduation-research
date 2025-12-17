@@ -1,17 +1,18 @@
 /* Shared navigation styles (used by header.php)
-   Improved visual design: clearer spacing, readable typography,
-   accessible focus states, subtle shadows and hover effects.
+   Modern, sleek navigation design with enhanced visuals
    Applied to pages that include header.php (login/reg excluded).
 */
 
 :root{
-    --nav-bg:#ffffff;
-    --nav-accent:#1976d2;
-    --nav-text:#111827;
-    --nav-muted:#6b7280;
-    --nav-contrast:#000000;
-    --nav-radius:6px;
-    --nav-height:84px;
+    --nav-bg: #ffffff;
+    --nav-accent: #3182ce;
+    --nav-accent-hover: #2c5aa0;
+    --nav-text: #1a202c;
+    --nav-muted: #718096;
+    --nav-contrast: #000000;
+    --nav-radius: 0px;
+    --nav-height: 60px;
+    --nav-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 /* =====================
@@ -19,120 +20,174 @@
 ===================== */
 
 .meny{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    height:var(--nav-height);
-    padding:0 18px;
-    background:var(--nav-bg);
-    border-bottom:1px solid rgba(15,23,42,.04);
-    box-shadow:0 6px 18px rgba(15,23,42,.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--nav-height);
+    padding: 0 3rem;
+    background: var(--nav-bg);
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: var(--nav-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .meny .brand{
-    margin-right:18px;
-    font-size:1.15rem;
-    font-weight:800;
-    color:var(--nav-accent);
+    margin-right: 3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--nav-text);
+    letter-spacing: 0;
+    transition: color 0.2s ease;
+}
+
+.meny .brand:hover {
+    color: var(--nav-accent-hover);
 }
 
 /* center container to avoid full-width buttons on large screens */
 .meny-inner{
-    width:100%;
-    max-width:1180px;
-    margin:0 auto;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .meny-nav{
-    display:flex;
-    align-items:center;
+    display: flex;
+    align-items: center;
 }
 
 .meny-nav ul{
-    display:flex;
-    gap:10px;
-    margin:0;
-    padding:0;
-    list-style:none;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.meny-nav li{margin:0}
+.meny-nav li{margin: 0}
+
+/* App title on the right side */
+.app-title{
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--nav-muted);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
 
 /* =====================
    Menu buttons
 ===================== */
 
 .menu-root li button{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    border-radius:var(--nav-radius);
-    border:1px solid transparent;
-    background:linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.95));
-    color:#fff;
-    font-size:.95rem;
-    font-weight:600;
-    cursor:pointer;
-    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
-    box-shadow:0 2px 6px rgba(2,6,23,.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    color: var(--nav-text);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.menu-root li button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 80%;
+    height: 2px;
+    background: var(--nav-accent);
+    transition: transform 0.2s ease;
+}
+
+.menu-root li button:hover::after {
+    transform: translateX(-50%) scaleX(1);
 }
 
 .menu-root li button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 6px 18px rgba(15,23,42,.12);
+    color: var(--nav-accent);
+}
+
+.menu-root li button:active{
+    transform: none;
 }
 
 .menu-root li button:focus{
-    outline:3px solid rgba(25,118,210,.18);
-    outline-offset:3px;
+    outline: none;
 }
 
 .menu-root li button a{
-    color:inherit;
-    text-decoration:none;
+    color: inherit;
+    text-decoration: none;
 }
 
 .menu-root li.active button{
-    background:var(--nav-accent);
-    border-color:var(--nav-accent);
-    color:#fff;
+    color: var(--nav-accent);
+    font-weight: 600;
+}
+
+.menu-root li.active button::after {
+    transform: translateX(-50%) scaleX(1);
 }
 
 /* =====================
    Sub menu
 ===================== */
 
-.has-sub{position:relative}
+.has-sub{position: relative}
 
 .sub-menu{
-    display:none !important; /* hidden by default */
-    position:absolute;
-    top:calc(100% + 8px);
-    left:0;
-    min-width:180px;
-    padding:6px;
-    background:var(--nav-bg);
-    border-radius:8px;
-    border:1px solid rgba(15,23,42,.04);
-    box-shadow:0 10px 30px rgba(2,6,23,.08);
-    z-index:60;
+    display: none !important;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    padding: 0.5rem;
+    background: var(--nav-bg);
+    border-radius: 0;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 60;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .sub-menu li a{
-    display:block;
-    padding:8px 12px;
-    border-radius:6px;
-    color:var(--nav-text);
-    text-decoration:none;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: var(--nav-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .sub-menu li a:hover{
-    background:rgba(15,23,42,.03);
-    color:var(--nav-accent);
+    background: linear-gradient(135deg, rgba(49, 130, 206, 0.1) 0%, rgba(49, 130, 206, 0.05) 100%);
+    color: var(--nav-accent);
+    transform: translateX(4px);
 }
 
 /* hover / focus states (mouse + keyboard accessibility) */
@@ -140,47 +195,54 @@
 .has-sub > button:hover + .sub-menu,
 .has-sub > button:focus + .sub-menu,
 .has-sub:focus-within .sub-menu{
-    display:block !important;
+    display: block !important;
 }
 
 /* =====================
    Responsive
 ===================== */
 
-@media (max-width:900px){
+@media (max-width: 900px){
     .meny{
-        height:76px;
-        padding:0 12px;
+        height: 65px;
+        padding: 0 1.5rem;
     }
     .menu-root li button{
-        padding:8px 12px;
-        font-size:.92rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    .meny .brand{
+        font-size: 1.2rem;
     }
 }
 
-@media (max-width:700px){
+@media (max-width: 700px){
     .meny{
-        flex-direction:column;
-        align-items:stretch;
-        height:auto;
-        padding:10px;
+        flex-direction: column;
+        align-items: stretch;
+        height: auto;
+        padding: 1rem;
+        position: static;
     }
     .meny-inner{
-        flex-direction:column;
-        gap:8px;
+        flex-direction: column;
+        gap: 1rem;
     }
     .meny-nav ul{
-        flex-direction:column;
-        gap:8px;
+        flex-direction: column;
+        gap: 0.75rem;
     }
     .menu-root li button{
-        width:100%;
-        justify-content:flex-start;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.85rem 1.25rem;
     }
     .sub-menu{
-        position:static;
-        box-shadow:none;
-        padding-left:12px;
+        position: static;
+        box-shadow: none;
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+        background: rgba(49, 130, 206, 0.05);
     }
 }
 
@@ -189,10 +251,10 @@
 ===================== */
 
 .visually-hidden{
-    position:absolute !important;
-    width:1px;
-    height:1px;
-    overflow:hidden;
-    clip:rect(1px,1px,1px,1px);
-    white-space:nowrap;
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(1px,1px,1px,1px);
+    white-space: nowrap;
 }

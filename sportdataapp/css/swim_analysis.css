@@ -37,11 +37,8 @@ h2 {
    種目選択フォーム
 ===================== */
 form {
-  background: var(--card);
   padding: 1rem 1.25rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  display: flex;
+  text-align: center;
   gap: .75rem;
   align-items: center;
   flex-wrap: wrap;

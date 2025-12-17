@@ -116,7 +116,7 @@ if (!$current) {
 $pool     = $current['pool'];
 $event    = $current['event'];
 $distance = $current['distance'];
-$now_time = $current['total_time'];
+$now_raw  = $current['total_time'];
 
 // total_time が文字列なら秒に変換するヘルパー
 function parse_time_to_seconds($t) {
@@ -124,15 +124,41 @@ function parse_time_to_seconds($t) {
     if (is_numeric($t)) return (float)$t;
     $t = trim($t);
     if (strpos($t, ':') !== false) {
-        list($m, $s) = explode(':', $t, 2);
-        $m = intval($m);
-        $s = floatval($s);
-        return $m * 60 + $s;
+        $parts = explode(':', $t);
+        // h:mm:ss
+        if (count($parts) === 3) {
+            $h = intval($parts[0]);
+            $m = intval($parts[1]);
+            $s = floatval($parts[2]);
+            return $h * 3600 + $m * 60 + $s;
+        }
+        // mm:ss
+        if (count($parts) === 2) {
+            $m = intval($parts[0]);
+            $s = floatval($parts[1]);
+            return $m * 60 + $s;
+        }
     }
     return floatval($t);
 }
 
-$now_time = parse_time_to_seconds($now_time);
+$now_time = parse_time_to_seconds($now_raw);
+
+// Ambiguous 3-part parsing fallback: treat "m:s:cs" (e.g. 1:31:00 -> 1m31.00s)
+function parse_time_ambiguous_ms_cs($t) {
+    if ($t === null || $t === '') return null;
+    if (is_numeric($t)) return (float)$t;
+    $t = trim($t);
+    if (strpos($t, ':') === false) return parse_time_to_seconds($t);
+    $parts = explode(':', $t);
+    if (count($parts) === 3) {
+        $m = intval($parts[0]);
+        $s = intval($parts[1]);
+        $cs = intval($parts[2]);
+        return $m * 60 + $s + ($cs / 100.0);
+    }
+    return parse_time_to_seconds($t);
+}
 
 /* =====================
    前回記録（同条件）
@@ -158,8 +184,8 @@ if (!$stmt) {
     } else {
         $res = mysqli_stmt_get_result($stmt);
         $prev = mysqli_fetch_assoc($res);
-        $prev_time = $prev['total_time'] ?? null;
-        $prev_time = parse_time_to_seconds($prev_time);
+        $prev_raw = $prev['total_time'] ?? null;
+        $prev_time = parse_time_to_seconds($prev_raw);
     }
 }
 
@@ -186,8 +212,25 @@ if (!$stmt) {
     } else {
         $res = mysqli_stmt_get_result($stmt);
         $best = mysqli_fetch_assoc($res);
-        $best_time = $best['best_time'] ?? null;
-        $best_time = parse_time_to_seconds($best_time);
+        $best_raw = $best['best_time'] ?? null;
+        $best_time = parse_time_to_seconds($best_raw);
+    }
+}
+
+// フォールバック: swim_best_tbl に値がなければ、履歴テーブルから最小値を取得して自己ベスト扱いにする
+if ($best_time === null) {
+    $sql_min = "SELECT MIN(total_time) AS min_time FROM swim_tbl WHERE group_id=? AND user_id=? AND pool=? AND event=? AND distance=?";
+    $stmt_min = mysqli_prepare($link, $sql_min);
+    if ($stmt_min) {
+        $d_param = is_numeric($distance) ? (int)$distance : $distance;
+        mysqli_stmt_bind_param($stmt_min, "ssssi", $group_id, $user_id, $pool, $event, $d_param);
+        if (mysqli_stmt_execute($stmt_min)) {
+            $rmin = mysqli_stmt_get_result($stmt_min);
+            $rowmin = mysqli_fetch_assoc($rmin);
+            $min_time = $rowmin['min_time'] ?? null;
+            $best_time = parse_time_to_seconds($min_time);
+        }
+        mysqli_stmt_close($stmt_min);
     }
 }
 
@@ -215,7 +258,9 @@ if (!$stmt) {
         $res = mysqli_stmt_get_result($stmt);
         $history = [];
         while ($row = mysqli_fetch_assoc($res)) {
-            $row['total_time'] = parse_time_to_seconds($row['total_time']);
+            $raw = $row['total_time'];
+            $row['raw_total_time'] = $raw;
+            $row['total_time'] = parse_time_to_seconds($raw);
             $history[] = $row;
         }
     }
@@ -223,6 +268,36 @@ if (!$stmt) {
 
 if (isset($stmt) && $stmt) mysqli_stmt_close($stmt);
 mysqli_close($link);
+
+// Post-normalization: if dataset median is short (<10min) but some parsed values are hours,
+// reinterpret ambiguous 3-part raw strings as mm:ss:cs (common data-entry like "1:31:00" meant 1:31.00)
+$numeric_times = array_filter(array_map(function($r){ return $r['total_time']; }, $history), function($v){ return $v !== null; });
+$count = count($numeric_times);
+$big_count = 0;
+foreach ($numeric_times as $v) { if ($v > 3600) $big_count++; }
+$median = null;
+if ($count > 0) {
+    sort($numeric_times);
+    $mid = (int) floor($count/2);
+    $median = $numeric_times[$mid];
+}
+if ($median !== null && $median < 600 && $big_count > 0) {
+    foreach ($history as &$r) {
+        if (isset($r['raw_total_time']) && substr_count($r['raw_total_time'], ':') === 2) {
+            $r['total_time'] = parse_time_ambiguous_ms_cs($r['raw_total_time']);
+        }
+    }
+    unset($r);
+    if (isset($now_raw) && substr_count($now_raw, ':') === 2 && $now_time !== null && $now_time > 3600) {
+        $now_time = parse_time_ambiguous_ms_cs($now_raw);
+    }
+    if (isset($prev_raw) && substr_count($prev_raw, ':') === 2 && $prev_time !== null && $prev_time > 3600) {
+        $prev_time = parse_time_ambiguous_ms_cs($prev_raw);
+    }
+    if (isset($best_raw) && substr_count($best_raw, ':') === 2 && $best_time !== null && $best_time > 3600) {
+        $best_time = parse_time_ambiguous_ms_cs($best_raw);
+    }
+}
 
 /* 種目名変換 */
 $event_map = [
@@ -238,7 +313,7 @@ $event_map = [
 <head>
 <meta charset="UTF-8">
 <title>水泳｜分析</title>
-<link rel="stylesheet" href="../../css/swim.css">
+<link rel="stylesheet" href="../../css/swim_analysis.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- nav スタイルは外部 css/nav.css に移動しました -->
 </head>
@@ -281,7 +356,7 @@ $event_map = [
     <tr>
         <th>今回</th>
         <td id="prev-now"></td>
-        <td id="best-now"></td>
+        <td><span id="best-now"></span> <span id="pb-badge" class="pb-badge" aria-live="polite"></span></td>
     </tr>
     <tr>
         <th>比較対象</th>
@@ -302,18 +377,18 @@ $event_map = [
     <div class="right-col">
         <!-- 推移グラフ -->
         <div class="chart-container">
-            <canvas id="timeChart" height="320"></canvas>
+            <canvas id="timeChart" height="px"></canvas>
         </div>
 
         <!-- 比較チャート（前回 vs 今回, ベスト vs 今回）: 右カラムに表示 -->
         <div class="compare-container">
             <div class="compare-chart">
                 <h3>前回 vs 今回</h3>
-                <canvas id="prevNowChart" height="200"></canvas>
+                <canvas id="prevNowChart" ></canvas>
             </div>
             <div class="compare-chart">
                 <h3>ベスト vs 今回</h3>
-                <canvas id="bestNowChart" height="200"></canvas>
+                <canvas id="bestNowChart"></canvas>
             </div>
         </div>
     </div>

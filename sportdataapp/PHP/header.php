@@ -20,7 +20,7 @@ if (!isset($NAV_BASE)) {
             <li><button><a href="#">テニス</a></button></li>
 
             <li class="has-sub <?= (strpos($_SERVER['PHP_SELF'], 'swim') !== false) ? 'active' : '' ?>">
-                <button><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/swim/swim_input.php">水泳</a></button>
+                <button>水泳</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/swim/swim_input.php">記録</a></li>
                     <li><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/swim/swim_analysis.php">分析</a></li>
@@ -30,4 +30,5 @@ if (!isset($NAV_BASE)) {
             <li><button><a href="#">バスケ</a></button></li>
         </ul>
     </nav>
+    <div class="app-title">Sports Analytics App</div>
 </div>

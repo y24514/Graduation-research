@@ -41,7 +41,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         attachLapListeners();
+        syncScrollAreas();
         resetTimeDisplay();
+        setTimeout(syncFormHeights, 0);
+    }
+
+    /* =====================
+       フォーム高さ同期
+    ===================== */
+    function syncFormHeights() {
+        const basic = document.querySelector('.form-basic');
+        const stroke = document.querySelector('.form-stroke');
+        const lap = document.querySelector('.form-lap');
+
+        if (!basic || !stroke || !lap) return;
+
+        const h = basic.offsetHeight;
+        stroke.style.height = h + 'px';
+        lap.style.height = h + 'px';
+    }
+
+    /* =====================
+       スクロール同期
+    ===================== */
+    function syncScrollAreas() {
+        const strokeArea = document.getElementById("stroke_area");
+        const lapArea = document.getElementById("lap_time_area");
+
+        if (!strokeArea || !lapArea) return;
+
+        // ストロークをスクロールしたらラップも同期
+        strokeArea.addEventListener("scroll", () => {
+            lapArea.scrollTop = strokeArea.scrollTop;
+        });
+
+        // ラップをスクロールしたらストロークも同期
+        lapArea.addEventListener("scroll", () => {
+            strokeArea.scrollTop = lapArea.scrollTop;
+        });
     }
 
     /* =====================
@@ -87,4 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("pool_type").addEventListener("change", updateSwimInputs);
     document.getElementById("event").addEventListener("change", updateSwimInputs);
     document.getElementById("distance").addEventListener("change", updateSwimInputs);
+
+    /* =====================
+       初期表示時の高さ同期
+    ===================== */
+    window.addEventListener('load', syncFormHeights);
 });

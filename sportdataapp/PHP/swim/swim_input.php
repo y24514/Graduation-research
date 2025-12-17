@@ -41,7 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             group_id,
             user_id,
             swim_date,
-            condition,
+            meet_name,
+            round,
+            `condition`,
+            session_type,
             pool,
             event,
             distance,
@@ -49,17 +52,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             stroke_json,
             lap_json,
             memo
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
 
     $stmt = mysqli_prepare($link, $sql);
     mysqli_stmt_bind_param(
         $stmt,
-        "sssissidsss",
+        "sssssisssidsss",
         $group_id,
         $user_id,
         $swim_date,
+        $meet_name,
+        $round,
         $condition,
+        $session_type,
         $pool,
         $event,
         $distance,
@@ -80,98 +86,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>水泳｜記録</title>
-    <link rel="stylesheet" href="../../css/swim.css">
+    <link rel="stylesheet" href="../../css/swim_input.css">
     <link rel="stylesheet" href="../../css/site.css">
     
 </head>
 <body>
 <?php $NAV_BASE = '..'; require_once __DIR__ . '/../header.php'; ?>
 
-<div class="top">
-    <div class="input-form">
-
+<div class="container">
+    <div class="chart-container" style="display: flex; justify-content: center;padding:18px; margin:0 auto;">
         <?php if (isset($_GET['success'])): ?>
             <p class="success">記録を保存しました</p>
         <?php endif; ?>
 
         <form method="post" id="swim-form">
 
-            <label>日付</label>
-            <input type="date" name="swim_date" required><br>
+  <!-- タイム（中央・横長） -->
+   <label>タイム</label>
+  <input type="text" id="time" readonly>
+  <input type="hidden" id="total_time" name="total_time">
 
-            <label>大会名</label>
-            <input type="text" name="meet_name" placeholder="大会名"><br>
+  <!-- 3列エリア -->
+  <div class="form-items">
 
-            <label>ラウンド</label>
-            <select name="round">
-                <option value="予選">予選</option>
-                <option value="準決勝">準決勝</option>
-                <option value="決勝">決勝</option>
-                <option value="タイム決勝">タイム決勝</option>
-            </select><br>
+    <!-- 左：基本情報 -->
+    <div class="form-basic">
+      <label>日付</label>
+      <input type="date" name="swim_date" required>
 
-            <label>体調</label>
-            <select name="condition">
-                <option value="5">とても良い</option>
-                <option value="4">良い</option>
-                <option value="3">普通</option>
-                <option value="2">悪い</option>
-                <option value="1">とても悪い</option>
-            </select><br>
+      <label>大会名</label>
+      <input type="text" name="meet_name">
 
-            <label>メモ</label>
-            <textarea name="memo" rows="3"></textarea><br>
+      <label>ラウンド</label>
+      <select name="round">
+        <option value="予選">予選</option>
+        <option value="準決勝">準決勝</option>
+        <option value="決勝">決勝</option>
+        <option value="タイム決勝">タイム決勝</option>
+      </select>
 
-            <label>プール</label>
-            <select id="pool_type" name="pool" required>
-                <option value="" disabled selected>選択してください</option>
-                <option value="short">短水路</option>
-                <option value="long">長水路</option>
-            </select><br>
+      <label>体調</label>
+      <select name="condition">
+        <option value="5">とても良い</option>
+        <option value="4">良い</option>
+        <option value="3">普通</option>
+        <option value="2">悪い</option>
+        <option value="1">とても悪い</option>
+      </select>
 
-            <label>種目</label>
-            <select id="event" name="event" required>
-                <option value="" disabled selected>選択してください</option>
-                <option value="fly">バタフライ</option>
-                <option value="ba">背泳ぎ</option>
-                <option value="br">平泳ぎ</option>
-                <option value="fr">自由形</option>
-                <option value="im">個人メドレー</option>
-            </select><br>
+      <label>プール</label>
+      <select id="pool_type" name="pool" required>
+        <option value="" selected disabled>選択してください</option>
+        <option value="short">短水路</option>
+        <option value="long">長水路</option>
+      </select>
 
-            <label>距離</label>
-            <select id="distance" name="distance" required>
-                <option value="" disabled selected>選択してください</option>
-                <option value="25">25m</option>
-                <option value="50">50m</option>
-                <option value="100">100m</option>
-                <option value="200">200m</option>
-                <option value="400">400m</option>
-                <option value="800">800m</option>
-                <option value="1500">1500m</option>
-            </select><br>
+      <label>種目</label>
+      <select id="event" name="event" required>
+        <option value="" selected disabled>選択してください</option>
+        <option value="fly">バタフライ</option>
+        <option value="ba">背泳ぎ</option>
+        <option value="br">平泳ぎ</option>
+        <option value="fr">自由形</option>
+        <option value="im">個人メドレー</option>
+      </select>
 
-            <input type="text" id="time" readonly>
-            <input type="hidden" id="total_time" name="total_time">
+      <label>距離</label>
+      <select id="distance" name="distance" required>
+        <option value="" selected disabled>選択してください</option>
+        <option value="25">25m</option>
+        <option value="50">50m</option>
+        <option value="100">100m</option>
+        <option value="200">200m</option>
+        <option value="400">400m</option>
+        <option value="800">800m</option>
+        <option value="1500">1500m</option>
+      </select>
+    </div>
 
-            <!-- ストローク -->
-            <div id="stroke_area">
-                <label>ストローク回数</label>
-                <input type="number" name="stroke_25" min="0" max="200" required>
-            </div>
+    <!-- 中央：ストローク -->
+    <div id="stroke_area" class="form-stroke">
+      <label>ストローク回数</label>
+    </div>
 
-            <!-- ラップ -->
-            <div id="lap_time_area">
-                <label>ラップタイム</label>
-                <input type="text"
-                       name="lap_time_25"
-                       placeholder="例: 15.23"
-                       pattern="\d{1,2}\.\d{1,2}"
-                       required>
-            </div>
+    <!-- 右：ラップ -->
+    <div id="lap_time_area" class="form-lap">
+      <label>ラップタイム</label>
+    </div>
 
-            <input type="submit" value="保存">
-        </form>
+    <!-- 保存ボタン -->
+    <div class="form-submit">
+      <input type="submit" value="保存">
+    </div>
+
+  </div>
+</form>
 
     </div>
 </div>

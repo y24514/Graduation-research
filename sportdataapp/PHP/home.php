@@ -29,6 +29,23 @@ mysqli_set_charset($link, 'utf8');
 $user_id = $_SESSION['user_id'];
 $group_id = $_SESSION['group_id'];
 $corrent_goal = "";
+$hasGoalThisMonth = false;
+$currentMonth = date('Y-m');
+
+// 今月の目標が既に登録されているかチェック
+$stmt_check = mysqli_prepare($link, "
+    SELECT COUNT(*) as count 
+    FROM goal_tbl 
+    WHERE group_id = ? AND user_id = ? 
+    AND DATE_FORMAT(created_at, '%Y-%m') = ?
+");
+mysqli_stmt_bind_param($stmt_check, "sss", $group_id, $user_id, $currentMonth);
+mysqli_stmt_execute($stmt_check);
+$result_check = mysqli_stmt_get_result($stmt_check);
+if ($row_check = mysqli_fetch_assoc($result_check)) {
+    $hasGoalThisMonth = ($row_check['count'] > 0);
+}
+mysqli_stmt_close($stmt_check);
 
 // goal表示
 $stmt = mysqli_prepare($link, "SELECT goal FROM goal_tbl WHERE group_id = ? AND user_id = ?");
@@ -121,18 +138,16 @@ mysqli_stmt_close($stmt2);
             <div class="goal">
                 <h2>目標</h2>
                 <div class="goal-border">
-                    <div class="goal-form">
-                        <form action="goalsave.php" method="post">
-                            <h3>今月の目標</h3>
-                            <input type="text" id="goal" name="goal"><br>
-                            <input type="submit" id="goal-reg" name="submit" value="登録">
-                        </form>
-                    </div>
-                    <div class="Viewing-goal">
-                        <h3>現在の目標</h3>
-                        <div class="now-goal">
-                            <p><?php echo htmlspecialchars($corrent_goal) ?></p>
-                        </div>
+                    <!-- 今月の目標が未登録の場合：入力フォーム表示 -->
+                    <form id="goal-form" <?= $hasGoalThisMonth ? 'class="hidden"' : '' ?> action="goalsave.php" method="post">
+                        <input type="text" id="goal" name="goal" placeholder="今月の目標を入力" value="<?= htmlspecialchars($corrent_goal, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="submit" id="goal-reg" name="submit" value="登録">
+                    </form>
+                    
+                    <!-- 今月の目標が登録済みの場合:現在の目標表示 -->
+                    <div id="goal-display" class="<?= !$hasGoalThisMonth ? 'hidden' : '' ?>">
+                        <p class="now-goal"><?= htmlspecialchars($corrent_goal ?: '目標が登録されていません', ENT_QUOTES, 'UTF-8') ?></p>
+                        <button type="button" id="edit-goal-btn">変更</button>
                     </div>
                 </div>
             </div>
@@ -156,6 +171,23 @@ if (showLoader) {
 <script src="../js/fullcalendar/packages/interaction/index.global.min.js"></script>
 <script src="../js/fullcalendar/packages/daygrid/index.global.min.js"></script>
 <script src="../js/calendar.js"></script>
+
+<script>
+// 目標の変更ボタン処理
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('edit-goal-btn');
+    const goalForm = document.getElementById('goal-form');
+    const goalDisplay = document.getElementById('goal-display');
+    
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            goalDisplay.classList.add('hidden');
+            goalForm.classList.remove('hidden');
+            document.getElementById('goal').focus();
+        });
+    }
+});
+</script>
 
 </body>
 </html>

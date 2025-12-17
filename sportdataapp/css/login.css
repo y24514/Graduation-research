@@ -1,7 +1,27 @@
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1a202c;
+  --text-secondary: #4a5568;
+  --muted: #718096;
+  --primary: #3182ce;
+  --primary-hover: #2c5aa0;
+  --danger: #e53e3e;
+  --success: #38a169;
+  --border: #cbd5e0;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+}
 
-body{
-    background-color: #ffffff;
-    font-family: "メイリオ", sans-serif;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color: var(--text);
+  background: var(--bg);
 }
 
 html, body {
@@ -23,43 +43,61 @@ html, body {
 h1{
     text-align: center;
     font-family: "Palatino Linotype", serif;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #5a67d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .login-form{
-    height: 500px;
-    width: 850px;
-    padding: 30px;
+    height: 600px;
+    width: 1100px;
+    padding: 50px;
     display: flex;
     justify-content: space-around;
     margin: auto;
-    background-color: rgb(225, 225, 225);
-    border: solid 0px grey;
-    border-radius: 3px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .left-login-form{
     margin: 30px;
-    padding: 30px;
+    padding: 40px;
 }
 
 .left-login-form h2{
     margin: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: center;
-    border-left: solid 10px black;
-    padding-left: 10px;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--text);
 }
 
 input[type="text"],
 input[type="password"] {
-  width: 300px;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+  width: 360px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
   box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
 
 .sent-box{
@@ -68,28 +106,53 @@ input[type="password"] {
 }
 
 input[type="submit"] {
-  width: 300px;
-  margin-top: 20px;
-  padding: 10px;
+  width: 360px;
+  margin-top: 25px;
+  padding: 14px;
   display: block;
   justify-content: center;
   border: none;
-  border-radius: 6px;
-  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: #fff;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+input[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+input[type="submit"]:hover::before {
+  left: 100%;
 }
 
 input[type="submit"]:hover{
-    background-color: rgb(117, 117, 117);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(49, 130, 206, 0.4);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0);
 }
 
 .right-reg{
     margin: 30px;
-    padding: 30px;
+    padding: 40px;
     padding-right: 0px;
-    border-left: solid 1px gray;
+    border-left: 2px solid var(--border);
     display: block;
     justify-content: center;
     align-items: center;      
@@ -97,30 +160,57 @@ input[type="submit"]:hover{
 
 .right-reg h2{
     margin: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: center;
-    border-left: solid 10px black;
-    padding-left: 10px;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--text);
 }
 
 .right-reg p{
     text-align: center;
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
 }
 
 .right-reg a{
     display: inline-block;
-    padding: 8px;
-    margin-top: 100px;
-    width: 300px;
-    background: rgb(0, 0, 0);
+    padding: 14px;
+    margin-top: 120px;
+    width: 360px;
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
     color: #fff;
     text-decoration: none;
     text-align: center;
     border: none;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.right-reg a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.right-reg a:hover::before {
+    left: 100%;
 }
 
 .right-reg a:hover{
-    background-color: rgb(117, 117, 117);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
