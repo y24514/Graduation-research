@@ -1,6 +1,5 @@
 /* =====================
-   ヘルパー: 時間パース/フォーマット
-   - 入力は秒 (number) または "m:ss.xx" の文字列などを想定
+   時間フォーマット関数
 ===================== */
 function parseTimeInput(v) {
     if (v === null || v === undefined) return null;
@@ -10,7 +9,6 @@ function parseTimeInput(v) {
         if (v === '') return null;
         if (v.indexOf(':') !== -1) {
             const parts = v.split(':').map(p => p.trim());
-            // support h:mm:ss, mm:ss or m:ss.xx
             if (parts.length === 3) {
                 const h = parseInt(parts[0], 10) || 0;
                 const m = parseInt(parts[1], 10) || 0;
@@ -21,9 +19,6 @@ function parseTimeInput(v) {
                 const s = parseFloat(parts[1]) || 0;
                 return m * 60 + s;
             }
-            // fallback
-            const f = parseFloat(v.replace(':', '.'));
-            return isNaN(f) ? null : f;
         }
         const f = parseFloat(v);
         return isNaN(f) ? null : f;
@@ -34,7 +29,6 @@ function parseTimeInput(v) {
 function formatTime(sec) {
     if (sec === null || sec === undefined || isNaN(sec)) return '---';
     const total = Number(sec);
-    // format as H:MM:SS.ss if >= 3600, else M:SS.ss or SS.ss
     const hours = Math.floor(total / 3600);
     const minutes = Math.floor((total % 3600) / 60);
     const seconds = (total % 60).toFixed(2).padStart(5, '0');
@@ -48,408 +42,260 @@ function formatTime(sec) {
     return seconds;
 }
 
-// Helper: compute nice y-axis min/max/step for seconds data
-function computeYAxisOptions(values, opts) {
-    opts = opts || {};
-    let vals = values.filter(v => v !== null && v !== undefined && !isNaN(v));
-    if (vals.length === 0) return { min: 0, max: 10, stepSize: 1 };
-    // median check to detect if most data are short but there are large outliers (e.g. mis-parsed "1:31:00")
-    vals.sort((a,b) => a - b);
-    const midIdx = Math.floor(vals.length / 2);
-    const median = vals[midIdx];
-    // if median indicates short durations and there are huge outliers, ignore outliers > 3600s
-    if (median < 600) {
-        const before = vals.length;
-        vals = vals.filter(v => v <= 3600);
-        if (vals.length === 0) {
-            // fallback to original vals if filtering removed all
-            vals = values.filter(v => v !== null && v !== undefined && !isNaN(v));
-        } else if (vals.length < before) {
-            console.debug('computeYAxisOptions: removed large outliers from axis calculation', { before, after: vals.length });
-        }
-    }
-    const minV = Math.min.apply(null, vals);
-    const maxV = Math.max.apply(null, vals);
-    // if all equal, create a small range
-    let min = minV;
-    let max = maxV;
-    if (Math.abs(max - min) < 1e-6) {
-        // choose +/- 1 second or 5% whichever greater
-        const delta = Math.max(1, Math.abs(min) * 0.05);
-        min = Math.max(0, min - delta);
-        max = max + delta;
-    }
-    const rawRange = max - min;
-    const desiredTicks = opts.desiredTicks || 5;
-    let roughStep = rawRange / desiredTicks;
-    // compute magnitude
-    const mag = Math.pow(10, Math.floor(Math.log10(Math.max(roughStep, 1e-9))));
-    const candidates = [1, 2, 5, 10];
-    let step = mag;
-    for (let i = 0; i < candidates.length; i++) {
-        const s = candidates[i] * mag;
-        const ticks = Math.ceil(rawRange / s);
-        if (ticks <= desiredTicks * 1.8 && ticks >= 2) { step = s; break; }
-    }
-    // If step is fractional (when roughStep < 1), normalize to 0.1, 0.2, 0.5, etc.
-    if (roughStep < 1) {
-        // try decimal candidates
-        const decCandidates = [0.1, 0.2, 0.5, 1];
-        for (let s of decCandidates) {
-            const ticks = Math.ceil(rawRange / s);
-            if (ticks <= desiredTicks * 1.8 && ticks >= 2) { step = s; break; }
-        }
-    }
-    // compute nice min/max aligned to step
-    const niceMin = Math.floor(min / step) * step;
-    const niceMax = Math.ceil(max / step) * step;
-    return { min: Math.max(0, niceMin), max: Math.max(niceMin + step, niceMax), stepSize: step };
-}
-
-/* =====================
-   比較表示 (DOM 安全チェック含む)
-===================== */
-const elPrevNow = document.getElementById('prev-now');
-const elPrevThen = document.getElementById('prev-then');
-const elBestNow = document.getElementById('best-now');
-const elBestThen = document.getElementById('best-then');
-const elDiffPrev = document.getElementById('diff-prev');
-const elDiffBest = document.getElementById('diff-best');
-const elPbBadge = document.getElementById('pb-badge');
-
-const nowSec  = parseTimeInput(NOW_TIME);
-const prevSec = parseTimeInput(PREV_TIME);
-const bestSec = parseTimeInput(BEST_TIME);
-
-if (elPrevNow) elPrevNow.textContent = nowSec !== null ? formatTime(nowSec) : '---';
-if (elPrevThen) elPrevThen.textContent = prevSec !== null ? formatTime(prevSec) : 'N/A';
-if (elBestNow) elBestNow.textContent = nowSec !== null ? formatTime(nowSec) : '---';
-if (elBestThen) elBestThen.textContent = bestSec !== null ? formatTime(bestSec) : 'N/A';
-
 function formatSignedSeconds(diff) {
     if (diff === null || diff === undefined || isNaN(diff)) return '---';
     const s = Math.abs(diff).toFixed(2);
-    // show + when worse (positive diff), - when improved (negative diff)
-    const sign = diff > 0 ? '+' : (diff < 0 ? '-' : '+');
-    // arrow: ▲ worse (slower), ▼ better (faster), = no change
+    const sign = diff > 0 ? '+' : (diff < 0 ? '-' : '±');
     const arrow = diff > 0 ? '▲' : (diff < 0 ? '▼' : '＝');
-    return `${arrow} ${sign}${s} 秒`;
+    const colorClass = diff > 0 ? 'text-danger' : (diff < 0 ? 'text-success' : '');
+    return `<span class="${colorClass}">${arrow} ${sign}${s}秒</span>`;
 }
 
-// Helper: format a value with diff to current (nowSec)
-function formatTimeWithDiff(v) {
-    if (v === null || v === undefined || isNaN(v)) return '---';
-    const base = formatTime(v) + ' 秒';
-    if (typeof nowSec === 'number' && nowSec !== null) {
-        const d = nowSec - v; // positive = now is slower (worse)
-        return base + ' — ' + formatSignedSeconds(d);
-    }
-    return base;
+/* =====================
+   データ処理
+===================== */
+// タイムデータを解析（条件分岐の外で定義）
+const nowSec = parseTimeInput(NOW_TIME);
+const prevSec = parseTimeInput(PREV_TIME);
+const bestSec = parseTimeInput(BEST_TIME);
+
+// 統計要素が存在する場合のみ処理（種目選択時）
+const statBest = document.getElementById('stat-best');
+const statAvg = document.getElementById('stat-avg');
+const statImprovement = document.getElementById('stat-improvement');
+
+if (statBest && statAvg && statImprovement) {
+    // 統計情報の表示
+    statBest.textContent = STATS.min ? formatTime(STATS.min) : '---';
+    statAvg.textContent = STATS.avg ? formatTime(STATS.avg) : '---';
+    statImprovement.innerHTML = STATS.improvement_rate !== null 
+        ? `<span class="${STATS.improvement_rate > 0 ? 'text-success' : 'text-danger'}">${STATS.improvement_rate > 0 ? '+' : ''}${STATS.improvement_rate.toFixed(1)}%</span>`
+        : '---';
+
+    // 比較テーブル
+    const elPrevNow = document.getElementById('prev-now');
+    const elPrevThen = document.getElementById('prev-then');
+    const elBestNow = document.getElementById('best-now');
+    const elBestThen = document.getElementById('best-then');
+    const elDiffPrev = document.getElementById('diff-prev');
+    const elDiffBest = document.getElementById('diff-best');
+    const elPbBadge = document.getElementById('pb-badge');
+
+    if (elPrevNow) elPrevNow.textContent = nowSec !== null ? formatTime(nowSec) : '---';
+    if (elPrevThen) elPrevThen.textContent = prevSec !== null ? formatTime(prevSec) : 'N/A';
+    if (elBestNow) elBestNow.textContent = nowSec !== null ? formatTime(nowSec) : '---';
+    if (elBestThen) elBestThen.textContent = bestSec !== null ? formatTime(bestSec) : 'N/A';
+
+if (elDiffPrev && nowSec !== null && prevSec !== null) {
+    elDiffPrev.innerHTML = formatSignedSeconds(nowSec - prevSec);
+} else if (elDiffPrev) {
+    elDiffPrev.textContent = '---';
 }
 
-if (elDiffPrev) {
-    if (prevSec !== null && nowSec !== null) {
-        const d = nowSec - prevSec;
-        // show arrow + signed value, and add title for exact seconds
-        elDiffPrev.innerHTML = '<span class="diff-arrow">' + formatSignedSeconds(d) + '</span>';
-        elDiffPrev.title = (d < 0 ? '今回が速い（改善）' : (d > 0 ? '今回が遅い（悪化）' : '変化なし'));
-        elDiffPrev.style.color = d < 0 ? '#2e7d32' : (d > 0 ? '#c62828' : '#333');
-    } else {
-        elDiffPrev.textContent = '---';
-    }
-}
-
-if (elDiffBest) {
-    if (bestSec !== null && nowSec !== null) {
-        const d = nowSec - bestSec;
-        elDiffBest.innerHTML = '<span class="diff-arrow">' + formatSignedSeconds(d) + '</span>';
-    elDiffBest.title = (d < 0 ? '今回がベストより速い（更新）' : (d > 0 ? '今回がベストより遅い' : 'ベストと同等'));
-        elDiffBest.style.color = d < 0 ? '#2e7d32' : (d > 0 ? '#c62828' : '#333');
-    } else {
+    if (elDiffBest && nowSec !== null && bestSec !== null) {
+        elDiffBest.innerHTML = formatSignedSeconds(nowSec - bestSec);
+        if (nowSec < bestSec && elPbBadge) {
+            elPbBadge.textContent = '🏆 NEW BEST!';
+            elPbBadge.classList.add('is-pb');
+        } else if (nowSec === bestSec && elPbBadge) {
+            elPbBadge.textContent = '🥇 タイ記録';
+            elPbBadge.classList.add('is-tie');
+        }
+    } else if (elDiffBest) {
         elDiffBest.textContent = '---';
     }
-}
-
-    // PB 表示: 今回が自己ベストかどうかを表示
-    if (elPbBadge) {
-        if (nowSec !== null && bestSec !== null) {
-            if (nowSec < bestSec) {
-                elPbBadge.textContent = '自己ベスト！';
-                elPbBadge.classList.add('is-pb');
-                elPbBadge.classList.remove('is-tie');
-            } else if (Math.abs(nowSec - bestSec) < 0.001) {
-                // 同タイム
-                elPbBadge.textContent = '自己ベスト(同タイム)';
-                elPbBadge.classList.add('is-tie');
-                elPbBadge.classList.remove('is-pb');
-            } else {
-                elPbBadge.textContent = '';
-                elPbBadge.classList.remove('is-pb', 'is-tie');
-            }
-        } else {
-            elPbBadge.textContent = '';
-            elPbBadge.classList.remove('is-pb', 'is-tie');
-        }
-    }
+} // if (statBest && statAvg && statImprovement) の閉じ括弧
 
 /* =====================
-   小チャート: 前回 vs 今回, PB vs 今回
+   全記録一覧テーブル
 ===================== */
-function renderSmallLineChart(canvasId, labels, data, color) {
-    const c = document.getElementById(canvasId);
-    if (!c) return null;
-    const newCanvas = c.cloneNode(true);
-    c.parentNode.replaceChild(newCanvas, c);
-    // plugin: draw value labels above points
-    const valueLabelPlugin = {
-        id: 'valueLabels',
-        afterDatasetsDraw: function(chart, args, options) {
-            const ctx = chart.ctx;
-            chart.data.datasets.forEach((dataset, datasetIndex) => {
-                const meta = chart.getDatasetMeta(datasetIndex);
-                meta.data.forEach((element, index) => {
-                    const val = dataset.data[index];
-                    if (val === null || val === undefined) return;
-                    const pos = element.tooltipPosition();
-                    ctx.save();
-                    ctx.fillStyle = '#333';
-                    ctx.font = '12px Arial';
-                    const label = formatTimeWithDiff(val);
-                    const w = ctx.measureText(label).width;
-                    ctx.fillText(label, pos.x - w/2, pos.y - 10);
-                    ctx.restore();
-                });
-            });
+const recordsTbody = document.getElementById('records-tbody');
+if (recordsTbody && HISTORY.length > 0) {
+    const bestTime = STATS.min;
+    HISTORY.forEach((record, index) => {
+        const row = document.createElement('tr');
+        if (record.total_time === bestTime) {
+            row.classList.add('record-best');
         }
-    };
+        
+        const conditionLabels = ['最悪', '悪い', '普通', '良い', '最高'];
+        const conditionClass = `condition-${record.condition || 3}`;
+        const conditionText = conditionLabels[(record.condition || 3) - 1] || '普通';
+        
+        row.innerHTML = `
+            <td>${record.swim_date}</td>
+            <td style="font-weight: 600;">${formatTime(record.total_time)}</td>
+            <td><span class="condition-badge ${conditionClass}">${conditionText}</span></td>
+            <td>${record.memo ? `<span class="record-memo">${record.memo}</span>` : '-'}</td>
+        `;
+        recordsTbody.appendChild(row);
+    });
+}
 
-    const yOpts = computeYAxisOptions(data.filter(v=>v!==null && v!==undefined));
-
-    // If very few data points, don't force stepSize (Chart.js will choose sensible ticks)
-    if (data.filter(v => v !== null && v !== undefined).length <= 2) {
-        delete yOpts.stepSize;
-    }
-
-    // If all values are nearly identical, expand the range slightly so the line is visible
-    const dataVals = data.filter(v => v !== null && v !== undefined);
-    if (dataVals.length > 0) {
-        let min = Math.min(...dataVals);
-        let max = Math.max(...dataVals);
-        if (Math.abs(max - min) < 0.01) {
-            min = min - 0.5;
-            max = max + 0.5;
-            yOpts.min = Math.max(0, min);
-            yOpts.max = max;
+/* =====================
+   Chart.js グラフ設定
+===================== */
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+        legend: { display: true, position: 'top' },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    return formatTime(context.parsed.y);
+                }
+            }
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: false,
+            ticks: {
+                callback: function(value) {
+                    return formatTime(value);
+                }
+            }
         }
     }
+};
 
-    // removed debug logs for production
-    return new Chart(newCanvas, {
+/* =====================
+   タイム推移グラフ
+===================== */
+const timeCtx = document.getElementById('timeChart');
+if (timeCtx && HISTORY.length > 0) {
+    const labels = HISTORY.map(r => r.swim_date);
+    const data = HISTORY.map(r => r.total_time);
+    
+    new Chart(timeCtx, {
         type: 'line',
         data: {
-            labels,
+            labels: labels,
             datasets: [{
-                label: canvasId,
-                data,
-                borderColor: color,
-                backgroundColor: color,
-                tension: 0.2,
-                fill: false,
-                pointRadius: 6,
-                spanGaps: false
+                label: 'タイム (秒)',
+                data: data,
+                borderColor: '#3182ce',
+                backgroundColor: 'rgba(49, 130, 206, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 7
             }]
         },
-        plugins: [valueLabelPlugin],
         options: {
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx){ const v = ctx.raw; return (v === null || v === undefined) ? 'N/A' : formatTimeWithDiff(v); } } } },
-            scales: { y: { beginAtZero: false, min: yOpts.min, max: yOpts.max, ticks: Object.assign({ callback: v => formatTime(v) }, (yOpts.stepSize ? { stepSize: yOpts.stepSize } : {})) } },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-}
-
-// 小チャート: 横棒で表示するヘルパ
-function renderSmallBarChart(canvasId, labels, data, color) {
-    const c = document.getElementById(canvasId);
-    if (!c) return null;
-    const newCanvas = c.cloneNode(true);
-    c.parentNode.replaceChild(newCanvas, c);
-
-    // value label plugin: 数値を棒の右端に描画 (詳細版に置換済み)
-        const valueLabelPlugin = {
-            id: 'valueLabelsBar',
-            afterDatasetsDraw: function(chart) {
-                const ctx = chart.ctx;
-                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    meta.data.forEach((bar, index) => {
-                        const val = dataset.data[index];
-                        if (val === null || val === undefined) return;
-                        // prepare two-line label: time on first line, diff on second
-                        const timeLabel = formatTime(val);
-                        const diff = (typeof nowSec === 'number' && nowSec !== null) ? (nowSec - val) : null;
-                        const diffLabel = diff === null || isNaN(diff) ? '' : formatSignedSeconds(diff);
-                        ctx.save();
-                        ctx.font = '12px Arial';
-                        // measure bar rectangle
-                        const model = bar; // Chart.js v3+ elements expose x/y/width/height
-                        const barLeft = model.x - (model.width || 0) / 2;
-                        const barRight = model.x + (model.width || 0) / 2;
-                        const barWidth = Math.max(0, (model.width || 0));
-                        const y = model.y;
-                        // attempt to draw inside bar if space, else draw to the right
-                        const inside = barWidth > 80; // threshold: if wide enough
-                        if (inside) {
-                            // draw timeLabel in white inside bar, centered vertically
-                            ctx.fillStyle = '#fff';
-                            ctx.textAlign = 'left';
-                            const px = barLeft + 8;
-                            ctx.fillText(timeLabel, px, y - 2);
-                            if (diffLabel) {
-                                ctx.fillStyle = '#fff';
-                                ctx.fillText(diffLabel, px, y + 12);
-                            }
-                        } else {
-                            // draw outside in dark color
-                            ctx.fillStyle = '#111';
-                            ctx.textAlign = 'left';
-                            const px = barRight + 8;
-                            ctx.fillText(timeLabel, px, y - 2);
-                            if (diffLabel) {
-                                ctx.fillText(diffLabel, px, y + 12);
-                            }
-                        }
-                        ctx.restore();
-                    });
-                });
+            ...chartOptions,
+            plugins: {
+                ...chartOptions.plugins,
+                title: {
+                    display: true,
+                    text: '記録の推移'
+                }
             }
-        };
-
-    const xOpts = computeYAxisOptions(data.filter(v=>v!==null && v!==undefined));
-    // for bar (horizontal), x axis is numeric
-    if (data.filter(v => v !== null && v !== undefined).length <= 2) delete xOpts.stepSize;
-    const dataVals = data.filter(v => v !== null && v !== undefined);
-    if (dataVals.length > 0) {
-        let min = Math.min(...dataVals);
-        let max = Math.max(...dataVals);
-        if (Math.abs(max - min) < 0.01) { min -= 0.5; max += 0.5; xOpts.min = Math.max(0, min); xOpts.max = max; }
-    }
-
-        return new Chart(newCanvas, {
-        type: 'bar',
-        data: { labels, datasets: [{ label: canvasId, data, backgroundColor: color, borderColor: color }] },
-        plugins: [valueLabelPlugin],
-        options: {
-            indexAxis: 'y',
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx){ const v = ctx.raw; return (v === null || v === undefined) ? 'N/A' : formatTimeWithDiff(v); } } } },
-            scales: { x: { min: xOpts.min, max: xOpts.max, ticks: Object.assign({ callback: v => formatTime(v) }, (xOpts.stepSize ? { stepSize: xOpts.stepSize } : {})) }, y: { ticks: { autoSkip: false } } },
-            responsive: true,
-            maintainAspectRatio: false
         }
     });
-}
-
-// 前回 vs 今回 (横棒)
-if (document.getElementById('prevNowChart')) {
-    const labelsPN = ['前回', '今回'];
-    const dataPN = [ prevSec !== null ? prevSec : null, nowSec !== null ? nowSec : null ];
-    renderSmallBarChart('prevNowChart', labelsPN, dataPN, '#1976d2');
-}
-
-// PB vs 今回 (横棒)
-if (document.getElementById('bestNowChart')) {
-    const labelsBN = ['ベスト', '今回'];
-    const dataBN = [ bestSec !== null ? bestSec : null, nowSec !== null ? nowSec : null ];
-    renderSmallBarChart('bestNowChart', labelsBN, dataBN, '#d32f2f');
 }
 
 /* =====================
-   Chart.js 推移グラフ
+   前回 vs 今回
 ===================== */
-const chartCanvas = document.getElementById('timeChart');
-if (!chartCanvas) {
-    console.debug('timeChart canvas not found');
-} else {
-    const labels = Array.isArray(HISTORY) ? HISTORY.map(h => h.swim_date) : [];
-    const times  = Array.isArray(HISTORY) ? HISTORY.map(h => {
-        const v = parseTimeInput(h.total_time);
-        return v === null ? null : v;
-    }) : [];
-
-    if (labels.length === 0) {
-        // データ無し時は canvas を非表示にしてメッセージを表示
-        chartCanvas.style.display = 'none';
-        const p = document.createElement('p');
-        p.textContent = '推移データがありません';
-        chartCanvas.parentNode.insertBefore(p, chartCanvas);
-    } else {
-        const datasets = [
-            {
-                label: '記録',
-                data: times,
-                tension: 0.2,
-                borderColor: '#1976d2',
-                backgroundColor: '#1976d2',
-                spanGaps: true,
-                pointRadius: 3
-            }
-        ];
-
-        if (bestSec !== null) {
-            datasets.push({
-                label: 'ベスト',
-                data: labels.map(() => bestSec),
-                borderDash: [5,5],
-                borderColor: '#d32f2f',
-                pointRadius: 0,
-                fill: false
-            });
-        }
-
-        const mainYOpts = computeYAxisOptions(times);
-
-        // If very few points, let Chart.js choose stepSize
-        if (times.filter(v => v !== null && v !== undefined).length <= 2) {
-            delete mainYOpts.stepSize;
-        }
-        // If all values nearly identical, expand range slightly
-        const mainVals = times.filter(v => v !== null && v !== undefined);
-        if (mainVals.length > 0) {
-            let min = Math.min(...mainVals);
-            let max = Math.max(...mainVals);
-            if (Math.abs(max - min) < 0.01) {
-                min -= 0.5; max += 0.5;
-                mainYOpts.min = Math.max(0, min);
-                mainYOpts.max = max;
+const prevNowCtx = document.getElementById('prevNowChart');
+if (prevNowCtx && prevSec !== null && nowSec !== null) {
+    new Chart(prevNowCtx, {
+        type: 'bar',
+        data: {
+            labels: ['前回', '今回'],
+            datasets: [{
+                label: 'タイム (秒)',
+                data: [prevSec, nowSec],
+                backgroundColor: [
+                    'rgba(203, 213, 224, 0.7)',
+                    nowSec < prevSec ? 'rgba(56, 161, 105, 0.7)' : 'rgba(229, 62, 62, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(203, 213, 224, 1)',
+                    nowSec < prevSec ? 'rgba(56, 161, 105, 1)' : 'rgba(229, 62, 62, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            ...chartOptions,
+            plugins: {
+                ...chartOptions.plugins,
+                legend: { display: false }
             }
         }
+    });
+}
 
-    // removed debug logs for production
-    new Chart(chartCanvas, {
-            type: 'line',
+/* =====================
+   ベスト vs 今回
+===================== */
+const bestNowCtx = document.getElementById('bestNowChart');
+if (bestNowCtx && bestSec !== null && nowSec !== null) {
+    new Chart(bestNowCtx, {
+        type: 'bar',
+        data: {
+            labels: ['ベスト', '今回'],
+            datasets: [{
+                label: 'タイム (秒)',
+                data: [bestSec, nowSec],
+                backgroundColor: [
+                    'rgba(212, 175, 55, 0.7)',
+                    nowSec <= bestSec ? 'rgba(56, 161, 105, 0.7)' : 'rgba(203, 213, 224, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(212, 175, 55, 1)',
+                    nowSec <= bestSec ? 'rgba(56, 161, 105, 1)' : 'rgba(203, 213, 224, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            ...chartOptions,
+            plugins: {
+                ...chartOptions.plugins,
+                legend: { display: false }
+            }
+        }
+    });
+}
+
+/* =====================
+   ペース分析 (100mあたり)
+===================== */
+const paceCtx = document.getElementById('paceChart');
+if (paceCtx && HISTORY.length > 0 && DISTANCE) {
+    const distance = parseFloat(DISTANCE);
+    const paceData = HISTORY.map(r => {
+        if (r.total_time && distance > 0) {
+            return (r.total_time / distance) * 100; // 100mあたりの秒数
+        }
+        return null;
+    }).filter(p => p !== null);
+    
+    if (paceData.length > 0) {
+        new Chart(paceCtx, {
+            type: 'bar',
             data: {
-                labels,
-                datasets
+                labels: HISTORY.map(r => r.swim_date),
+                datasets: [{
+                    label: '100mペース (秒)',
+                    data: paceData,
+                    backgroundColor: 'rgba(214, 158, 46, 0.7)',
+                    borderColor: 'rgba(214, 158, 46, 1)',
+                    borderWidth: 2
+                }]
             },
             options: {
+                ...chartOptions,
                 plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                        const v = context.raw;
-                                        if (v === null || v === undefined) return 'データなし';
-                                        return formatTimeWithDiff(v);
-                                    }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        reverse: true,
-                        min: mainYOpts.min,
-                        max: mainYOpts.max,
-                        ticks: Object.assign({ callback: v => formatTime(v) }, (mainYOpts.stepSize ? { stepSize: mainYOpts.stepSize } : {}))
+                    ...chartOptions.plugins,
+                    title: {
+                        display: true,
+                        text: `100mあたりのペース推移 (${DISTANCE}m種目)`
                     }
                 }
             }

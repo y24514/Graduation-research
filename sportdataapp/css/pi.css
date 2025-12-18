@@ -1,158 +1,690 @@
+/* ==========================================
+   身体情報ページ - シンプルデザイン
+========================================== */
+
 :root {
-  --bg: #f0f4f8;
-  --card: #ffffff;
-  --text: #1a202c;
-  --text-secondary: #4a5568;
-  --muted: #718096;
-  --primary: #3182ce;
-  --primary-hover: #2c5aa0;
-  --danger: #e53e3e;
-  --success: #38a169;
-  --border: #cbd5e0;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --radius: 12px;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  color: var(--text);
-  background: var(--bg);
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1a202c;
+    --text-secondary: #4a5568;
+    --muted: #718096;
+    --primary: #3182ce;
+    --primary-hover: #2c5aa0;
+    --danger: #e53e3e;
+    --success: #38a169;
+    --warning: #d69e2e;
+    --border: #cbd5e0;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --radius: 12px;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-/* Navigation styles moved to css/nav.css - header.php will load them */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
 
-/* 入力 */
-h2{
-    margin: 0px;
-    margin-top: 5px;
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ==========================================
+   成功バナー
+========================================== */
+.success-banner {
+    background: var(--success);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.success-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* ==========================================
+   統計サマリーカード
+========================================== */
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow);
     border-left: 4px solid var(--primary);
-    padding-left: 15px;
+}
+
+.stat-card-primary { border-left-color: #3182ce; }
+.stat-card-success { border-left-color: #38a169; }
+.stat-card-warning { border-left-color: #d69e2e; }
+.stat-card-info { border-left-color: #4299e1; }
+
+.stat-icon {
+    font-size: 2rem;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--text);
+}
+
+.stat-unit {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 0.25rem;
+}
+
+.stat-change {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.stat-change.increase {
+    background: rgba(229, 62, 62, 0.1);
+    color: var(--danger);
+}
+
+.stat-change.decrease {
+    background: rgba(56, 161, 105, 0.1);
+    color: var(--success);
+}
+
+.bmi-category,
+.sleep-quality {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+.bmi-category.category-低体重 {
+    background: rgba(66, 153, 225, 0.1);
+    color: #2c5aa0;
+}
+
+.bmi-category.category-普通体重 {
+    background: rgba(56, 161, 105, 0.1);
+    color: var(--success);
+}
+
+.bmi-category.category-肥満\(1度\),
+.bmi-category.category-肥満\(2度以上\) {
+    background: rgba(237, 137, 54, 0.1);
+    color: var(--warning);
+}
+
+.sleep-quality.quality-良好 {
+    background: rgba(56, 161, 105, 0.1);
+    color: var(--success);
+}
+
+.sleep-quality.quality-普通 {
+    background: rgba(237, 137, 54, 0.1);
+    color: var(--warning);
+}
+
+.sleep-quality.quality-不足 {
+    background: rgba(229, 62, 62, 0.1);
+    color: var(--danger);
+}
+
+/* ==========================================
+   最新データ表示
+========================================== */
+.current-status {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+}
+
+.title-icon {
     font-size: 1.5rem;
 }
 
-.container{
+.current-data {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.data-item {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.data-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.data-label {
+    font-size: 0.875rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.data-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* ==========================================
+   コンテンツグリッド
+========================================== */
+.content-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================
+   入力パネル
+========================================== */
+.input-panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+}
+
+/* ==========================================
+   フォーム
+========================================== */
+.pi-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.label-icon {
+    font-size: 1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    color: var(--text);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.submit-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
 }
 
-.input-panel{
-    margin: 30px;
-    width: 500px;
+.submit-btn:hover {
+    background: var(--primary-hover);
 }
 
-.form-all{
-    border: 1px solid var(--border);
+.btn-icon {
+    font-size: 1.125rem;
+}
+
+/* ==========================================
+   BMI計算機
+========================================== */
+.bmi-calculator {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg);
     border-radius: var(--radius);
-    margin: 10px;
-    padding: 30px;
-    box-shadow: var(--shadow-lg);
-    background-color: var(--card);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1.5px solid var(--border);
 }
 
-.form-all:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+.calc-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+.calc-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: 8px;
 }
 
-input[type="text"],
-input[type="number"],
-input[type="time"],
-input[type="text"]{
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 18px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
+.calc-label {
+    font-size: 0.875rem;
+    color: var(--muted);
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="time"]:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+.calc-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--warning);
 }
 
-input[type="text"]{
-    height: 100px;
+.bmi-scale {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
 }
 
-input[type="submit"] {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);
-  transition: all 0.2s ease;
+.scale-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-input[type="submit"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(49, 130, 206, 0.4);
+.scale-bar {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
 }
 
-input[type="submit"]:active {
-    transform: translateY(0);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+.scale-bar.underweight { background: #4299e1; }
+.scale-bar.normal { background: #38a169; }
+.scale-bar.overweight { background: #ed8936; }
+.scale-bar.obese { background: #e53e3e; }
+
+.scale-label {
+    font-size: 0.625rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.2;
 }
 
-.graph-panel_1 {
-    margin: 30px;
+/* ==========================================
+   グラフパネル
+========================================== */
+.graph-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.graph{
-    border: 1px solid var(--border);
+.chart-section {
+    background: var(--card);
     border-radius: var(--radius);
-    margin: 10px;
-    padding: 30px;
-    width: 1200px;
-    box-shadow: var(--shadow-lg);
-    background-color: var(--card);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
 }
 
-.graph:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+.chart-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1rem;
 }
 
-.panel-item{
-    margin: 30px;
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* ==========================================
+   記録一覧セクション
+========================================== */
+.records-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.record-count {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.records-table-wrapper {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border-radius: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.records-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+.records-table thead {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+}
+
+.records-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+}
+
+.records-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s ease;
+}
+
+.records-table tbody tr:hover {
+    background: var(--bg);
+}
+
+.records-table tbody tr.latest-record {
+    background: rgba(49, 130, 206, 0.05);
+}
+
+.records-table td {
+    padding: 1rem;
+    color: var(--text);
+}
+
+.no-data {
+    text-align: center !important;
+    color: var(--muted) !important;
+    padding: 3rem !important;
+    font-style: italic;
+}
+
+.weight-cell {
+    position: relative;
+}
+
+.weight-diff {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+    font-weight: 600;
+}
+
+.weight-diff.increase {
+    background: rgba(229, 62, 62, 0.1);
+    color: var(--danger);
+}
+
+.weight-diff.decrease {
+    background: rgba(56, 161, 105, 0.1);
+    color: var(--success);
+}
+
+.bmi-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.bmi-badge.bmi-low {
+    background: rgba(66, 153, 225, 0.1);
+    color: #2c5aa0;
+}
+
+.bmi-badge.bmi-normal {
+    background: rgba(56, 161, 105, 0.1);
+    color: var(--success);
+}
+
+.bmi-badge.bmi-high {
+    background: rgba(237, 137, 54, 0.1);
+    color: var(--warning);
+}
+
+.injury-cell {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================
+   レスポンシブデザイン
+========================================== */
+
+/* タブレット（768px-1024px） */
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    .stats-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* スマホ（767px以下） */
+@media (max-width: 767px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .stats-summary {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+        min-height: 100px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-panel,
+    .info-panel {
+        padding: 1.25rem;
+    }
+
+    .panel-title {
+        font-size: 1.25rem;
+    }
+
+    .current-data {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .bmi-scale {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .bmi-category {
+        padding: 0.75rem;
+    }
+
+    .records-table {
+        font-size: 0.85rem;
+    }
+
+    .records-table th,
+    .records-table td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+
+    .form-actions button {
+        padding: 0.85rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* 小型スマホ（480px以下） */
+@media (max-width: 480px) {
+    .stats-summary {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        min-height: 80px;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .form-panel,
+    .info-panel {
+        padding: 1rem;
+    }
+
+    .panel-title {
+        font-size: 1.1rem;
+    }
+
+    .bmi-scale {
+        grid-template-columns: 1fr;
+    }
 }
 
 

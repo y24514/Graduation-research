@@ -1,0 +1,159 @@
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1a202c;
+  --text-secondary: #4a5568;
+  --muted: #718096;
+  --primary: #3182ce;
+  --primary-hover: #2c5aa0;
+  --danger: #e53e3e;
+  --success: #38a169;
+  --border: #cbd5e0;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+/* Navigation styles moved to css/nav.css - header.php will load them */
+
+/* 入力 */
+h2{
+    margin: 0px;
+    margin-top: 5px;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 1.5rem;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+}
+
+.input-panel{
+    margin: 30px;
+    width: 500px;
+}
+
+.form-all{
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 10px;
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+    background-color: var(--card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-all:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="text"]{
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="time"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+input[type="text"]{
+    height: 100px;
+}
+
+input[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);
+  transition: all 0.2s ease;
+}
+
+input[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(49, 130, 206, 0.4);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.graph-panel_1 {
+    margin: 30px;
+}
+
+.graph{
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 10px;
+    padding: 30px;
+    width: 1200px;
+    box-shadow: var(--shadow-lg);
+    background-color: var(--card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.graph:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.panel-item{
+    margin: 30px;
+}
+
+
+

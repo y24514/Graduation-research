@@ -9,6 +9,9 @@ if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
     exit;
 }
 
+// ページリロード時にローディングを表示
+$showLoader = true;
+
 $group_id = $_SESSION['group_id'];
 $user_id  = $_SESSION['user_id'];
 
@@ -32,6 +35,8 @@ mysqli_set_charset($link, "utf8");
 
 // GET パラメータでの選択受け取り (combo=pool|event|distance を想定)
 $selected_combo = $_GET['combo'] ?? null;
+$date_from = $_GET['date_from'] ?? null;
+$date_to = $_GET['date_to'] ?? null;
 $sel_pool = null; $sel_event = null; $sel_distance = null;
 if ($selected_combo) {
     $parts = explode('|', $selected_combo);
@@ -235,13 +240,33 @@ if ($best_time === null) {
 }
 
 /* =====================
-   推移データ
+   推移データ（期間フィルター対応）
 ===================== */
+$where_date = "";
+$bind_types = "ssssi";
+$bind_params = [$group_id, $user_id, $pool, $event, is_numeric($distance) ? (int)$distance : $distance];
+
+if ($date_from && $date_to) {
+    $where_date = " AND swim_date BETWEEN ? AND ?";
+    $bind_types .= "ss";
+    $bind_params[] = $date_from;
+    $bind_params[] = $date_to;
+} elseif ($date_from) {
+    $where_date = " AND swim_date >= ?";
+    $bind_types .= "s";
+    $bind_params[] = $date_from;
+} elseif ($date_to) {
+    $where_date = " AND swim_date <= ?";
+    $bind_types .= "s";
+    $bind_params[] = $date_to;
+}
+
 $sql = "
-    SELECT swim_date, total_time
+    SELECT swim_date, total_time, lap_json, stroke_json, `condition`, memo, created_at
     FROM swim_tbl
     WHERE group_id=? AND user_id=?
       AND pool=? AND event=? AND distance=?
+      {$where_date}
     ORDER BY swim_date ASC, created_at ASC
 ";
 $stmt = mysqli_prepare($link, $sql);
@@ -249,8 +274,7 @@ if (!$stmt) {
     error_log('Prepare failed (history): ' . mysqli_error($link) . ' SQL: ' . $sql);
     $history = [];
 } else {
-    $d_param = is_numeric($distance) ? (int)$distance : $distance;
-    mysqli_stmt_bind_param($stmt, "ssssi", $group_id, $user_id, $pool, $event, $d_param);
+    mysqli_stmt_bind_param($stmt, $bind_types, ...$bind_params);
     if (!mysqli_stmt_execute($stmt)) {
         error_log('Execute failed (history): ' . mysqli_stmt_error($stmt));
         $history = [];
@@ -267,6 +291,133 @@ if (!$stmt) {
 }
 
 if (isset($stmt) && $stmt) mysqli_stmt_close($stmt);
+
+/* =====================
+   ラップタイム比較データ
+===================== */
+// 最新10件のラップタイムとストロークを取得（選択された種目に限定）
+if ($sel_pool && $sel_event && $sel_distance) {
+    // フィルタがある場合は選択された種目のみ
+    $lap_compare_sql = "SELECT pool, event, distance, total_time, stroke_json, lap_json, swim_date 
+                        FROM swim_tbl 
+                        WHERE group_id = ? AND user_id = ? 
+                          AND pool = ? AND event = ? AND distance = ?
+                        ORDER BY swim_date DESC, created_at DESC 
+                        LIMIT 10";
+    $lap_stmt = mysqli_prepare($link, $lap_compare_sql);
+    $lap_comparison_data = [];
+
+    if ($lap_stmt) {
+        $d_param = is_numeric($sel_distance) ? (int)$sel_distance : $sel_distance;
+        mysqli_stmt_bind_param($lap_stmt, "ssssi", $group_id, $user_id, $sel_pool, $sel_event, $d_param);
+        if (mysqli_stmt_execute($lap_stmt)) {
+            $lap_result = mysqli_stmt_get_result($lap_stmt);
+            
+            while ($row = mysqli_fetch_assoc($lap_result)) {
+                $stroke_data = json_decode($row['stroke_json'], true);
+                $lap_data = json_decode($row['lap_json'], true);
+                
+                if ($stroke_data && $lap_data) {
+                    foreach ($lap_data as $key => $lap_time) {
+                        if (preg_match('/lap_time_(\d+)/', $key, $matches)) {
+                            $lap_distance = (int)$matches[1];
+                            $stroke_key = 'stroke_' . $lap_distance;
+                            $stroke_count = isset($stroke_data[$stroke_key]) ? (int)$stroke_data[$stroke_key] : 0;
+                            
+                            $event_key = $row['event'] . '_' . $lap_distance . 'm';
+                            
+                            if (!isset($lap_comparison_data[$event_key])) {
+                                $lap_comparison_data[$event_key] = [
+                                    'event' => $row['event'],
+                                    'distance' => $lap_distance,
+                                    'records' => []
+                                ];
+                            }
+                            
+                            $lap_comparison_data[$event_key]['records'][] = [
+                                'date' => $row['swim_date'],
+                                'time' => (float)$lap_time,
+                                'stroke' => $stroke_count
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        mysqli_stmt_close($lap_stmt);
+    }
+} else {
+    // フィルタなしの場合は全種目
+    $lap_compare_sql = "SELECT pool, event, distance, total_time, stroke_json, lap_json, swim_date 
+                        FROM swim_tbl 
+                        WHERE group_id = ? AND user_id = ? 
+                        ORDER BY swim_date DESC, created_at DESC 
+                        LIMIT 10";
+    $lap_stmt = mysqli_prepare($link, $lap_compare_sql);
+    $lap_comparison_data = [];
+
+    if ($lap_stmt) {
+        mysqli_stmt_bind_param($lap_stmt, "ss", $group_id, $user_id);
+        if (mysqli_stmt_execute($lap_stmt)) {
+            $lap_result = mysqli_stmt_get_result($lap_stmt);
+            
+            while ($row = mysqli_fetch_assoc($lap_result)) {
+                $stroke_data = json_decode($row['stroke_json'], true);
+                $lap_data = json_decode($row['lap_json'], true);
+                
+                if ($stroke_data && $lap_data) {
+                    foreach ($lap_data as $key => $lap_time) {
+                        if (preg_match('/lap_time_(\d+)/', $key, $matches)) {
+                            $lap_distance = (int)$matches[1];
+                            $stroke_key = 'stroke_' . $lap_distance;
+                            $stroke_count = isset($stroke_data[$stroke_key]) ? (int)$stroke_data[$stroke_key] : 0;
+                            
+                            $event_key = $row['event'] . '_' . $lap_distance . 'm';
+                            
+                            if (!isset($lap_comparison_data[$event_key])) {
+                                $lap_comparison_data[$event_key] = [
+                                    'event' => $row['event'],
+                                    'distance' => $lap_distance,
+                                    'records' => []
+                                ];
+                            }
+                            
+                            $lap_comparison_data[$event_key]['records'][] = [
+                                'date' => $row['swim_date'],
+                                'time' => (float)$lap_time,
+                                'stroke' => $stroke_count
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        mysqli_stmt_close($lap_stmt);
+    }
+}
+
+// 各種目の最新と前回の比較を計算
+foreach ($lap_comparison_data as $key => &$data) {
+    if (count($data['records']) >= 2) {
+        // 日付でソート（最新が先頭）
+        usort($data['records'], function($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+        
+        $latest = $data['records'][0];
+        $previous = $data['records'][1];
+        
+        $data['latest_time'] = $latest['time'];
+        $data['latest_stroke'] = $latest['stroke'];
+        $data['previous_time'] = $previous['time'];
+        $data['previous_stroke'] = $previous['stroke'];
+        $data['time_diff'] = $latest['time'] - $previous['time'];
+        $data['stroke_diff'] = $latest['stroke'] - $previous['stroke'];
+        $data['record_count'] = count($data['records']);
+    }
+}
+unset($data);
+
 mysqli_close($link);
 
 // Post-normalization: if dataset median is short (<10min) but some parsed values are hours,
@@ -299,6 +450,46 @@ if ($median !== null && $median < 600 && $big_count > 0) {
     }
 }
 
+/* =====================
+   統計情報の計算
+===================== */
+$stats = [
+    'count' => 0,
+    'avg' => null,
+    'min' => null,
+    'max' => null,
+    'std_dev' => null,
+    'improvement_rate' => null
+];
+
+if (count($history) > 0) {
+    $times = array_filter(array_column($history, 'total_time'), function($v) { return $v !== null; });
+    if (count($times) > 0) {
+        $stats['count'] = count($times);
+        $stats['avg'] = array_sum($times) / count($times);
+        $stats['min'] = min($times);
+        $stats['max'] = max($times);
+        
+        // 標準偏差
+        if (count($times) > 1) {
+            $variance = 0.0;
+            foreach ($times as $t) {
+                $variance += pow($t - $stats['avg'], 2);
+            }
+            $stats['std_dev'] = sqrt($variance / count($times));
+        }
+        
+        // 改善率（最初の記録と最新の記録を比較）
+        if (count($times) >= 2) {
+            $first_time = $times[0];
+            $last_time = $times[count($times) - 1];
+            if ($first_time > 0) {
+                $stats['improvement_rate'] = (($first_time - $last_time) / $first_time) * 100;
+            }
+        }
+    }
+}
+
 /* 種目名変換 */
 $event_map = [
     "fly" => "バタフライ",
@@ -307,6 +498,8 @@ $event_map = [
     "fr"  => "自由形",
     "im"  => "個人メドレー"
 ];
+
+$NAV_BASE = '..';
 
 // HTMLテンプレートを読み込み
 require_once __DIR__ . '/../../HTML/swim_analysis.html.php';

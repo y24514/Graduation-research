@@ -19,7 +19,7 @@
     </div>
 <?php endif; ?>
 
-<?php $NAV_BASE = '.'; require_once __DIR__ . '/../PHP/header.php'; ?>
+<?php require_once __DIR__ . '/../PHP/header.php'; ?>
 
 <div class="home">
     <!-- ホーム画面 -->
@@ -77,6 +77,38 @@
     </div>
 </div>
 
+<!-- イベント入力モーダル -->
+<div id="event-modal" class="event-modal">
+    <div class="event-modal-content">
+        <div class="event-modal-header">
+            <h3>イベント登録</h3>
+            <button class="event-modal-close" onclick="closeEventModal()">&times;</button>
+        </div>
+        <div class="event-modal-body">
+            <div class="event-form-group">
+                <label for="event-title">イベント名 <span class="required">*</span></label>
+                <input type="text" id="event-title" placeholder="例: 水泳大会" required>
+            </div>
+            <div class="event-form-group">
+                <label for="event-memo">メモ</label>
+                <textarea id="event-memo" rows="3" placeholder="詳細情報を入力（任意）"></textarea>
+            </div>
+            <div class="event-form-group">
+                <label>期間</label>
+                <div class="event-date-range">
+                    <span id="event-start-date"></span>
+                    <span class="date-separator">〜</span>
+                    <span id="event-end-date"></span>
+                </div>
+            </div>
+        </div>
+        <div class="event-modal-footer">
+            <button class="event-btn event-btn-cancel" onclick="closeEventModal()">キャンセル</button>
+            <button class="event-btn event-btn-submit" onclick="submitEvent()">登録</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
@@ -103,6 +135,88 @@ document.addEventListener('DOMContentLoaded', function() {
             goalForm.classList.remove('hidden');
             document.getElementById('goal').focus();
         });
+    }
+});
+
+// イベントモーダル用グローバル変数
+let currentEventInfo = null;
+
+function openEventModal(info) {
+    currentEventInfo = info;
+    const modal = document.getElementById('event-modal');
+    const startDate = new Date(info.startStr);
+    const endDate = new Date(info.endStr);
+    endDate.setDate(endDate.getDate() - 1); // FullCalendarのendは翌日なので1日引く
+    
+    document.getElementById('event-start-date').textContent = startDate.toLocaleDateString('ja-JP');
+    document.getElementById('event-end-date').textContent = endDate.toLocaleDateString('ja-JP');
+    document.getElementById('event-title').value = '';
+    document.getElementById('event-memo').value = '';
+    
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+        document.getElementById('event-title').focus();
+    }, 10);
+}
+
+function closeEventModal() {
+    const modal = document.getElementById('event-modal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        currentEventInfo = null;
+    }, 300);
+}
+
+function submitEvent() {
+    const title = document.getElementById('event-title').value.trim();
+    const memo = document.getElementById('event-memo').value.trim();
+    
+    if (!title) {
+        alert('イベント名を入力してください');
+        document.getElementById('event-title').focus();
+        return;
+    }
+    
+    if (currentEventInfo) {
+        fetch('../PHP/calendarsave.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                title: title,
+                memo: memo,
+                startdate: currentEventInfo.startStr,
+                enddate: currentEventInfo.endStr
+            })
+        }).then(() => {
+            // カレンダーにイベントを追加
+            if (window.calendarInstance) {
+                window.calendarInstance.addEvent({
+                    title: title,
+                    start: currentEventInfo.startStr,
+                    end: currentEventInfo.endStr
+                });
+            }
+            closeEventModal();
+        });
+    }
+}
+
+// モーダル外クリックで閉じる
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('event-modal');
+    if (e.target === modal) {
+        closeEventModal();
+    }
+});
+
+// Escキーで閉じる
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeEventModal();
     }
 });
 </script>

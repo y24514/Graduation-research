@@ -9,21 +9,48 @@ if (!isset($NAV_BASE)) {
 }
 ?>
 <!-- 共通ナビ用スタイルを外部ファイルで読み込み -->
-<?php /* $NAV_BASE を使ってページから見た css/nav.css の相対パスを生成します */ ?>
-<link rel="stylesheet" href="<?= htmlspecialchars($NAV_BASE . '/../css/nav.css', ENT_QUOTES, 'UTF-8') ?>">
+<?php
+// HTMLテンプレートのCSS読み込みパスから判定
+$css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false) ? '../../css/' : '../css/';
+?>
+<link rel="stylesheet" href="<?= $css_depth ?>nav.css">
 <!-- 共通ナビ -->
 <div class="meny">
-    <nav class="meny-nav">
+    <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <div class="settings-container">
+        <button class="settings-btn" onclick="toggleSettingsMenu(event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+        <div class="settings-menu" id="settingsMenu">
+            <a href="<?= htmlspecialchars($NAV_BASE . '/logout.php', ENT_QUOTES, 'UTF-8') ?>" onclick="return confirm('ログアウトしますか？')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                ログアウト
+            </a>
+        </div>
+    </div>
+    <nav class="meny-nav" id="mobileNav">
         <ul class="menu-root">
-            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'home.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/home.php">ホーム</a></button></li>
-            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/pi.php">身体情報</a></button></li>
+            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'home.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE . '/home.php', ENT_QUOTES, 'UTF-8') ?>">ホーム</a></button></li>
+            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE . '/pi.php', ENT_QUOTES, 'UTF-8') ?>">身体情報</a></button></li>
             <li><button><a href="#">テニス</a></button></li>
 
             <li class="has-sub <?= (strpos($_SERVER['PHP_SELF'], 'swim') !== false) ? 'active' : '' ?>">
                 <button>水泳</button>
                 <ul class="sub-menu">
-                    <li><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/swim/swim_input.php">記録</a></li>
-                    <li><a href="<?= htmlspecialchars($NAV_BASE, ENT_QUOTES, 'UTF-8') ?>/swim/swim_analysis.php">分析</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/swim/swim_input.php', ENT_QUOTES, 'UTF-8') ?>">記録</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/swim/swim_analysis.php', ENT_QUOTES, 'UTF-8') ?>">分析</a></li>
                 </ul>
             </li>
 
@@ -32,3 +59,26 @@ if (!isset($NAV_BASE)) {
     </nav>
     <div class="app-title">Sports Analytics App</div>
 </div>
+<script>
+function toggleMobileMenu() {
+    const nav = document.getElementById('mobileNav');
+    const hamburger = document.querySelector('.hamburger-btn');
+    nav.classList.toggle('active');
+    hamburger.classList.toggle('active');
+}
+
+function toggleSettingsMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('settingsMenu');
+    menu.classList.toggle('show');
+}
+
+// メニュー外をクリックしたら閉じる
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('settingsMenu');
+    const settingsBtn = document.querySelector('.settings-btn');
+    if (!settingsBtn.contains(event.target)) {
+        menu.classList.remove('show');
+    }
+});
+</script>

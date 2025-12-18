@@ -1,0 +1,295 @@
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1a202c;
+  --text-secondary: #4a5568;
+  --muted: #718096;
+  --primary: #3182ce;
+  --primary-hover: #2c5aa0;
+  --danger: #e53e3e;
+  --success: #38a169;
+  --border: #cbd5e0;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, "Noto Sans JP", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+html, body {
+  height: 1000px;
+}
+
+/* ホーム */
+.home-all {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 20px;
+}
+
+.home-left {
+  width: 950px;
+}
+
+.home-right {
+  width: 1000px;
+}
+
+h2 {
+  margin: 10px 0;
+  border-left: 4px solid var(--primary);
+  padding-left: 15px;
+}
+
+.user-border,
+.messege-area,
+.goal-border,
+.calendar-area {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.user-border {
+  display: flex;
+  gap: 20px;
+}
+
+.photo img {
+  border-radius: 10px;
+}
+
+.goal-border {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+/* ===== 目標フォーム ===== */
+#goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+#goal {
+  width: 100%;
+  min-height: 100px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 1.1rem;
+  resize: none;
+}
+
+#goal:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+#goal-reg {
+  align-self: flex-end;
+  padding: 8px 30px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+#goal-reg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+}
+
+/* ===== 目標表示 ===== */
+#goal-display {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.now-goal {
+  width: 100%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding: 40px;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#edit-goal-btn {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  padding: 4px 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+#edit-goal-btn:hover {
+  opacity: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.messege-area {
+  height: 500px;
+}
+
+.calendar-area {
+  height: 700px;
+}
+
+.photo {
+  padding: 20px;
+}
+
+.user-information th {
+  text-align: left;
+  font-size: 25px;
+}
+
+.user-information td {
+  padding-left: 10px;
+  font-size: 20px;
+}
+
+.calendar-table {
+    width: 100%;        
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid var(--border);
+    height: 100px;    
+    vertical-align: top;
+    padding: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.calendar-table td:hover {
+    background-color: rgba(49, 130, 206, 0.05);
+}
+
+.calendar-table .date {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.calendar-table .today {
+    background: linear-gradient(135deg, #fff9e6 0%, #ffedd5 100%);
+    border: 2px solid var(--primary);
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2);
+}
+
+.event {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    margin-top: 5px;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    border-left: 3px solid var(--primary);
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, #ffffff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.loader .spinner {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  font-size: 10px;
+  text-indent: -9999em;
+  border-top: 8px solid rgba(255, 255, 255, 0.3);
+  border-right: 8px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 8px solid rgba(255, 255, 255, 0.3);
+  border-left: 8px solid #ffffff;
+  transform: translateZ(0);
+  animation: load8 0.8s infinite linear;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4),
+              inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.loader .txt {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes load8 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ユーティリティクラス */
+.hidden {
+  display: none !important;
+}

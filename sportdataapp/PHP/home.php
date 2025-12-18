@@ -83,6 +83,8 @@ while (mysqli_stmt_fetch($stmt2)) {
 }
 mysqli_stmt_close($stmt2);
 
+$NAV_BASE = '.';
+
 // HTMLテンプレートを読み込み
 require_once __DIR__ . '/../HTML/home.html.php';
 
