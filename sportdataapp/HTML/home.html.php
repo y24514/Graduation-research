@@ -24,55 +24,165 @@
 <div class="home">
     <!-- ホーム画面 -->
     <div class="home-all">
+        <!-- 目標を上部全体に配置 -->
+        <div class="goal">
+            <div class="goal-border">
+                <!-- 今月の目標が未登録の場合：入力フォーム表示 -->
+                <form id="goal-form" <?= $hasGoalThisMonth ? 'class="hidden"' : '' ?> action="goalsave.php" method="post">
+                    <input type="text" id="goal" name="goal" placeholder="今月の目標を入力" value="<?= htmlspecialchars($corrent_goal, ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="submit" id="goal-reg" name="submit" value="登録">
+                </form>
+                
+                <!-- 今月の目標が登録済みの場合:現在の目標表示 -->
+                <div id="goal-display" class="<?= !$hasGoalThisMonth ? 'hidden' : '' ?>">
+                    <p class="now-goal"><?= htmlspecialchars($corrent_goal ?: '目標が登録されていません', ENT_QUOTES, 'UTF-8') ?></p>
+                    <button type="button" id="edit-goal-btn">変更</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 左側 -->
         <div class="home-left">
             <!--　ユーザー情報 -->
             <div class="user">
-                <h2>ユーザー情報</h2>
                 <div class="user-border">
-                    <div class="photo">
-                        <img src="../img/default-avatar.png" width="270px" height="300px">
+                    <div class="user-header">
+                        <div class="user-avatar-large">
+                            <?= mb_substr($userName, 0, 1, 'UTF-8') ?>
+                            <div class="user-status-indicator"></div>
+                        </div>
+                        <div class="user-header-info">
+                            <h3 class="user-name"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></h3>
+                            <p class="user-position"><?= htmlspecialchars($userPosition, ENT_QUOTES, 'UTF-8') ?></p>
+                        </div>
                     </div>
-                    <table class="user-information">
-                        <tr><th>氏名</th><td><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></td></tr>
-                        <tr><th>生年月日</th><td><?= htmlspecialchars($userDob, ENT_QUOTES, 'UTF-8') ?></td></tr>
-                        <tr><th>身長</th><td><?= htmlspecialchars($userHeight, ENT_QUOTES, 'UTF-8') ?> cm</td></tr>
-                        <tr><th>体重</th><td><?= htmlspecialchars($userWeight, ENT_QUOTES, 'UTF-8') ?> kg</td></tr>
-                        <tr><th>ポジション</th><td><?= htmlspecialchars($userPosition, ENT_QUOTES, 'UTF-8') ?></td></tr>
-                    </table>
+                    <div class="user-stats-grid">
+                        <div class="user-stat-item">
+                            <div class="stat-icon"></div>
+                            <div class="stat-info">
+                                <span class="stat-label">生年月日</span>
+                                <span class="stat-value"><?= htmlspecialchars($userDob, ENT_QUOTES, 'UTF-8') ?></span>
+                            </div>
+                        </div>
+                        <div class="user-stat-item">
+                            <div class="stat-icon"></div>
+                            <div class="stat-info">
+                                <span class="stat-label">身長</span>
+                                <span class="stat-value"><?= htmlspecialchars($userHeight, ENT_QUOTES, 'UTF-8') ?> cm</span>
+                            </div>
+                        </div>
+                        <div class="user-stat-item">
+                            <div class="stat-icon"></div>
+                            <div class="stat-info">
+                                <span class="stat-label">体重</span>
+                                <span class="stat-value"><?= htmlspecialchars($userWeight, ENT_QUOTES, 'UTF-8') ?> kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <a href="pi.php" class="user-action-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            体組成記録
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- メッセージ -->
             <div class="messege">
-                <h2>お知らせ</h2>
-                <div class="messege-area"></div>
+                <div class="notification-header-section">
+                    <h2>お知らせ</h2>
+                    <div class="notification-filter">
+                        <button class="filter-btn active" data-filter="all">すべて</button>
+                        <button class="filter-btn" data-filter="group">グループ</button>
+                        <button class="filter-btn" data-filter="direct">DM</button>
+                    </div>
+                </div>
+                <div class="messege-area">
+                    <?php if (!empty($chat_notifications)): ?>
+                        <?php foreach ($chat_notifications as $index => $notification): ?>
+                            <?php 
+                                // ダイレクトメッセージの場合は送信者のIDを使用
+                                $direct_id = $notification['chat_type'] === 'direct' 
+                                    ? $notification['sender_user_id'] 
+                                    : '';
+                                
+                                $chat_url = $notification['chat_type'] === 'group' 
+                                    ? 'chat_list.php?type=group&id=' . $notification['chat_group_id']
+                                    : 'chat_list.php?type=direct&id=' . urlencode($direct_id);
+                            ?>
+                            <a href="<?= $chat_url ?>" class="notification-item" data-type="<?= $notification['chat_type'] ?>" style="animation-delay: <?= $index * 0.1 ?>s">
+                                <div class="notification-avatar">
+                                    <?= mb_substr($notification['sender_name'], 0, 1, 'UTF-8') ?>
+                                    <div class="notification-unread-dot"></div>
+                                </div>
+                                <div class="notification-body">
+                                    <div class="notification-header">
+                                        <div class="notification-title-group">
+                                            <?php if ($notification['chat_type'] === 'group'): ?>
+                                                <svg class="notification-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="9" cy="7" r="4"></circle>
+                                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                </svg>
+                                            <?php else: ?>
+                                                <svg class="notification-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                                </svg>
+                                            <?php endif; ?>
+                                            <span class="notification-sender"><?= htmlspecialchars($notification['sender_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        </div>
+                                        <span class="notification-time"><?= date('m/d H:i', strtotime($notification['created_at'])) ?></span>
+                                    </div>
+                                    <?php if ($notification['chat_type'] === 'group'): ?>
+                                        <div class="notification-group">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                            </svg>
+                                            <?= htmlspecialchars($notification['group_name'], ENT_QUOTES, 'UTF-8') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="notification-message">
+                                        <?= htmlspecialchars(mb_substr($notification['message'], 0, 60, 'UTF-8'), ENT_QUOTES, 'UTF-8') ?>
+                                        <?= mb_strlen($notification['message'], 'UTF-8') > 60 ? '...' : '' ?>
+                                    </div>
+                                </div>
+                                <div class="notification-badge <?= $notification['chat_type'] ?>">
+                                    <?= $notification['chat_type'] === 'group' ? 'グループ' : 'DM' ?>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="no-notifications">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <p>新しいメッセージはありません</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
-        <!-- 右側 -->
-        <div class="home-right">
-            <!-- 目標 -->
-            <div class="goal">
-                <h2>目標</h2>
-                <div class="goal-border">
-                    <!-- 今月の目標が未登録の場合：入力フォーム表示 -->
-                    <form id="goal-form" <?= $hasGoalThisMonth ? 'class="hidden"' : '' ?> action="goalsave.php" method="post">
-                        <input type="text" id="goal" name="goal" placeholder="今月の目標を入力" value="<?= htmlspecialchars($corrent_goal, ENT_QUOTES, 'UTF-8') ?>">
-                        <input type="submit" id="goal-reg" name="submit" value="登録">
-                    </form>
-                    
-                    <!-- 今月の目標が登録済みの場合:現在の目標表示 -->
-                    <div id="goal-display" class="<?= !$hasGoalThisMonth ? 'hidden' : '' ?>">
-                        <p class="now-goal"><?= htmlspecialchars($corrent_goal ?: '目標が登録されていません', ENT_QUOTES, 'UTF-8') ?></p>
-                        <button type="button" id="edit-goal-btn">変更</button>
-                    </div>
+        <!-- カレンダーを右側に配置 -->
+        <div class="calendar">
+            <div class="calendar-header-section">
+                <h2>カレンダー</h2>
+                <div class="calendar-quick-actions">
+                    <button class="calendar-action-btn" onclick="document.querySelector('.fc-today-button').click()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        今日
+                    </button>
                 </div>
             </div>
-            <div class="calendar">
-                <h2>カレンダー</h2>
-                <div id="calendar-area" class="calendar-area"></div>
-            </div>
+            <div id="calendar-area" class="calendar-area"></div>
         </div>
     </div>
 </div>
@@ -110,12 +220,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-if (showLoader) {
-    $.getScript("../js/loading.js");
-}
-</script>
+<script src="../js/loading.js"></script>
 
 <script src="../js/fullcalendar/dist/index.global.min.js"></script>
 <script src="../js/fullcalendar/packages/interaction/index.global.min.js"></script>
@@ -136,6 +241,32 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('goal').focus();
         });
     }
+    
+    // 通知フィルター機能
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const notificationItems = document.querySelectorAll('.notification-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // アクティブボタンを切り替え
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            notificationItems.forEach(item => {
+                if (filter === 'all') {
+                    item.style.display = 'flex';
+                } else {
+                    if (item.dataset.type === filter) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
 });
 
 // イベントモーダル用グローバル変数

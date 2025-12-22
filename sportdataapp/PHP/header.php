@@ -42,7 +42,14 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false) ? '../../css/
     </div>
     <nav class="meny-nav" id="mobileNav">
         <ul class="menu-root">
-            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'home.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE . '/home.php', ENT_QUOTES, 'UTF-8') ?>">ホーム</a></button></li>
+            <li class="has-sub <?= (basename($_SERVER['PHP_SELF']) === 'home.php' || basename($_SERVER['PHP_SELF']) === 'diary.php' || basename($_SERVER['PHP_SELF']) === 'chat_list.php' || basename($_SERVER['PHP_SELF']) === 'chat.php') ? 'active' : '' ?>">
+                <button>ホーム</button>
+                <ul class="sub-menu">
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/home.php', ENT_QUOTES, 'UTF-8') ?>">ダッシュボード</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/diary.php', ENT_QUOTES, 'UTF-8') ?>">日記</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/chat_list.php', ENT_QUOTES, 'UTF-8') ?>">チャット</a></li>
+                </ul>
+            </li>
             <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE . '/pi.php', ENT_QUOTES, 'UTF-8') ?>">身体情報</a></button></li>
             <li><button><a href="#">テニス</a></button></li>
 

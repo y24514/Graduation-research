@@ -1,0 +1,230 @@
+/* LINE風チャット一覧ページのスタイル */
+
+.chat-list-container {
+    max-width: 1000px;
+    margin: 80px auto 40px;
+    padding: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.chat-list-header {
+    background: #00B900;
+    padding: 20px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.create-group-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: white;
+}
+
+.create-group-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.create-group-btn .btn-icon {
+    font-size: 1.5rem;
+}
+
+.chat-list-content {
+    background: white;
+}
+
+/* チャットアイテム */
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+
+.chat-item:hover {
+    background: #f8f8f8;
+}
+
+.chat-item:active {
+    background: #f0f0f0;
+}
+
+/* グループチャット特別スタイル */
+.chat-item.group-chat {
+    background: linear-gradient(to right, #f0fff4, #ffffff);
+    border-bottom: 2px solid #e8f5e9;
+}
+
+.chat-item.group-chat:hover {
+    background: linear-gradient(to right, #e8f5e9, #f8f8f8);
+}
+
+/* アバター */
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.group-avatar {
+    background: linear-gradient(135deg, #00B900 0%, #00A000 100%);
+}
+
+.avatar-icon {
+    font-size: 1.5rem;
+}
+
+.avatar-text {
+    font-size: 1.2rem;
+}
+
+/* チャット情報 */
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.chat-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-time {
+    font-size: 0.75rem;
+    color: #999;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.chat-last-message {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-message {
+    color: #999;
+    font-style: italic;
+}
+
+/* 未読バッジ */
+.unread-badge {
+    background: #ff3b30;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+    margin-left: 10px;
+}
+
+/* セクション区切り */
+.section-divider {
+    padding: 10px 20px;
+    background: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.divider-text {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 600;
+}
+
+/* 空の状態 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .chat-list-container {
+        margin-top: 70px;
+        border-radius: 0;
+    }
+    
+    .chat-list-header {
+        padding: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .chat-item {
+        padding: 14px 15px;
+    }
+    
+    .chat-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+    
+    .chat-name {
+        font-size: 1rem;
+    }
+    
+    .chat-last-message {
+        font-size: 0.85rem;
+    }
+}

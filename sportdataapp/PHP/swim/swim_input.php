@@ -2,7 +2,7 @@
 session_start();
 
 // ページリロード時にローディングを表示
-$showLoader = true;
+$showLoader = false;
 
 $link = mysqli_connect("localhost", "y24514", "Kr96main0303", "sportdata_db");
 mysqli_set_charset($link, "utf8");

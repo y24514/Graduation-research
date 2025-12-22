@@ -83,6 +83,54 @@ while (mysqli_stmt_fetch($stmt2)) {
 }
 mysqli_stmt_close($stmt2);
 
+// チャット通知を取得（最新5件の未読メッセージのみ）
+$stmt_chat = mysqli_prepare($link, "
+    SELECT 
+        c.id,
+        c.message,
+        c.created_at,
+        c.chat_type,
+        c.chat_group_id,
+        c.recipient_id,
+        c.user_id as sender_user_id,
+        l.name as sender_name,
+        g.group_name
+    FROM chat_tbl c
+    LEFT JOIN login_tbl l ON c.user_id = l.user_id AND c.group_id = l.group_id
+    LEFT JOIN chat_group_tbl g ON c.chat_group_id = g.chat_group_id
+    LEFT JOIN chat_read_status_tbl r ON (
+        r.user_id = ? 
+        AND r.group_id = ?
+        AND (
+            (c.chat_type = 'direct' AND r.chat_type = 'direct' AND r.recipient_id = c.user_id)
+            OR
+            (c.chat_type = 'group' AND r.chat_type = 'group' AND r.chat_group_id = c.chat_group_id)
+        )
+    )
+    WHERE (
+        (c.chat_type = 'direct' AND c.recipient_id = ? AND c.group_id = ?)
+        OR 
+        (c.chat_type = 'group' AND c.chat_group_id IN (
+            SELECT chat_group_id FROM chat_group_member_tbl 
+            WHERE user_id = ? AND group_id = ?
+        ))
+    )
+    AND c.user_id != ?
+    AND c.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    AND (r.last_read_message_id IS NULL OR c.id > r.last_read_message_id)
+    ORDER BY c.created_at DESC
+    LIMIT 5
+");
+mysqli_stmt_bind_param($stmt_chat, "sssssss", $user_id, $group_id, $user_id, $group_id, $user_id, $group_id, $user_id);
+mysqli_stmt_execute($stmt_chat);
+$result_chat = mysqli_stmt_get_result($stmt_chat);
+
+$chat_notifications = [];
+while ($row_chat = mysqli_fetch_assoc($result_chat)) {
+    $chat_notifications[] = $row_chat;
+}
+mysqli_stmt_close($stmt_chat);
+
 $NAV_BASE = '.';
 
 // HTMLテンプレートを読み込み

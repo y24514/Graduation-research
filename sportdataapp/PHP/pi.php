@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
 }
 
 // ページリロード時にローディングを表示
-$showLoader = true;
+$showLoader = false;
 
 /* =====================
    DB接続 (環境変数優先)
