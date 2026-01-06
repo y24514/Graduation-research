@@ -1,6 +1,17 @@
 <?php
 session_start();
-if (!isset($_SESSION['game'])) { header("Location: index.php"); exit; }
+$NAV_BASE = '.';
+require_once __DIR__ . '/header.php';
+
+if (!isset($_SESSION['game'])) {
+    http_response_code(200);
+    echo '<div style="padding:16px; max-width:800px; margin:0 auto;">';
+    echo '<h2 style="margin:8px 0;">試合が開始されていません</h2>';
+    echo '<p style="margin:8px 0;">先に「試合設定」からチーム/スタメンを選んで試合開始してください。</p>';
+    echo '<p style="margin:12px 0;"><a href="basketball_index.php" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
+    echo '</div>';
+    exit;
+}
 $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 ?>
 <!DOCTYPE html>
@@ -42,11 +53,6 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
     </style>
 </head>
 <body>
-
-<?php
-$NAV_BASE = '..';
-require_once __DIR__ . '/../header.php';
-?>
 
 <div class="page-pad">
 
@@ -170,7 +176,7 @@ require_once __DIR__ . '/../header.php';
 
     // サーバー保存処理
     async function saveState() {
-        await fetch('save_game.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(game.state) });
+    await fetch('save_game.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(game.state) });
     }
 
 // 📊 スタッツ分析ボタン

@@ -1,11 +1,18 @@
 <?php
 session_start();
 // 分析ロジックの読み込み
-require_once __DIR__ . '/logic/analyze.php';
+require_once __DIR__ . '/basketball_logic/analyze.php';
 
 // データの存在チェック
 if (!isset($_SESSION['game'])) {
-    header('Location: index.php');
+    $NAV_BASE = '.';
+    require_once __DIR__ . '/header.php';
+    http_response_code(200);
+    echo '<div style="padding:16px; max-width:800px; margin:0 auto;">';
+    echo '<h2 style="margin:8px 0;">結果を表示する試合がありません</h2>';
+    echo '<p style="margin:8px 0;">先に「試合設定」から試合を開始してください。</p>';
+    echo '<p style="margin:12px 0;"><a href="basketball_index.php" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
+    echo '</div>';
     exit;
 }
 $game = $_SESSION['game'];
@@ -132,7 +139,8 @@ $jsonTeams = json_encode($game['teams']);
 
 <?php
 $NAV_BASE = '..';
-require_once __DIR__ . '/../header.php';
+$NAV_BASE = '.';
+require_once __DIR__ . '/header.php';
 ?>
 
 <div class="page-pad">

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/logic/db_config.php';
+require_once __DIR__ . '/basketball_logic/db_config.php';
 
 if (!isset($_SESSION['game'])) {
     die("保存するデータがありません。");

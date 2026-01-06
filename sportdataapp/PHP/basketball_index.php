@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . "/config/db.php";
+require_once __DIR__ . "/basketball_config/db.php";
 
 $dbError = '';
 
@@ -31,6 +31,8 @@ try {
     $dbError = $e->getMessage();
     $showPlayers = false;
 }
+
+$noTeams = empty($teams);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -60,10 +62,19 @@ try {
 <body>
 <?php
 $NAV_BASE = '..';
-require_once __DIR__ . '/../header.php';
+$NAV_BASE = '.';
+require_once __DIR__ . '/header.php';
 ?>
 <div class="container">
     <h1>BasketLog <small style="font-size: 0.5em; color: #666;">試合設定</small></h1>
+
+    <?php if ($noTeams && empty($dbError)): ?>
+        <div class="box" style="border: 1px solid #fde68a; background: #fffbeb;">
+            <h3 style="margin-top:0; color:#92400e;">チーム/選手が未登録です</h3>
+            <p style="margin:0 0 10px; color:#92400e;">sportdata_db の <code>teams</code> と <code>players</code> にデータを入れると選択できるようになります。</p>
+            <p style="margin:0; color:#92400e;">同梱の seed SQL（<code>sportdataapp/db/basketball_seed.sql</code>）を phpMyAdmin のSQLタブで実行してください。</p>
+        </div>
+    <?php endif; ?>
 
     <?php if (!empty($dbError)): ?>
         <div class="box" style="border: 1px solid #fecaca; background: #fff5f5;">

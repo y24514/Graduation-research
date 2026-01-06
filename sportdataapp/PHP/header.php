@@ -69,13 +69,17 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                 </ul>
             </li>
 
-            <li class="has-sub <?= (strpos($_SERVER['PHP_SELF'], 'basketball') !== false) ? 'active' : '' ?>">
+            <?php
+            $currentPage = basename($_SERVER['PHP_SELF']);
+            $isBasketballPage = in_array($currentPage, ['basketball_index.php', 'game.php', 'analysis.php', 'final.php', 'save_game.php', 'save_to_db.php'], true);
+            ?>
+            <li class="has-sub <?= ($isBasketballPage) ? 'active' : '' ?>">
                 <button>バスケ</button>
                 <ul class="sub-menu">
-                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/basketball/index.php', ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
-                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/basketball/game.php', ENT_QUOTES, 'UTF-8') ?>">試合記録</a></li>
-                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/basketball/analysis.php', ENT_QUOTES, 'UTF-8') ?>">分析</a></li>
-                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/basketball/final.php', ENT_QUOTES, 'UTF-8') ?>">最終結果</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/basketball_index.php', ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/game.php', ENT_QUOTES, 'UTF-8') ?>">試合記録</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/analysis.php', ENT_QUOTES, 'UTF-8') ?>">分析</a></li>
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/final.php', ENT_QUOTES, 'UTF-8') ?>">最終結果</a></li>
                 </ul>
             </li>
         </ul>

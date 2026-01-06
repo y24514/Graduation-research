@@ -16,7 +16,7 @@
                     <i class="fas fa-running"></i>
                     <h1>SportData</h1>
                 </div>
-                <p class="subtitle">スポーツデータ管理システム</p>
+                <p class="subtitle">スポーツデータ分析可視化アプリ</p>
             </div>
 
             <!-- 成功メッセージ -->
