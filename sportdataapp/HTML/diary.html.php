@@ -220,6 +220,29 @@
     </div>
 </div>
 
+<!-- 削除確認モーダル -->
+<div id="deleteConfirmModal" class="diary-modal delete-confirm" aria-hidden="true">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>削除の確認</h2>
+            <button type="button" class="close-modal-btn" onclick="closeDeleteConfirmModal()" aria-label="閉じる">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="deleteConfirmMessage" class="confirm-message">この日記を削除しますか？</p>
+            <p class="confirm-sub">この操作は取り消せません。</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="cancel-btn" onclick="closeDeleteConfirmModal()">キャンセル</button>
+            <button id="deleteConfirmOkBtn" type="button" class="delete-btn" onclick="confirmDeleteDiary()">削除</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../js/loading.js"></script>
 <script src="../js/diary.js"></script>

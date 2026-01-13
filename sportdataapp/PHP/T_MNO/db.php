@@ -19,11 +19,24 @@ function getDbConnection() {
 // --- 試合結果を保存する関数 ---
 function saveGameResult($db, $d) {
     // 1. gamesテーブルに基本情報を保存
-    $stmt = $db->prepare("INSERT INTO games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([
-        $d['teamA'], $d['teamB'], $d['gamesA'], $d['gamesB'], 
-        $d['a1'], $d['a2'] ?? '', $d['b1'], $d['b2'] ?? ''
-    ]);
+    $groupId = $d['group_id'] ?? null;
+    $savedByUserId = $d['saved_by_user_id'] ?? null;
+
+    try {
+        $stmt = $db->prepare("INSERT INTO games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, group_id, saved_by_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $d['teamA'], $d['teamB'], $d['gamesA'], $d['gamesB'],
+            $d['a1'], $d['a2'] ?? '', $d['b1'], $d['b2'] ?? '',
+            $groupId, $savedByUserId,
+        ]);
+    } catch (PDOException $e) {
+        // 互換: 既存DBに列が無い場合
+        $stmt = $db->prepare("INSERT INTO games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $d['teamA'], $d['teamB'], $d['gamesA'], $d['gamesB'],
+            $d['a1'], $d['a2'] ?? '', $d['b1'], $d['b2'] ?? ''
+        ]);
+    }
     $gameId = $db->lastInsertId();
 
     // 2. actionsテーブルに全履歴を保存

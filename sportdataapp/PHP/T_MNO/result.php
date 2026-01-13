@@ -36,6 +36,14 @@ if (isset($_GET['id'])) {
     $d = $_SESSION['data'];
     $history = $d['history'];
 
+    // 管理者閲覧（group 単位）用に、保存データへ紐づけ情報を追加
+    if (!isset($d['group_id']) && isset($_SESSION['group_id'])) {
+        $d['group_id'] = (string)$_SESSION['group_id'];
+    }
+    if (!isset($d['saved_by_user_id']) && isset($_SESSION['user_id'])) {
+        $d['saved_by_user_id'] = (string)$_SESSION['user_id'];
+    }
+
     if (!isset($_SESSION['last_saved_id'])) {
         // 保存未完了なら保存（db.phpの関数を使用）
         $_SESSION['last_saved_id'] = saveGameResult($db, $d);

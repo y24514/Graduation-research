@@ -89,14 +89,18 @@
                 <div class="card-body">
                     <div class="user-profile">
                         <div class="user-avatar-large">
-                            <?= mb_substr($userName, 0, 1, 'UTF-8') ?>
-                            <div class="status-dot"></div>
+                            <?php if (!empty($currentUserIconUrl)): ?>
+                                <img src="<?= htmlspecialchars($currentUserIconUrl, ENT_QUOTES, 'UTF-8') ?>" alt="ユーザーアイコン">
+                            <?php else: ?>
+                                <?= mb_substr($userName, 0, 1, 'UTF-8') ?>
+                            <?php endif; ?>
                         </div>
                         <div class="user-info">
                             <h3 class="user-name"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></h3>
                             <p class="user-position"><?= htmlspecialchars($userPosition, ENT_QUOTES, 'UTF-8') ?></p>
                         </div>
                     </div>
+                    <?php if (empty($_SESSION['is_admin'])): ?>
                     <div class="user-stats">
                         <div class="stat-item">
                             <span class="stat-label">
@@ -146,6 +150,7 @@
                         </svg>
                         身体情報
                     </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -183,7 +188,15 @@
                             ?>
                             <a href="<?= $chat_url ?>" class="notification-item" data-type="<?= $notification['chat_type'] ?>" style="animation-delay: <?= $index * 0.1 ?>s">
                                 <div class="notification-avatar">
-                                    <?= mb_substr($notification['sender_name'], 0, 1, 'UTF-8') ?>
+                                    <?php
+                                        $senderId = (string)($notification['sender_user_id'] ?? '');
+                                        $senderIconUrl = $senderId !== '' ? ($senderIconUrls[$senderId] ?? null) : null;
+                                    ?>
+                                    <?php if (!empty($senderIconUrl)): ?>
+                                        <img src="<?= htmlspecialchars($senderIconUrl, ENT_QUOTES, 'UTF-8') ?>" alt="送信者アイコン">
+                                    <?php else: ?>
+                                        <?= mb_substr($notification['sender_name'], 0, 1, 'UTF-8') ?>
+                                    <?php endif; ?>
                                     <div class="notification-unread-dot"></div>
                                 </div>
                                 <div class="notification-body">

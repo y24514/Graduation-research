@@ -205,6 +205,32 @@ body {
   margin-left: auto;
 }
 
+/* チェックボックス */
+.checkbox-label {
+  margin-bottom: 8px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.form-checkbox:hover {
+  border-color: var(--border-focus);
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
 /* 入力フィールド */
 input[type="text"],
 input[type="number"],

@@ -3,6 +3,7 @@
 // モーダル関連の変数
 let isEditMode = false;
 let editingDiaryId = null;
+let pendingDeleteDiaryId = null;
 
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,7 +56,112 @@ document.addEventListener('DOMContentLoaded', function() {
             charCount.textContent = this.value.length;
         });
     }
+
+    // 削除確認モーダル：背景クリックで閉じる
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    if (deleteConfirmModal) {
+        deleteConfirmModal.addEventListener('click', function(e) {
+            if (e.target === deleteConfirmModal) {
+                closeDeleteConfirmModal();
+            }
+        });
+    }
 });
+
+function openDeleteConfirmModal(id) {
+    pendingDeleteDiaryId = id;
+
+    const okBtn = document.getElementById('deleteConfirmOkBtn');
+    if (okBtn) {
+        okBtn.disabled = false;
+        okBtn.textContent = '削除';
+    }
+
+    const modal = document.getElementById('deleteConfirmModal');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('active');
+    }, 10);
+}
+
+function closeDeleteConfirmModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        pendingDeleteDiaryId = null;
+    }, 300);
+}
+
+function confirmDeleteDiary() {
+    const id = pendingDeleteDiaryId;
+    if (!id) {
+        alert('削除する日記が選択されていません');
+        return;
+    }
+
+    const okBtn = document.getElementById('deleteConfirmOkBtn');
+    const originalText = okBtn ? okBtn.textContent : '削除';
+    if (okBtn) {
+        okBtn.disabled = true;
+        okBtn.textContent = '削除中...';
+    }
+
+    // サーバーに送信
+    fetch('diary_api.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=delete&id=' + id
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('日記を削除しました', 'success');
+            closeDeleteConfirmModal();
+            closeDiaryModal();
+
+            // JSで画面から削除（リロードなし）
+            const card = document.querySelector('.diary-card[data-id="' + id + '"]');
+            const monthSection = card ? card.closest('.diary-month') : null;
+            if (card) {
+                card.remove();
+            }
+
+            // 月セクションが空なら削除
+            if (monthSection && monthSection.querySelectorAll('.diary-card').length === 0) {
+                monthSection.remove();
+            }
+
+            // フィルター状態/空表示を更新
+            if (typeof filterDiaries === 'function') {
+                filterDiaries();
+            } else {
+                const remaining = document.querySelectorAll('.diary-card').length;
+                updateEmptyState(remaining === 0, false);
+            }
+        } else {
+            alert(data.message || '削除に失敗しました');
+            if (okBtn) {
+                okBtn.disabled = false;
+                okBtn.textContent = originalText;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました');
+        if (okBtn) {
+            okBtn.disabled = false;
+            okBtn.textContent = originalText;
+        }
+    });
+}
 
 // 新しい日記を書くボタン
 function openDiaryModal() {
@@ -227,36 +333,7 @@ function deleteDiary(id) {
         return;
     }
 
-    if (!confirm('この日記を削除しますか？')) {
-        return;
-    }
-
-    // サーバーに送信
-    fetch('diary_api.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=delete&id=' + id
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage('日記を削除しました', 'success');
-            closeDiaryModal();
-            
-            // ページをリロード
-            setTimeout(() => {
-                location.reload();
-            }, 500);
-        } else {
-            alert(data.message || '削除に失敗しました');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('エラーが発生しました');
-    });
+    openDeleteConfirmModal(id);
 }
 
 // 検索・フィルタリング機能

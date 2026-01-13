@@ -33,10 +33,13 @@ $user_id = $_SESSION['user_id'];
 $group_id = $_SESSION['group_id'];
 $userName = $_SESSION['name'] ?? '';
 
+require_once __DIR__ . '/user_icon_helper.php';
+
 /* =====================
    グループメンバー一覧取得
 ===================== */
 $members = [];
+$memberIconCache = [];
 $stmt = mysqli_prepare($link, "SELECT user_id, name FROM login_tbl WHERE group_id = ? AND user_id != ? ORDER BY name");
 mysqli_stmt_bind_param($stmt, "ss", $group_id, $user_id);
 if (mysqli_stmt_execute($stmt)) {
@@ -89,6 +92,13 @@ if (mysqli_stmt_execute($stmt)) {
         $unread_row = mysqli_fetch_assoc($unread_result);
         $row['unread_count'] = $unread_row['unread_count'] ?? 0;
         mysqli_stmt_close($unread_stmt);
+
+        $memberId = (string)($row['user_id'] ?? '');
+        if ($memberId !== '' && !array_key_exists($memberId, $memberIconCache)) {
+            $icon = sportdata_find_user_icon($group_id, $memberId);
+            $memberIconCache[$memberId] = $icon['url'] ?? null;
+        }
+        $row['icon_url'] = $memberId !== '' ? ($memberIconCache[$memberId] ?? null) : null;
         
         $members[] = $row;
     }

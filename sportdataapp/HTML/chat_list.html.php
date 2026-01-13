@@ -54,7 +54,11 @@
             <?php foreach ($members as $member): ?>
             <a href="#" class="chat-item" onclick="loadChat('direct', '<?= htmlspecialchars($member['user_id'], ENT_QUOTES, 'UTF-8') ?>'); return false;" data-type="direct" data-id="<?= htmlspecialchars($member['user_id'], ENT_QUOTES, 'UTF-8') ?>">
                 <div class="chat-avatar">
-                    <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                    <?php if (!empty($member['icon_url'])): ?>
+                        <img src="<?= htmlspecialchars($member['icon_url'], ENT_QUOTES, 'UTF-8') ?>" alt="ユーザーアイコン">
+                    <?php else: ?>
+                        <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                    <?php endif; ?>
                 </div>
                 <div class="chat-info">
                     <div class="chat-name">
@@ -112,7 +116,11 @@
                             <label class="member-checkbox-item">
                                 <input type="checkbox" name="members[]" value="<?= htmlspecialchars($member['user_id'], ENT_QUOTES, 'UTF-8') ?>">
                                 <div class="member-checkbox-avatar">
-                                    <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                                    <?php if (!empty($member['icon_url'])): ?>
+                                        <img src="<?= htmlspecialchars($member['icon_url'], ENT_QUOTES, 'UTF-8') ?>" alt="ユーザーアイコン">
+                                    <?php else: ?>
+                                        <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                                    <?php endif; ?>
                                 </div>
                                 <span class="member-checkbox-name"><?= htmlspecialchars($member['name'], ENT_QUOTES, 'UTF-8') ?></span>
                             </label>

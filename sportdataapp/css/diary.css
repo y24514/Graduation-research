@@ -348,6 +348,28 @@ body::-webkit-scrollbar-thumb {
     transform: scale(1);
 }
 
+/* 削除確認モーダル（confirm() 置き換え） */
+.delete-confirm .modal-content {
+    max-width: 520px;
+}
+
+.delete-confirm .modal-header {
+    background: var(--danger);
+}
+
+.confirm-message {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.confirm-sub {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;

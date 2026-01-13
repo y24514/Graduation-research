@@ -1,15 +1,18 @@
-let menybtn = document.querySelector('.meny-btn');
+(function () {
+    const menybtn = document.querySelector('.meny-btn');
+    if (!menybtn) return;
 
-let img = false;
+    let isOpen = false;
 
-menybtn.addEventListener('click', () => {
-    img = !img;
-    const nav = document.querySelector('.meny-nav');
-    nav.classList.toggle('show');
-    
-    if(img){
-        menybtn.style.backgroundImage = "url('../img/meny_open.png')";
-    } else{
-        menybtn.style.backgroundImage = "url('../img/meny_close.png')";
-    }
-})
+    menybtn.addEventListener('click', () => {
+        isOpen = !isOpen;
+        const nav = document.querySelector('.meny-nav');
+        if (nav) {
+            nav.classList.toggle('show');
+        }
+
+        menybtn.style.backgroundImage = isOpen
+            ? "url('../img/meny_open.png')"
+            : "url('../img/meny_close.png')";
+    });
+})();

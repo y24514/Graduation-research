@@ -69,6 +69,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                         $_SESSION['height'] = $row['height'];
                         $_SESSION['weight'] = $row['weight'];
                         $_SESSION['position'] = $row['position'];
+                        $_SESSION['is_admin'] = !empty($row['is_admin']) ? 1 : 0;
+                        $_SESSION['is_super_admin'] = !empty($row['is_super_admin']) ? 1 : 0;
                         $_SESSION['show_loader'] = true;
                         $_SESSION['first_login'] = true;
                         $_SESSION['login_time'] = time();

@@ -38,6 +38,10 @@ $userHeight = $_SESSION['height'] ?? '';
 $userWeight = $_SESSION['weight'] ?? '';
 $userPosition = $_SESSION['position'] ?? '';
 
+require_once __DIR__ . '/user_icon_helper.php';
+$currentUserIcon = sportdata_find_user_icon($group_id, $user_id);
+$currentUserIconUrl = $currentUserIcon['url'] ?? null;
+
 // 今月の範囲（created_at で判定）
 $monthStart = date('Y-m-01 00:00:00');
 $monthEnd = date('Y-m-01 00:00:00', strtotime('+1 month'));
@@ -142,6 +146,21 @@ while ($row_chat = mysqli_fetch_assoc($result_chat)) {
     $chat_notifications[] = $row_chat;
 }
 mysqli_stmt_close($stmt_chat);
+
+// 通知一覧の送信者アイコンURL（キャッシュ付き）
+$senderIconUrls = [];
+$senderIconCache = [];
+foreach ($chat_notifications as $n) {
+    $senderId = (string)($n['sender_user_id'] ?? '');
+    if ($senderId === '') {
+        continue;
+    }
+    if (!array_key_exists($senderId, $senderIconCache)) {
+        $icon = sportdata_find_user_icon($group_id, $senderId);
+        $senderIconCache[$senderId] = $icon['url'] ?? null;
+    }
+    $senderIconUrls[$senderId] = $senderIconCache[$senderId];
+}
 
 $NAV_BASE = '.';
 

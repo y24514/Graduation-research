@@ -112,12 +112,26 @@ if (isset($stmt) && mysqli_stmt_execute($stmt)) {
 }
 
 foreach ($messages as $msg):
+$icon = null;
+if (!empty($group_id) && !empty($msg['user_id'])) {
+    require_once __DIR__ . '/user_icon_helper.php';
+    static $iconCache = [];
+    $cacheKey = (string)$group_id . '|' . (string)$msg['user_id'];
+    if (!array_key_exists($cacheKey, $iconCache)) {
+        $iconCache[$cacheKey] = sportdata_find_user_icon((string)$group_id, (string)$msg['user_id']);
+    }
+    $icon = $iconCache[$cacheKey];
+}
 $isMyMessage = trim((string)$msg['user_id']) === trim((string)$user_id);
 ?>
 <div class="message-item <?= $isMyMessage ? 'my-message' : 'other-message' ?>" data-message-id="<?= (int)$msg['id'] ?>">
     <?php if (!$isMyMessage): ?>
     <div class="message-avatar">
-        <?= mb_substr($msg['name'] ?? '?', 0, 1, 'UTF-8') ?>
+        <?php if (!empty($icon['url'])): ?>
+            <img src="<?= htmlspecialchars($icon['url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($msg['name'] ?? 'ユーザー', ENT_QUOTES, 'UTF-8') ?>">
+        <?php else: ?>
+            <?= mb_substr($msg['name'] ?? '?', 0, 1, 'UTF-8') ?>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
     <div class="message-content">

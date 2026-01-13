@@ -182,6 +182,14 @@ body {
     margin-right: 16px;
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+    overflow: hidden;
+}
+
+.chat-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 
 .chat-info {
@@ -393,6 +401,14 @@ body {
     font-size: 0.85rem;
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .my-message .message-avatar {
@@ -818,6 +834,14 @@ body {
     font-weight: 700;
     font-size: 0.9rem;
     margin-right: 12px;
+    overflow: hidden;
+}
+
+.member-checkbox-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 
 .member-checkbox-name {

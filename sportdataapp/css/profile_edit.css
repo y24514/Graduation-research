@@ -201,6 +201,88 @@ body {
   font-size: 1.3rem;
 }
 
+/* ユーザーアイコン */
+.avatar-section {
+  margin-bottom: 22px;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.avatar-label {
+  display: block;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.avatar-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.avatar-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: linear-gradient(135deg, var(--primary) 0%, #5a67d8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.avatar-controls {
+  flex: 1;
+}
+
+.avatar-actions {
+  margin-top: 10px;
+}
+
+.btn-submit--secondary {
+  background: white;
+  color: var(--text-secondary);
+  border: 2px solid var(--border);
+  box-shadow: none;
+}
+
+.btn-submit--secondary:hover {
+  background: rgba(49, 130, 206, 0.05);
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.avatar-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+}
+
 .section-note {
   color: var(--text-secondary);
   font-size: 0.9rem;

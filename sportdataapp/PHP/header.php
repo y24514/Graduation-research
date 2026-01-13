@@ -7,6 +7,22 @@ if (!isset($NAV_BASE)) {
     // デフォルトは親フォルダ扱い（安全側）
     $NAV_BASE = '.';
 }
+
+// スーパー管理者は「管理画面のみ」利用（他ページは管理画面へ誘導）
+$currentPage = basename($_SERVER['PHP_SELF'] ?? '');
+$isSuperAdmin = !empty($_SESSION['is_super_admin']);
+if ($isSuperAdmin) {
+    $allowedPages = ['admin.php', 'logout.php'];
+    if (!in_array($currentPage, $allowedPages, true)) {
+        $target = $NAV_BASE . '/admin.php';
+        if (!headers_sent()) {
+            header('Location: ' . $target);
+        } else {
+            echo '<script>location.href=' . json_encode($target, JSON_UNESCAPED_SLASHES) . ';</script>';
+        }
+        exit;
+    }
+}
 ?>
 <!-- 共通ナビ用スタイルを外部ファイルで読み込み -->
 <?php
@@ -30,6 +46,16 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
             </svg>
         </button>
         <div class="settings-menu" id="settingsMenu">
+            <?php if (!empty($_SESSION['is_admin']) || !empty($_SESSION['is_super_admin'])): ?>
+            <a href="<?= htmlspecialchars($NAV_BASE . '/admin.php', ENT_QUOTES, 'UTF-8') ?>">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l9 4.5v6c0 5-3.8 9.4-9 10-5.2-.6-9-5-9-10v-6L12 3z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                </svg>
+                管理者
+            </a>
+            <div class="settings-divider"></div>
+            <?php endif; ?>
             <a href="<?= htmlspecialchars($NAV_BASE . '/profile_edit.php', ENT_QUOTES, 'UTF-8') ?>">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -50,6 +76,14 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
     </div>
     <nav class="meny-nav" id="mobileNav">
         <ul class="menu-root">
+            <?php if (!empty($_SESSION['is_super_admin'])): ?>
+            <li class="has-sub active">
+                <button>管理</button>
+                <ul class="sub-menu">
+                    <li><a href="<?= htmlspecialchars($NAV_BASE . '/admin.php', ENT_QUOTES, 'UTF-8') ?>">管理者</a></li>
+                </ul>
+            </li>
+            <?php else: ?>
             <li class="has-sub <?= (basename($_SERVER['PHP_SELF']) === 'home.php' || basename($_SERVER['PHP_SELF']) === 'diary.php' || basename($_SERVER['PHP_SELF']) === 'chat_list.php' || basename($_SERVER['PHP_SELF']) === 'chat.php') ? 'active' : '' ?>">
                 <button>ホーム</button>
                 <ul class="sub-menu">
@@ -58,7 +92,9 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                     <li><a href="<?= htmlspecialchars($NAV_BASE . '/chat_list.php', ENT_QUOTES, 'UTF-8') ?>">チャット</a></li>
                 </ul>
             </li>
+            <?php if (empty($_SESSION['is_admin'])): ?>
             <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars($NAV_BASE . '/pi.php', ENT_QUOTES, 'UTF-8') ?>">身体情報</a></button></li>
+            <?php endif; ?>
 
             <?php
             $requestUri = $_SERVER['REQUEST_URI'] ?? '';
@@ -94,6 +130,7 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                     <li><a href="<?= htmlspecialchars($NAV_BASE . '/final.php', ENT_QUOTES, 'UTF-8') ?>">最終結果</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
         </ul>
     </nav>
     <div class="app-title">Sports Analytics App</div>

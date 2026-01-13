@@ -344,7 +344,9 @@ CREATE TABLE `login_tbl` (
   `dob` date NOT NULL,
   `height` decimal(5,1) NOT NULL,
   `weight` decimal(5,1) NOT NULL,
-  `position` varchar(50) NOT NULL
+  `position` varchar(50) NOT NULL,
+  `is_admin` tinyint(1) NOT NULL DEFAULT 0,
+  `is_super_admin` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

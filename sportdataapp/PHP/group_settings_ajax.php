@@ -120,9 +120,17 @@ $is_creator = ($group['created_by'] === $user_id);
             <h3 class="section-title">メンバー (<?= count($members) ?>人)</h3>
             <div class="member-list-settings">
                 <?php foreach ($members as $member): ?>
+                <?php
+                require_once __DIR__ . '/user_icon_helper.php';
+                $memberIcon = sportdata_find_user_icon((string)$group_id, (string)$member['user_id']);
+                ?>
                 <div class="member-item-settings">
                     <div class="member-avatar-settings">
-                        <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                        <?php if (!empty($memberIcon['url'])): ?>
+                            <img src="<?= htmlspecialchars($memberIcon['url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($member['name'], ENT_QUOTES, 'UTF-8') ?>">
+                        <?php else: ?>
+                            <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                        <?php endif; ?>
                     </div>
                     <div class="member-info">
                         <span class="member-name"><?= htmlspecialchars($member['name'], ENT_QUOTES, 'UTF-8') ?></span>
@@ -146,9 +154,17 @@ $is_creator = ($group['created_by'] === $user_id);
             <h3 class="section-title">メンバーを追加</h3>
             <div class="add-member-list">
                 <?php foreach ($available_members as $member): ?>
+                <?php
+                require_once __DIR__ . '/user_icon_helper.php';
+                $availableIcon = sportdata_find_user_icon((string)$group_id, (string)$member['user_id']);
+                ?>
                 <div class="add-member-item">
                     <div class="member-avatar-settings">
-                        <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                        <?php if (!empty($availableIcon['url'])): ?>
+                            <img src="<?= htmlspecialchars($availableIcon['url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($member['name'], ENT_QUOTES, 'UTF-8') ?>">
+                        <?php else: ?>
+                            <?= mb_substr($member['name'], 0, 1, 'UTF-8') ?>
+                        <?php endif; ?>
                     </div>
                     <span class="member-name"><?= htmlspecialchars($member['name'], ENT_QUOTES, 'UTF-8') ?></span>
                     <button class="btn-add" onclick="addMember('<?= htmlspecialchars($member['user_id'], ENT_QUOTES, 'UTF-8') ?>', <?= $chat_group_id ?>)">
@@ -178,6 +194,17 @@ $is_creator = ($group['created_by'] === $user_id);
     flex-direction: column;
     height: 100%;
     background: white;
+}
+
+.member-avatar-settings {
+    overflow: hidden;
+}
+
+.member-avatar-settings img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .settings-header {
