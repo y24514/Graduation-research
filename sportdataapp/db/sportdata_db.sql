@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2025-12-24 07:45:18
+-- 生成日時: 2026-01-14 08:46:33
 -- サーバのバージョン： 10.4.32-MariaDB
 -- PHP のバージョン: 8.2.12
 
@@ -20,6 +20,46 @@ SET time_zone = "+00:00";
 --
 -- データベース: `sportdata_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `admin_role_requests`
+--
+
+CREATE TABLE `admin_role_requests` (
+  `id` int(11) NOT NULL,
+  `group_id` varchar(50) NOT NULL,
+  `user_id` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `requested_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `actioned_by` varchar(50) DEFAULT NULL,
+  `actioned_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `admin_role_requests`
+--
+
+INSERT INTO `admin_role_requests` (`id`, `group_id`, `user_id`, `name`, `requested_at`, `status`, `actioned_by`, `actioned_at`) VALUES
+(1, 'cis', 'mainte', 'mainte', '2026-01-14 10:34:31', 'approved', 'host', '2026-01-14 10:36:00'),
+(2, 'cis', 'harunaabe', '顧問の安倍', '2026-01-14 11:24:09', 'pending', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `basketball_strategies`
+--
+
+CREATE TABLE `basketball_strategies` (
+  `id` int(11) NOT NULL,
+  `group_id` varchar(64) DEFAULT NULL,
+  `user_id` varchar(64) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `json_data` longtext NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -233,7 +273,53 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (136, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2025-12-24 11:11:48'),
 (137, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2025-12-24 11:11:49'),
 (138, 'cis', 'y24514', 'direct', NULL, 'y24514_2', 7, '2025-12-24 11:11:49'),
-(139, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2025-12-24 11:11:50');
+(139, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2025-12-24 11:11:50'),
+(140, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-07 09:03:33'),
+(141, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-07 09:03:41'),
+(142, 'cis', 'y24514', 'direct', NULL, 'y24515', 24, '2026-01-07 09:03:50'),
+(143, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-07 09:26:04'),
+(144, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-07 09:26:07'),
+(145, 'cis', 'y24514', 'direct', NULL, 'y24515', 24, '2026-01-07 09:26:08'),
+(146, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2026-01-07 09:26:09'),
+(147, 'cis', 'y24514', 'direct', NULL, 'y24514_2', 7, '2026-01-07 09:26:10'),
+(148, 'cis', 'y24514', 'direct', NULL, 'y24515', 24, '2026-01-07 11:59:00'),
+(149, 'cis', 'abe', 'direct', NULL, 'y24520', 26, '2026-01-08 10:02:19'),
+(150, 'cis', 'abe', 'direct', NULL, 'y24510', 27, '2026-01-08 10:02:20'),
+(151, 'cis', 'abe', 'direct', NULL, 'y24514', 25, '2026-01-08 10:02:22'),
+(152, 'cis', 'abe', 'direct', NULL, 'y24514', 25, '2026-01-08 10:02:23'),
+(153, 'cis', 'abe', 'direct', NULL, 'y24510', 27, '2026-01-08 10:08:35'),
+(154, 'cis', 'abe', 'direct', NULL, 'y24520', 26, '2026-01-08 10:08:35'),
+(155, 'cis', 'abe', 'direct', NULL, 'y24514', 25, '2026-01-08 10:08:37'),
+(156, 'cis', 'abe', 'direct', NULL, 'y24514', 25, '2026-01-08 10:08:38'),
+(157, 'cis', 'abe', 'direct', NULL, 'y24514', 25, '2026-01-08 10:08:39'),
+(158, 'cis', 'y24514', 'direct', NULL, 'abe', 25, '2026-01-08 11:37:01'),
+(159, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-08 11:47:50'),
+(160, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-08 11:47:57'),
+(161, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-08 11:48:08'),
+(162, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-08 13:10:19'),
+(163, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-08 13:10:23'),
+(164, 'cis', 'y24514', 'direct', NULL, 'y24515', 24, '2026-01-08 13:10:32'),
+(165, 'cis', 'y24515', 'direct', NULL, 'y24514', 30, '2026-01-08 13:11:02'),
+(166, 'cis', 'y24514', 'direct', NULL, 'y24515', 31, '2026-01-08 13:11:50'),
+(167, 'cis', 'abe', 'direct', NULL, 'y24514', 29, '2026-01-08 13:32:59'),
+(168, 'cis', 'abe', 'direct', NULL, 'y24514', 29, '2026-01-08 13:33:01'),
+(169, 'cis', 'abe', 'direct', NULL, 'y24520', 26, '2026-01-08 13:33:02'),
+(170, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 10:36:34'),
+(171, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:13:05'),
+(172, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-13 11:13:11'),
+(173, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:24:07'),
+(174, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-13 11:24:08'),
+(175, 'cis', 'y24514', 'direct', NULL, 'y24515', 31, '2026-01-13 11:24:10'),
+(176, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2026-01-13 11:24:11'),
+(177, 'cis', 'y24514', 'direct', NULL, 'y24514_2', 7, '2026-01-13 11:24:12'),
+(178, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:24:12'),
+(179, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:31:28'),
+(180, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:38:25'),
+(181, 'cis', 'y24515', 'direct', NULL, 'y24514', 31, '2026-01-13 11:39:10'),
+(182, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 09:55:05'),
+(183, 'cis', 'y24514', 'direct', NULL, 'y24514_3', 32, '2026-01-14 10:32:33'),
+(184, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 11:41:11'),
+(185, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 11:41:19');
 
 -- --------------------------------------------------------
 
@@ -277,7 +363,15 @@ INSERT INTO `chat_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `chat_group_id
 (14, 'cis', 'y24515', 'direct', NULL, 'y24514', 'ぺこぺこ', NULL, NULL, 0, NULL, '2025-12-22 16:40:04'),
 (16, 'cis', 'y24515', 'direct', NULL, 'y24514', '楽しいね', NULL, NULL, 0, NULL, '2025-12-23 09:18:30'),
 (19, 'cis', 'y24515', 'direct', NULL, 'y24514', 'たのしいなあああ！？', NULL, NULL, 0, NULL, '2025-12-23 10:08:44'),
-(24, 'cis', 'y24514', 'direct', NULL, 'y24515', '楽しいなぁぁぁああああ', NULL, NULL, 1, '2025-12-24 09:03:17', '2025-12-23 14:27:25');
+(24, 'cis', 'y24514', 'direct', NULL, 'y24515', '楽しいなぁぁぁああああ', NULL, NULL, 1, '2025-12-24 09:03:17', '2025-12-23 14:27:25'),
+(25, 'cis', 'abe', 'direct', NULL, 'y24514', 'こんにちは！卒研進んでいますか？', NULL, NULL, 0, NULL, '2026-01-08 10:01:58'),
+(26, 'cis', 'abe', 'direct', NULL, 'y24520', 'こんにちは！卒研進んでいますか？', NULL, NULL, 0, NULL, '2026-01-08 10:02:02'),
+(27, 'cis', 'abe', 'direct', NULL, 'y24510', '体調は大丈夫ですか', NULL, NULL, 0, NULL, '2026-01-08 10:02:16'),
+(28, 'cis', 'y24514', 'direct', NULL, 'abe', '送れています。', NULL, NULL, 1, '2026-01-08 11:37:34', '2026-01-08 11:37:26'),
+(29, 'cis', 'y24514', 'direct', NULL, 'abe', '遅れている状況です', NULL, NULL, 0, NULL, '2026-01-08 11:37:48'),
+(30, 'cis', 'y24514', 'direct', NULL, 'y24515', 'テスト　送信', NULL, NULL, 0, NULL, '2026-01-08 13:10:40'),
+(31, 'cis', 'y24515', 'direct', NULL, 'y24514', 'テスト送信確認', NULL, NULL, 0, NULL, '2026-01-08 13:11:20'),
+(32, 'cis', 'y24514_3', 'direct', NULL, 'y24514', 'ばーか', NULL, NULL, 0, NULL, '2026-01-14 10:31:32');
 
 -- --------------------------------------------------------
 
@@ -302,7 +396,50 @@ CREATE TABLE `diary_tbl` (
 --
 
 INSERT INTO `diary_tbl` (`id`, `group_id`, `user_id`, `diary_date`, `title`, `content`, `tags`, `created_at`, `updated_at`) VALUES
-(3, 'cis', 'y24514', '2025-12-24', 'テスト', 'テスト', '', '2025-12-24 09:01:18', '2025-12-24 09:01:18');
+(4, 'cis', 'abe', '2026-01-08', 'おれはジャイアン', 'ガキ大将', '#じゃいあん', '2026-01-08 10:02:47', '2026-01-08 10:02:47'),
+(10, 'cis', 'abe', '2026-01-07', '昨日のこと', '昨日のこと書くの忘れてた', '#練習', '2026-01-08 10:06:25', '2026-01-08 10:06:25'),
+(11, 'cis', 'abe', '2026-01-01', 'あけましておめでとうございます', '今年もがんばるぞ', '#意気込み', '2026-01-08 10:06:52', '2026-01-08 10:06:52'),
+(12, 'cis', 'abe', '2025-12-25', 'クリスマス', 'クリスマスも練習だ！がんばるぞ！', '#練習', '2026-01-08 10:07:19', '2026-01-08 10:07:19'),
+(13, '花巻東', 'y24514', '2026-01-08', 'ｇｇｇ', 'ｇｇｇｇ', 'ｇｇｇ', '2026-01-08 10:07:28', '2026-01-08 10:07:28'),
+(19, '花巻東', 'y24514', '2026-01-22', 'ｈ', 'あったかい', 'ｈｈｈ', '2026-01-08 10:09:19', '2026-01-08 10:09:19'),
+(20, '花巻東', 'y24514', '2026-01-08', 'ああああ', 'ああああ', 'ああああ', '2026-01-08 10:12:51', '2026-01-08 10:12:51'),
+(21, 'cis', 'harunaabe', '2026-01-14', 'おれはジャイアン', 'a', '', '2026-01-14 11:41:34', '2026-01-14 11:41:34');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `games`
+--
+
+CREATE TABLE `games` (
+  `id` bigint(20) NOT NULL,
+  `team_a_name` varchar(100) NOT NULL,
+  `team_b_name` varchar(100) NOT NULL,
+  `score_a` int(11) NOT NULL DEFAULT 0,
+  `score_b` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `group_id` varchar(64) DEFAULT NULL,
+  `saved_by_user_id` varchar(64) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `game_actions`
+--
+
+CREATE TABLE `game_actions` (
+  `id` bigint(20) NOT NULL,
+  `game_id` bigint(20) NOT NULL,
+  `quarter` tinyint(4) NOT NULL,
+  `team` char(1) NOT NULL,
+  `player_id` int(11) NOT NULL,
+  `player_name` varchar(100) NOT NULL,
+  `action_type` varchar(20) NOT NULL,
+  `point` tinyint(4) NOT NULL DEFAULT 0,
+  `result` varchar(20) NOT NULL DEFAULT 'success',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ;
 
 -- --------------------------------------------------------
 
@@ -327,7 +464,8 @@ CREATE TABLE `goal_tbl` (
 INSERT INTO `goal_tbl` (`goal_id`, `group_id`, `user_id`, `goal`, `progress`, `deadline`, `created_at`) VALUES
 (5, 'sangitan', 'h-abe', '120kgになる', 0, NULL, '2025-12-03 13:47:46'),
 (6, 'cis', 'abe', '', 0, NULL, '2025-12-03 14:15:07'),
-(7, 'cis', 'y24514', '半フリ55秒切る', 100, NULL, '2025-12-23 14:28:53');
+(7, 'cis', 'y24514', '半フリ55秒切る', 100, NULL, '2026-01-07 08:53:28'),
+(8, 'cis', 'abe', '県民体ベスト４', 0, NULL, '2026-01-08 14:03:44');
 
 -- --------------------------------------------------------
 
@@ -345,6 +483,7 @@ CREATE TABLE `login_tbl` (
   `height` decimal(5,1) NOT NULL,
   `weight` decimal(5,1) NOT NULL,
   `position` varchar(50) NOT NULL,
+  `sport` varchar(20) DEFAULT NULL,
   `is_admin` tinyint(1) NOT NULL DEFAULT 0,
   `is_super_admin` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -353,16 +492,20 @@ CREATE TABLE `login_tbl` (
 -- テーブルのデータのダンプ `login_tbl`
 --
 
-INSERT INTO `login_tbl` (`id`, `group_id`, `user_id`, `password`, `name`, `dob`, `height`, `weight`, `position`) VALUES
-(13, 'cis', 'y24514', '$2y$10$MVyXrYFuMD/ULyZMNG40d.8yDyCa2FU4Ydm2EghYzPTmg2nj.lSYK', '藤原大輔', '2006-03-03', 170.0, 59.0, '学生会役員'),
-(16, '花巻東', 'y24514', '$2y$10$irKSeqOAkgWJ3hAlF3m2ru.SAsNgv7YiSbY7nd5fdbPbFuRlxdSpm', '藤原大輔', '2006-03-03', 170.0, 59.0, 'fly/fr'),
-(17, 'cis', 'y24513', '$2y$10$T2CgtBtyPu43inv7IY53reJ5v7f9YCJFboy9AI6rpPZlr9Xv9VCsq', '藤原啄都', '2025-12-18', 172.0, 59.0, 'バタフライ'),
-(18, 'sangitan', 'h-abe', '$2y$10$3077kKiMdxYuVABAokwcwOON0P5z5.psI.GWsh2ZlywJLrHYHJHwG', '安倍春菜', '2026-07-03', 190.0, 100.0, 'DF'),
-(19, 'cis', 'y24520', '$2y$10$UN6nKQIqkmpClpFUVdQM8ONs76V2bkS2CwuJy2gdC4rdL6TL6c98O', '吉田稜', '2025-07-21', 164.0, 60.0, '前衛'),
-(20, 'cis', 'abe', '$2y$10$5rnhaBbn/ycTIjygFdip1utCRMa/G7oh2CKa.ocM2R8f9JqS82yGO', '剛田武', '2025-11-12', 200.0, 100.0, 'OF'),
-(21, 'cis', 'y24514_2', '$2y$10$ZT6N5Ll9v.abrtWzETvWr.4pcIATYVuQVoqUmehSen6il6uK3hUp.', '藤原大輔２', '2006-03-03', 170.0, 59.0, 'fly'),
-(22, 'cis', 'y24515', '$2y$10$7CRF5eZTnCErAstv1jdyuuP8id/fscLSIfjp7C2hGzvRL9vzC/75i', '藤原叶夢', '2006-02-05', 182.0, 55.0, '二年生'),
-(23, 'cis', 'y24510', '$2y$10$QwHSD73GmvpdHH2nybBJluekIlV1UeYF.zgR/V/UPSDUbGnHx31qi', '田村淳道', '2005-10-24', 180.0, 65.0, '二年生');
+INSERT INTO `login_tbl` (`id`, `group_id`, `user_id`, `password`, `name`, `dob`, `height`, `weight`, `position`, `sport`, `is_admin`, `is_super_admin`) VALUES
+(13, 'cis', 'y24514', '$2y$10$MVyXrYFuMD/ULyZMNG40d.8yDyCa2FU4Ydm2EghYzPTmg2nj.lSYK', '藤原大輔', '2006-03-03', 170.0, 59.0, '学生会役員', NULL, 0, 0),
+(16, '花巻東', 'y24514', '$2y$10$irKSeqOAkgWJ3hAlF3m2ru.SAsNgv7YiSbY7nd5fdbPbFuRlxdSpm', '藤原大輔', '2006-03-03', 170.0, 59.0, 'fly/fr', NULL, 0, 0),
+(17, 'cis', 'y24513', '$2y$10$T2CgtBtyPu43inv7IY53reJ5v7f9YCJFboy9AI6rpPZlr9Xv9VCsq', '藤原啄都', '2025-12-18', 172.0, 59.0, 'バタフライ', NULL, 0, 0),
+(18, 'sangitan', 'h-abe', '$2y$10$3077kKiMdxYuVABAokwcwOON0P5z5.psI.GWsh2ZlywJLrHYHJHwG', '安倍春菜', '2026-07-03', 190.0, 100.0, 'DF', NULL, 0, 0),
+(19, 'cis', 'y24520', '$2y$10$UN6nKQIqkmpClpFUVdQM8ONs76V2bkS2CwuJy2gdC4rdL6TL6c98O', '吉田稜', '2025-07-21', 164.0, 60.0, '前衛', NULL, 0, 0),
+(20, 'cis', 'abe', '$2y$10$5rnhaBbn/ycTIjygFdip1utCRMa/G7oh2CKa.ocM2R8f9JqS82yGO', '剛田武', '2025-11-12', 200.0, 100.0, 'OF', 'all', 0, 0),
+(21, 'cis', 'y24514_2', '$2y$10$ZT6N5Ll9v.abrtWzETvWr.4pcIATYVuQVoqUmehSen6il6uK3hUp.', '藤原大輔２', '2006-03-03', 170.0, 59.0, 'fly', NULL, 0, 0),
+(22, 'cis', 'y24515', '$2y$10$7CRF5eZTnCErAstv1jdyuuP8id/fscLSIfjp7C2hGzvRL9vzC/75i', '藤原叶夢', '2006-02-05', 182.0, 55.0, '二年生', NULL, 0, 0),
+(23, 'cis', 'y24510', '$2y$10$QwHSD73GmvpdHH2nybBJluekIlV1UeYF.zgR/V/UPSDUbGnHx31qi', '田村淳道', '2005-10-24', 180.0, 65.0, '二年生', NULL, 0, 0),
+(26, 'system', 'host', '$2y$10$TlJs197Yt7J67hbxydxSYeHuyPNA5mPY4vZd0VyBFxuEYAC/n8K6u', 'host', '2000-01-01', 170.0, 60.0, '作成者', NULL, 1, 1),
+(27, 'cis', 'y24514_3', '$2y$10$f3FtUbCV/.PQVbnusRTRSekmyiAQ5vi3zDp31S4HdR8BMT.VrHizC', '藤原大輔', '2006-03-03', 170.0, 59.0, 'バタフライ', 'swim', 0, 0),
+(28, 'cis', 'mainte', '$2y$10$dHGgYNzX9wNr.Dz6blcEi.1VeQhwE7grRI8f8aXQrhd.k4trxzLZu', 'mainte', '1900-01-01', 0.0, 0.0, '管理者', 'all', 1, 0),
+(29, 'cis', 'harunaabe', '$2y$10$e53yk0vW9wbeeE2axN76y.ffnIgu9uQ4TFqBdMnKfU2WYumTu9FHi', '顧問の安倍', '1900-01-01', 0.0, 0.0, '顧問', 'all', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -410,6 +553,36 @@ CREATE TABLE `players` (
   `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- テーブルのデータのダンプ `players`
+--
+
+INSERT INTO `players` (`id`, `team_id`, `number`, `name`) VALUES
+(1, 1, 4, 'A Player 4'),
+(2, 1, 5, 'A Player 5'),
+(3, 1, 6, 'A Player 6'),
+(4, 1, 7, 'A Player 7'),
+(5, 1, 8, 'A Player 8'),
+(6, 1, 9, 'A Player 9'),
+(7, 1, 10, 'A Player 10'),
+(8, 1, 11, 'A Player 11'),
+(9, 1, 12, 'A Player 12'),
+(10, 1, 13, 'A Player 13'),
+(11, 1, 14, 'A Player 14'),
+(12, 1, 15, 'A Player 15'),
+(13, 2, 4, 'B Player 4'),
+(14, 2, 5, 'B Player 5'),
+(15, 2, 6, 'B Player 6'),
+(16, 2, 7, 'B Player 7'),
+(17, 2, 8, 'B Player 8'),
+(18, 2, 9, 'B Player 9'),
+(19, 2, 10, 'B Player 10'),
+(20, 2, 11, 'B Player 11'),
+(21, 2, 12, 'B Player 12'),
+(22, 2, 13, 'B Player 13'),
+(23, 2, 14, 'B Player 14'),
+(24, 2, 15, 'B Player 15');
+
 -- --------------------------------------------------------
 
 --
@@ -434,6 +607,31 @@ CREATE TABLE `swim_best_tbl` (
 INSERT INTO `swim_best_tbl` (`id`, `group_id`, `user_id`, `pool`, `event`, `distance`, `best_time`, `updated_at`) VALUES
 (1, 'cis', 'y24514', 'long', 'fly', 50, 28.00, '2025-12-15 02:00:18'),
 (3, 'cis', 'y24514', 'long', 'fr', 50, 25.78, '2025-12-15 02:09:51');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `swim_practice_tbl`
+--
+
+CREATE TABLE `swim_practice_tbl` (
+  `id` int(11) NOT NULL,
+  `group_id` varchar(100) NOT NULL,
+  `user_id` varchar(50) NOT NULL,
+  `practice_date` date NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `menu_text` text DEFAULT NULL,
+  `memo` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `swim_practice_tbl`
+--
+
+INSERT INTO `swim_practice_tbl` (`id`, `group_id`, `user_id`, `practice_date`, `title`, `menu_text`, `memo`, `created_at`) VALUES
+(1, 'cis', 'harunaabe', '2026-01-14', '肺活量アップ', 'Main100＊5', '', '2026-01-14 11:37:49'),
+(2, 'cis', 'harunaabe', '2026-01-14', '筋トレ', 'ランニング\r\n腹筋\r\n背筋', '', '2026-01-14 11:38:23');
 
 -- --------------------------------------------------------
 
@@ -479,7 +677,10 @@ INSERT INTO `swim_tbl` (`id`, `group_id`, `user_id`, `swim_date`, `meet_name`, `
 (42, 'cis', 'abe', '2025-12-18', NULL, NULL, 5, NULL, 'short', 'fly', 100, 60.80, '{\"stroke_25\":0,\"stroke_50\":2,\"stroke_75\":1,\"stroke_100\":3}', '{\"lap_time_25\":\"15.2\",\"lap_time_50\":\"15.2\",\"lap_time_75\":\"15.2\",\"lap_time_100\":\"15.2\"}', NULL, '2025-12-18 01:44:13'),
 (43, 'cis', 'y24514', '2025-12-19', NULL, NULL, 2, NULL, 'long', 'fly', 100, 66.79, '{\"stroke_50\":21,\"stroke_100\":25}', '{\"lap_time_50\":\"29.98\",\"lap_time_100\":\"36.81\"}', NULL, '2025-12-18 04:04:06'),
 (44, 'cis', 'y24514', '2025-12-18', NULL, NULL, 3, NULL, 'long', 'fr', 100, 59.98, '{\"stroke_50\":18,\"stroke_100\":18}', '{\"lap_time_50\":\"29.98\",\"lap_time_100\":\"30.00\"}', NULL, '2025-12-18 04:49:52'),
-(45, 'cis', 'y24514', '2025-12-24', NULL, NULL, 3, NULL, 'short', 'fr', 50, 27.48, '{\"stroke_25\":18,\"stroke_50\":19}', '{\"lap_time_25\":\"12.14\",\"lap_time_50\":\"15.34\"}', NULL, '2025-12-24 00:13:55');
+(45, 'cis', 'y24514', '2025-12-24', NULL, NULL, 3, NULL, 'short', 'fr', 50, 27.48, '{\"stroke_25\":18,\"stroke_50\":19}', '{\"lap_time_25\":\"12.14\",\"lap_time_50\":\"15.34\"}', NULL, '2025-12-24 00:13:55'),
+(46, 'cis', 'y24514', '2026-01-08', NULL, NULL, 3, NULL, 'long', 'fr', 50, 24.98, '{\"stroke_50\":19}', '{\"lap_time_50\":\"24.98\"}', NULL, '2026-01-08 04:18:28'),
+(47, 'cis', 'y24514', '2026-01-08', 'スイミングフェスタ', 'タイム決勝', 1, 'official', 'short', 'fr', 50, 24.45, '{\"stroke_25\":11,\"stroke_50\":13}', '{\"lap_time_25\":\"11.23\",\"lap_time_50\":\"13.22\"}', NULL, '2026-01-08 04:21:33'),
+(48, 'cis', 'abe', '2026-01-08', NULL, NULL, 2, 'practice', 'short', 'ba', 100, 63.80, '{\"stroke_25\":10,\"stroke_50\":10,\"stroke_75\":11,\"stroke_100\":12}', '{\"lap_time_25\":\"15.2\",\"lap_time_50\":\"15.2\",\"lap_time_75\":\"15.2\",\"lap_time_100\":\"18.2\"}', NULL, '2026-01-08 04:22:47');
 
 -- --------------------------------------------------------
 
@@ -493,8 +694,31 @@ CREATE TABLE `teams` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- テーブルのデータのダンプ `teams`
+--
+
+INSERT INTO `teams` (`id`, `name`) VALUES
+(1, 'Team A'),
+(2, 'Team B');
+
+--
 -- ダンプしたテーブルのインデックス
 --
+
+--
+-- テーブルのインデックス `admin_role_requests`
+--
+ALTER TABLE `admin_role_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_group_status_time` (`group_id`,`status`,`requested_at`),
+  ADD KEY `idx_user_group` (`group_id`,`user_id`);
+
+--
+-- テーブルのインデックス `basketball_strategies`
+--
+ALTER TABLE `basketball_strategies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_basketball_strategies_group_created` (`group_id`,`created_at`);
 
 --
 -- テーブルのインデックス `calendar_tbl`
@@ -547,7 +771,26 @@ ALTER TABLE `chat_tbl`
 ALTER TABLE `diary_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_user` (`group_id`,`user_id`),
-  ADD KEY `idx_date` (`diary_date`);
+  ADD KEY `idx_date` (`diary_date`),
+  ADD KEY `idx_user_date` (`group_id`,`user_id`,`diary_date`);
+
+--
+-- テーブルのインデックス `games`
+--
+ALTER TABLE `games`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_games_created_at` (`created_at`),
+  ADD KEY `idx_games_group_id_created_at` (`group_id`,`created_at`),
+  ADD KEY `idx_games_saved_by` (`saved_by_user_id`,`created_at`);
+
+--
+-- テーブルのインデックス `game_actions`
+--
+ALTER TABLE `game_actions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_game_actions_game_id` (`game_id`),
+  ADD KEY `idx_game_actions_player_id` (`player_id`),
+  ADD KEY `idx_game_actions_quarter_team` (`quarter`,`team`);
 
 --
 -- テーブルのインデックス `goal_tbl`
@@ -563,7 +806,9 @@ ALTER TABLE `goal_tbl`
 ALTER TABLE `login_tbl`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`password`) USING BTREE,
-  ADD KEY `group_id` (`group_id`);
+  ADD KEY `group_id` (`group_id`),
+  ADD KEY `idx_login_tbl_is_super_admin` (`is_super_admin`),
+  ADD KEY `idx_login_tbl_sport` (`sport`);
 
 --
 -- テーブルのインデックス `pi_tbl`
@@ -589,6 +834,13 @@ ALTER TABLE `swim_best_tbl`
   ADD KEY `swimbest_user_id` (`user_id`);
 
 --
+-- テーブルのインデックス `swim_practice_tbl`
+--
+ALTER TABLE `swim_practice_tbl`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_swim_practice_user_date` (`group_id`,`user_id`,`practice_date`);
+
+--
 -- テーブルのインデックス `swim_tbl`
 --
 ALTER TABLE `swim_tbl`
@@ -605,6 +857,18 @@ ALTER TABLE `teams`
 --
 -- ダンプしたテーブルの AUTO_INCREMENT
 --
+
+--
+-- テーブルの AUTO_INCREMENT `admin_role_requests`
+--
+ALTER TABLE `admin_role_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- テーブルの AUTO_INCREMENT `basketball_strategies`
+--
+ALTER TABLE `basketball_strategies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- テーブルの AUTO_INCREMENT `calendar_tbl`
@@ -628,31 +892,43 @@ ALTER TABLE `chat_group_tbl`
 -- テーブルの AUTO_INCREMENT `chat_read_status_tbl`
 --
 ALTER TABLE `chat_read_status_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
 
 --
 -- テーブルの AUTO_INCREMENT `chat_tbl`
 --
 ALTER TABLE `chat_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- テーブルの AUTO_INCREMENT `diary_tbl`
 --
 ALTER TABLE `diary_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- テーブルの AUTO_INCREMENT `games`
+--
+ALTER TABLE `games`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- テーブルの AUTO_INCREMENT `game_actions`
+--
+ALTER TABLE `game_actions`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- テーブルの AUTO_INCREMENT `goal_tbl`
 --
 ALTER TABLE `goal_tbl`
-  MODIFY `goal_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `goal_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- テーブルの AUTO_INCREMENT `login_tbl`
 --
 ALTER TABLE `login_tbl`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- テーブルの AUTO_INCREMENT `pi_tbl`
@@ -664,7 +940,7 @@ ALTER TABLE `pi_tbl`
 -- テーブルの AUTO_INCREMENT `players`
 --
 ALTER TABLE `players`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- テーブルの AUTO_INCREMENT `swim_best_tbl`
@@ -673,16 +949,22 @@ ALTER TABLE `swim_best_tbl`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- テーブルの AUTO_INCREMENT `swim_practice_tbl`
+--
+ALTER TABLE `swim_practice_tbl`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- テーブルの AUTO_INCREMENT `swim_tbl`
 --
 ALTER TABLE `swim_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- テーブルの AUTO_INCREMENT `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- ダンプしたテーブルの制約
@@ -706,6 +988,12 @@ ALTER TABLE `chat_group_member_tbl`
 --
 ALTER TABLE `chat_tbl`
   ADD CONSTRAINT `chat_tbl_ibfk_1` FOREIGN KEY (`chat_group_id`) REFERENCES `chat_group_tbl` (`chat_group_id`) ON DELETE CASCADE;
+
+--
+-- テーブルの制約 `game_actions`
+--
+ALTER TABLE `game_actions`
+  ADD CONSTRAINT `fk_game_actions_game_id` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`) ON DELETE CASCADE;
 
 --
 -- テーブルの制約 `goal_tbl`
