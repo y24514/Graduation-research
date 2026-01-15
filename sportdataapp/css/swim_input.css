@@ -526,9 +526,15 @@ form {
 }
 
 .face-option:hover {
-  transform: translateY(-2px);
-  background: #ffe4e9;
-  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  /* マーク（顔アイコン）だけ色を変えるため、周囲（カード）は変化させない */
+  transform: none;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.face-option:hover .face-svg circle:first-child {
+  fill: #ffe4e9;
+  stroke: #ffb6c1;
 }
 
 .face-option input[type="radio"] {
@@ -569,13 +575,14 @@ form {
 }
 
 .face-option:has(input[type="radio"]:checked) {
-  background: #ff69b4;
-  box-shadow: 0 6px 16px rgba(255, 20, 147, 0.4);
+  /* 選択状態もマークのみで表現する */
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .face-option:has(input[type="radio"]:checked) .face-label {
-  color: #ffffff;
-  font-weight: 700;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 中央：ストローク */
