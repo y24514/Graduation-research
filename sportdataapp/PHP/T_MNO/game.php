@@ -184,7 +184,7 @@ $acts = ['サービスエース', 'スマッシュ', 'ボレー', 'ストロー�
     <form method="post" id="actF" style="display:contents;">
         <input type="hidden" name="player" id="p_in"><input type="hidden" name="action" id="a_in"><input type="hidden" name="action_btn" value="1">
         <button type="submit" name="undo" class="footer-btn" style="background:#fff;">戻す</button>
-        <button type="submit" name="reset" class="footer-btn" style="background:#e74c3c; color:white;" onclick="return confirm('終了しますか？')">終了</button>
+        <button type="submit" name="reset" class="footer-btn" style="background:#e74c3c; color:white;" onclick="return confirm('途中で終了すると記録されません。終了しますか？')">終了</button>
     </form>
 </footer>
 
