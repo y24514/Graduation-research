@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 
 /* ---------------------
    セッションチェック
@@ -42,6 +42,7 @@ function render_no_data_alert(string $redirect, string $message): void {
     echo "<meta charset=\"utf-8\">";
     echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
     echo "<title>水泳｜分析</title>";
+    echo "<link rel=\"icon\" type=\"image/svg+xml\" href=\"../../img/favicon.svg\">";
     echo "<link rel=\"stylesheet\" href=\"../../css/site.css\">";
     echo "<link rel=\"stylesheet\" href=\"../../css/swim_input.css\">";
     echo "<link rel=\"stylesheet\" href=\"../../css/swim_alert.css\">";

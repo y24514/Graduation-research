@@ -1,5 +1,11 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
+
+// 管理者（先生/顧問）はダッシュボードを使わない
+if (!empty($_SESSION['is_admin']) && empty($_SESSION['is_super_admin'])) {
+    header('Location: admin.php');
+    exit();
+}
 
 // ログインしているか確認
 if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
@@ -79,24 +85,56 @@ if ($row = mysqli_fetch_assoc($result)) {
 mysqli_stmt_close($stmt);
 
 // スケジュール表示
-$stmt2 = mysqli_prepare($link, "
-    SELECT title, startdate, enddate 
-    FROM calendar_tbl 
-    WHERE group_id = ? AND user_id = ?
-");
-mysqli_stmt_bind_param($stmt2, "ss", $group_id, $user_id);
-mysqli_stmt_execute($stmt2);
-mysqli_stmt_bind_result($stmt2, $title, $startdate, $enddate);
+$calendarHasIsShared = false;
+try {
+    $res = mysqli_query(
+        $link,
+        "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'calendar_tbl' AND COLUMN_NAME = 'is_shared'"
+    );
+    if ($res && mysqli_fetch_assoc($res)) {
+        $calendarHasIsShared = true;
+    }
+    if ($res) {
+        mysqli_free_result($res);
+    }
+} catch (Throwable $e) {
+    $calendarHasIsShared = false;
+}
 
 $records = [];
-while (mysqli_stmt_fetch($stmt2)) {
-    $records[] = [
-        'title' => $title,
-        'start' => $startdate,
-        'end' => $enddate
-    ];
+if ($calendarHasIsShared) {
+    $stmt2 = mysqli_prepare(
+        $link,
+        'SELECT title, startdate, enddate, is_shared FROM calendar_tbl WHERE group_id = ? AND (user_id = ? OR is_shared = 1)'
+    );
+    mysqli_stmt_bind_param($stmt2, 'ss', $group_id, $user_id);
+    mysqli_stmt_execute($stmt2);
+    $result2 = mysqli_stmt_get_result($stmt2);
+    while ($row = mysqli_fetch_assoc($result2)) {
+        $records[] = [
+            'title' => $row['title'],
+            'start' => $row['startdate'],
+            'end' => $row['enddate'],
+        ];
+    }
+    mysqli_stmt_close($stmt2);
+} else {
+    $stmt2 = mysqli_prepare(
+        $link,
+        'SELECT title, startdate, enddate FROM calendar_tbl WHERE group_id = ? AND user_id = ?'
+    );
+    mysqli_stmt_bind_param($stmt2, 'ss', $group_id, $user_id);
+    mysqli_stmt_execute($stmt2);
+    mysqli_stmt_bind_result($stmt2, $title, $startdate, $enddate);
+    while (mysqli_stmt_fetch($stmt2)) {
+        $records[] = [
+            'title' => $title,
+            'start' => $startdate,
+            'end' => $enddate,
+        ];
+    }
+    mysqli_stmt_close($stmt2);
 }
-mysqli_stmt_close($stmt2);
 
 // チャット通知を取得（最新5件の未読メッセージのみ）
 $stmt_chat = mysqli_prepare($link, "
@@ -161,6 +199,8 @@ foreach ($chat_notifications as $n) {
     }
     $senderIconUrls[$senderId] = $senderIconCache[$senderId];
 }
+
+$canShareCalendar = !empty($_SESSION['is_admin']) || !empty($_SESSION['is_super_admin']);
 
 $NAV_BASE = '.';
 

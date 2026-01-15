@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 // セッションをクリアして、プログラム側からの自動入力を防ぐ
 unset($_SESSION['last_saved_id']); 
 unset($_SESSION['data']); 
@@ -37,6 +37,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>試合設定</title>
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <style>
         body { font-family: sans-serif; margin:0; background:#f0f2f5; color: #2c3e50; }
         .app-header { height: 50px; background: #2c3e50; color: white; display: flex; align-items: center; padding: 0 15px; font-weight: bold; }

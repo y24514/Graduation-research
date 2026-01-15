@@ -1,5 +1,5 @@
 <?php 
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
@@ -88,7 +88,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                         }
 
                         mysqli_stmt_close($stmt);
-                        header('Location: home.php');
+
+                        // 管理者はダッシュボードではなくメンバー閲覧（admin.php）へ
+                        $tabId = (string)($_GET['tab_id'] ?? ($_POST['tab_id'] ?? ($GLOBALS['SPORTDATA_TAB_ID'] ?? '')));
+                        if ($tabId !== '' && !preg_match('/^[A-Za-z0-9_-]{8,64}$/', $tabId)) {
+                            $tabId = '';
+                        }
+                        $suffix = $tabId !== '' ? ('?tab_id=' . rawurlencode($tabId)) : '';
+                        if (!empty($_SESSION['is_admin']) || !empty($_SESSION['is_super_admin'])) {
+                            header('Location: admin.php' . $suffix);
+                        } else {
+                            header('Location: home.php' . $suffix);
+                        }
                         exit();
                     } else {
                         $errors[] = 'パスワードが正しくありません';

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 $NAV_BASE = '.';
 require_once __DIR__ . '/header.php';
 
@@ -19,6 +19,7 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 <head>
     <meta charset="UTF-8">
     <title>試合記録</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         :root { --teamA: #3498db; --teamB: #e74c3c; --drawer-w: 280px; --bg-color: #f0f2f5; }

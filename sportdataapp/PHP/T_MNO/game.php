@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 
 // 共通ナビ用：アクセスURLに応じてPHPルートへの相対パスを切り替える
 // - /PHP/T_MNO/* で開いている場合: ..
@@ -95,6 +95,7 @@ $acts = ['サービスエース', 'スマッシュ', 'ボレー', 'ストロー�
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>試合記録</title>
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <style>
         body { font-family: sans-serif; margin:0; background:#f0f2f5; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         .app-header { height: 45px; background: #2c3e50; color: white; display: flex; align-items: center; padding: 0 15px; flex-shrink: 0; }

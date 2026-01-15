@@ -5,6 +5,29 @@ let isEditMode = false;
 let editingDiaryId = null;
 let pendingDeleteDiaryId = null;
 
+// タブ別セッション対応: tab_id をAJAXにも付与する
+function getTabId() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const tabId = params.get('tab_id');
+        return tabId ? String(tabId) : '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function appendTabIdToUrl(url) {
+    const tabId = getTabId();
+    if (!tabId) return url;
+    return url + (url.includes('?') ? '&' : '?') + 'tab_id=' + encodeURIComponent(tabId);
+}
+
+function appendTabIdToBody(body) {
+    const tabId = getTabId();
+    if (!tabId) return body;
+    return body + '&tab_id=' + encodeURIComponent(tabId);
+}
+
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', function() {
     // 検索ボックスのイベントリスナー
@@ -112,12 +135,12 @@ function confirmDeleteDiary() {
     }
 
     // サーバーに送信
-    fetch('diary_api.php', {
+    fetch(appendTabIdToUrl('diary_api.php'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'action=delete&id=' + id
+        body: appendTabIdToBody('action=delete&id=' + encodeURIComponent(id))
     })
     .then(response => response.json())
     .then(data => {
@@ -202,7 +225,7 @@ function editDiary(id) {
     editingDiaryId = id;
 
     // サーバーから日記データを取得
-    fetch('diary_api.php?action=get&id=' + id)
+    fetch(appendTabIdToUrl('diary_api.php?action=get&id=' + encodeURIComponent(id)))
     .then(response => response.json())
     .then(data => {
         if (data.success) {
@@ -286,8 +309,10 @@ function saveDiary() {
         formData += '&id=' + editingDiaryId;
     }
 
+    formData = appendTabIdToBody(formData);
+
     // サーバーに送信
-    fetch('diary_api.php', {
+    fetch(appendTabIdToUrl('diary_api.php'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -334,6 +359,117 @@ function deleteDiary(id) {
     }
 
     openDeleteConfirmModal(id);
+}
+
+// 日記を管理者に提出/取消
+function toggleSubmitDiary(id) {
+    const card = document.querySelector('.diary-card[data-id="' + id + '"]');
+    const btn = card ? card.querySelector('button[data-submit-btn="1"]') : null;
+    if (!btn) {
+        alert('提出ボタンが見つかりません');
+        return;
+    }
+
+    const isSubmitted = (btn.dataset.submitted === '1');
+    const action = isSubmitted ? 'unsubmit' : 'submit';
+
+    btn.disabled = true;
+
+    fetch(appendTabIdToUrl('diary_api.php'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: appendTabIdToBody('action=' + encodeURIComponent(action) + '&id=' + encodeURIComponent(id))
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data || !data.success) {
+            alert((data && data.message) ? data.message : '更新に失敗しました');
+            btn.disabled = false;
+            return;
+        }
+
+        const nowSubmitted = !isSubmitted;
+        btn.dataset.submitted = nowSubmitted ? '1' : '0';
+        btn.title = nowSubmitted ? '提出を取り消す' : '管理者に提出';
+
+        // バッジ更新
+        const dateRow = card ? card.querySelector('.diary-card-date') : null;
+        const badge = dateRow ? dateRow.querySelector('.submit-badge') : null;
+        if (nowSubmitted) {
+            if (!badge && dateRow) {
+                const b = document.createElement('span');
+                b.className = 'submit-badge';
+                b.textContent = '提出済み';
+                dateRow.appendChild(b);
+            }
+            showMessage('管理者に提出しました', 'success');
+        } else {
+            if (badge) badge.remove();
+            showMessage('提出を取り消しました', 'success');
+        }
+
+        btn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました');
+        btn.disabled = false;
+    });
+}
+
+// 提出された日記に対する管理者フィードバック保存
+function saveDiaryFeedback(id) {
+    const textarea = document.getElementById('feedbackText-' + id);
+    const btn = document.getElementById('feedbackBtn-' + id);
+    const meta = document.getElementById('feedbackMeta-' + id);
+
+    if (!textarea || !btn) {
+        alert('フィードバック入力欄が見つかりません');
+        return;
+    }
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '保存中...';
+
+    const feedback = textarea.value || '';
+    const body = appendTabIdToBody(
+        'action=feedback&id=' + encodeURIComponent(id) + '&feedback=' + encodeURIComponent(feedback)
+    );
+
+    fetch(appendTabIdToUrl('diary_api.php'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data || !data.success) {
+            alert((data && data.message) ? data.message : '保存に失敗しました');
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+        }
+
+        showMessage('フィードバックを保存しました', 'success');
+        if (meta) {
+            const now = new Date();
+            meta.textContent = '最終更新: ' + now.toLocaleString('ja-JP');
+        }
+
+        btn.disabled = false;
+        btn.textContent = originalText;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました');
+        btn.disabled = false;
+        btn.textContent = originalText;
+    });
 }
 
 // 検索・フィルタリング機能

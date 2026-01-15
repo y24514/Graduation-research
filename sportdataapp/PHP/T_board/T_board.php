@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 $NAV_BASE = '..';
 require_once __DIR__ . '/../header.php';
 ?>
@@ -9,6 +9,7 @@ require_once __DIR__ . '/../header.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sports Analytics App</title>
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <style>
         :root {

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン - Sports Analytics App</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -147,7 +148,8 @@
                             </div>
                         </div>
 
-                        <a href="reg.php" class="btn-register">
+                        <?php $tabId = (string)($_GET['tab_id'] ?? ''); ?>
+                        <a href="reg.php<?= $tabId !== '' ? ('?tab_id=' . urlencode($tabId)) : '' ?>" class="btn-register">
                             <i class="fas fa-user-plus"></i>
                             <span>新規登録はこちら</span>
                         </a>

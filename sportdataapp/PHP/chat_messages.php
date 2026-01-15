@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
     http_response_code(401);

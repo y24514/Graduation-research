@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日記 - Sports Analytics App</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/site.css">
     <link rel="stylesheet" href="../css/diary.css">
 </head>
@@ -32,6 +33,50 @@
             新しい日記を書く
         </button>
     </div>
+
+    <?php if (!empty($isAdminUser) && !empty($hasDiarySubmitColumns)): ?>
+    <section class="submitted-section" aria-label="提出された日記">
+        <div class="submitted-header">
+            <h2 class="submitted-title">提出された日記</h2>
+            <p class="submitted-sub">メンバーが「管理者に提出」した日記が表示されます</p>
+        </div>
+        <?php if (empty($submittedDiaries)): ?>
+            <div class="submitted-empty">提出された日記はまだありません</div>
+        <?php else: ?>
+            <div class="submitted-grid">
+                <?php foreach ($submittedDiaries as $sd): ?>
+                    <div class="submitted-card">
+                        <div class="submitted-meta">
+                            <div class="submitted-user"><?= htmlspecialchars($sd['user_name'] ?? $sd['user_id'] ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+                            <div class="submitted-date"><?= htmlspecialchars(date('Y年m月d日', strtotime($sd['diary_date'])), ENT_QUOTES, 'UTF-8') ?></div>
+                        </div>
+                        <?php if (!empty($sd['title'])): ?>
+                        <div class="submitted-titleline"><?= htmlspecialchars($sd['title'], ENT_QUOTES, 'UTF-8') ?></div>
+                        <?php endif; ?>
+                        <div class="submitted-content"><?= nl2br(htmlspecialchars($sd['content'], ENT_QUOTES, 'UTF-8')) ?></div>
+
+                        <?php if (!empty($hasDiaryFeedbackColumns)): ?>
+                            <div class="submitted-feedback">
+                                <div class="submitted-feedback-label">フィードバック</div>
+                                <textarea class="submitted-feedback-input" id="feedbackText-<?= (int)$sd['id'] ?>" placeholder="ここにフィードバックを入力..." rows="3"><?= htmlspecialchars((string)($sd['admin_feedback'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
+                                <div class="submitted-feedback-actions">
+                                    <button type="button" class="submitted-feedback-btn" id="feedbackBtn-<?= (int)$sd['id'] ?>" onclick="saveDiaryFeedback(<?= (int)$sd['id'] ?>)">保存</button>
+                                    <div class="submitted-feedback-meta" id="feedbackMeta-<?= (int)$sd['id'] ?>">
+                                        <?php if (!empty($sd['admin_feedback_at'])): ?>
+                                            最終更新: <?= htmlspecialchars((string)$sd['admin_feedback_at'], ENT_QUOTES, 'UTF-8') ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="submitted-feedback-note">フィードバック機能を使うにはDBに [sportdataapp/db/add_diary_admin_feedback.sql] を適用してください。</div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </section>
+    <?php endif; ?>
     
     <!-- 検索・フィルター -->
     <div class="diary-filters">
@@ -91,8 +136,19 @@
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                         <?= date('Y年m月d日', strtotime($diary['diary_date'])) ?>
+                        <?php if (!empty($hasDiarySubmitColumns) && !empty($diary['submitted_to_admin'])): ?>
+                            <span class="submit-badge">提出済み</span>
+                        <?php endif; ?>
                     </div>
                     <div class="diary-card-actions">
+                        <?php if (!empty($canSubmitDiaryToAdmin) && !empty($hasDiarySubmitColumns)): ?>
+                        <button class="btn-icon" data-submit-btn="1" data-submitted="<?= !empty($diary['submitted_to_admin']) ? '1' : '0' ?>" onclick="toggleSubmitDiary(<?= $diary['id'] ?>)" title="管理者に提出">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13"></path>
+                                <path d="M22 2L15 22l-4-9-9-4 20-7z"></path>
+                            </svg>
+                        </button>
+                        <?php endif; ?>
                         <button class="btn-icon" onclick="editDiary(<?= $diary['id'] ?>)" title="編集">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -114,6 +170,13 @@
                     <?= nl2br(htmlspecialchars(mb_substr($diary['content'], 0, 150, 'UTF-8'), ENT_QUOTES, 'UTF-8')) ?>
                     <?= mb_strlen($diary['content'], 'UTF-8') > 150 ? '...' : '' ?>
                 </div>
+
+                <?php if (!empty($hasDiaryFeedbackColumns) && !empty($diary['admin_feedback'])): ?>
+                    <div class="diary-admin-feedback">
+                        <div class="diary-admin-feedback-label">管理者フィードバック</div>
+                        <div class="diary-admin-feedback-body"><?= nl2br(htmlspecialchars((string)$diary['admin_feedback'], ENT_QUOTES, 'UTF-8')) ?></div>
+                    </div>
+                <?php endif; ?>
                 <?php if (!empty($diary['tags'])): ?>
                 <div class="diary-card-tags">
                     <?php foreach (explode(',', $diary['tags']) as $tag): ?>

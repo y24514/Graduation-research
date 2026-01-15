@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 
 require_once __DIR__ . '/db.php'; // DB共通ファイルを読み込む
 
@@ -100,6 +100,7 @@ $winnerTeam = ($d['gamesA'] > $d['gamesB']) ? $d['teamA'] : $d['teamB'];
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>分析レポート</title>
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: sans-serif; margin:0; background:#f4f7f9; color: #333; }

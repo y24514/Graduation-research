@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 require_once __DIR__ . '/basketball_logic/analyze.php';
 $game = $_SESSION['game'] ?? null;
 if ($game === null) {
@@ -25,6 +25,7 @@ $qB = $analysis['B']['points'];
 <head>
     <meta charset="UTF-8">
     <title>分析結果 - Q<?= $q ?></title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: sans-serif; background: #eee; padding: 0; margin: 0; }

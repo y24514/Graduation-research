@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホームページ</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="../css/site.css">
 
     <script>
         const eventsFromPHP = <?= json_encode($records, JSON_UNESCAPED_UNICODE); ?>;
         const showLoader = <?= $showLoader ? 'true' : 'false' ?>;
+        const canShareCalendar = <?= !empty($canShareCalendar) ? 'true' : 'false' ?>;
     </script>
 </head>
 <body>
@@ -294,6 +296,16 @@
                     <span id="event-end-date"></span>
                 </div>
             </div>
+
+            <?php if (!empty($canShareCalendar)): ?>
+            <div class="event-form-group">
+                <label>共有</label>
+                <label class="event-share-row">
+                    <input type="checkbox" id="event-is-shared">
+                    <span>グループ全員に共有する</span>
+                </label>
+            </div>
+            <?php endif; ?>
         </div>
         <div class="event-modal-footer">
             <button class="event-btn event-btn-cancel" onclick="closeEventModal()">キャンセル</button>
@@ -441,6 +453,9 @@ function openEventModal(info) {
     document.getElementById('event-end-date').textContent = endDate.toLocaleDateString('ja-JP');
     document.getElementById('event-title').value = '';
     document.getElementById('event-memo').value = '';
+
+    const sharedEl = document.getElementById('event-is-shared');
+    if (sharedEl) sharedEl.checked = false;
     
     modal.style.display = 'flex';
     setTimeout(() => {
@@ -469,18 +484,33 @@ function submitEvent() {
     }
     
     if (currentEventInfo) {
+        const sharedEl = document.getElementById('event-is-shared');
+        const isShared = (typeof canShareCalendar !== 'undefined' && canShareCalendar && sharedEl && sharedEl.checked) ? '1' : '';
+
         fetch('../PHP/calendarsave.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: new URLSearchParams({
+            body: new URLSearchParams(Object.assign({
                 title: title,
                 memo: memo,
                 startdate: currentEventInfo.startStr,
                 enddate: currentEventInfo.endStr
-            })
-        }).then(() => {
+            }, isShared ? { is_shared: '1' } : {}))
+        })
+        .then(async (res) => {
+            const text = await res.text();
+            if (!res.ok) {
+                throw new Error(text || '保存に失敗しました');
+            }
+
+            // 共有のDB未更新などはここで止める
+            if (text.includes('未更新') || text.includes('エラー') || text.includes('未ログイン')) {
+                alert(text);
+                return;
+            }
+
             // カレンダーにイベントを追加
             if (window.calendarInstance) {
                 window.calendarInstance.addEvent({
@@ -490,6 +520,9 @@ function submitEvent() {
                 });
             }
             closeEventModal();
+        })
+        .catch((err) => {
+            alert(err?.message || '保存に失敗しました');
         });
     }
 }

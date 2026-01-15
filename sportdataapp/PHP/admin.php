@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
     header('Location: login.php');
@@ -45,35 +45,37 @@ try {
     $hasAdminRoleRequestsTable = false;
 }
 
+// お問い合わせテーブル存在チェック
+$hasInquiriesTable = false;
+try {
+    $tblRes = mysqli_query(
+        $link,
+        "SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'inquiries_tbl' LIMIT 1"
+    );
+    if ($tblRes && mysqli_num_rows($tblRes) > 0) {
+        $hasInquiriesTable = true;
+    }
+    if ($tblRes) {
+        mysqli_free_result($tblRes);
+    }
+} catch (Throwable $e) {
+    $hasInquiriesTable = false;
+}
+
 // CSRFトークン
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 $csrfToken = (string)$_SESSION['csrf_token'];
 
-// スーパー管理者は全groupを選択できる
-$availableGroups = [];
-if ($isSuperAdmin) {
-    $res = mysqli_query($link, 'SELECT DISTINCT group_id FROM login_tbl ORDER BY group_id');
-    if ($res) {
-        while ($r = mysqli_fetch_assoc($res)) {
-            if (!empty($r['group_id'])) $availableGroups[] = (string)$r['group_id'];
-        }
-        mysqli_free_result($res);
-    }
-}
-
 $group_id = (string)$_SESSION['group_id'];
-$requestedGroupId = (string)($_GET['group_id'] ?? '');
-if ($isSuperAdmin && $requestedGroupId !== '') {
-    // 存在するgroupのみ許可
-    if (in_array($requestedGroupId, $availableGroups, true)) {
-        $group_id = $requestedGroupId;
-    }
-}
 
 // スーパー管理者: 管理者権限(is_admin)の付与/解除
 $adminActionMessage = '';
+if (!empty($_SESSION['calendar_flash'])) {
+    $adminActionMessage = (string)$_SESSION['calendar_flash'];
+    unset($_SESSION['calendar_flash']);
+}
 if ($isSuperAdmin && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $postedToken = (string)($_POST['csrf_token'] ?? '');
     if (!hash_equals($csrfToken, $postedToken)) {
@@ -154,36 +156,38 @@ if ($isSuperAdmin && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     }
                 }
             }
-        } else {
-            // 既存: 管理者権限(is_admin)の付与/解除
-            $targetGroupId = (string)($_POST['target_group_id'] ?? '');
-            $targetUserId = (string)($_POST['target_user_id'] ?? '');
-            $makeAdmin = !empty($_POST['make_admin']) ? 1 : 0;
-
-            if ($targetGroupId === '' || $targetUserId === '') {
-                $adminActionMessage = '対象ユーザーが不正です。';
+        } elseif ($adminAction === 'reply_inquiry') {
+            if (!$hasInquiriesTable) {
+                $adminActionMessage = 'お問い合わせテーブルが見つかりません。';
             } else {
-                // 存在チェック（対象が本当にそのgroupにいるか）
-                $check = mysqli_prepare($link, 'SELECT 1 FROM login_tbl WHERE group_id = ? AND user_id = ? LIMIT 1');
-                mysqli_stmt_bind_param($check, 'ss', $targetGroupId, $targetUserId);
-                mysqli_stmt_execute($check);
-                $checkRes = mysqli_stmt_get_result($check);
-                $exists = ($checkRes && mysqli_fetch_row($checkRes)) ? true : false;
-                mysqli_stmt_close($check);
+                $inquiryId = (int)($_POST['inquiry_id'] ?? 0);
+                $response = trim((string)($_POST['response'] ?? ''));
 
-                if (!$exists) {
-                    $adminActionMessage = '対象ユーザーが見つかりません。';
+                if ($inquiryId <= 0) {
+                    $adminActionMessage = '問い合わせの指定が不正です。';
+                } elseif ($response === '') {
+                    $adminActionMessage = '返信内容は必須です。';
                 } else {
-                    $upd = mysqli_prepare($link, 'UPDATE login_tbl SET is_admin = ? WHERE group_id = ? AND user_id = ? LIMIT 1');
-                    mysqli_stmt_bind_param($upd, 'iss', $makeAdmin, $targetGroupId, $targetUserId);
-                    if (mysqli_stmt_execute($upd)) {
-                        $adminActionMessage = $makeAdmin ? '管理者権限を付与しました。' : '管理者権限を解除しました。';
+                    $responderUserId = (string)($_SESSION['user_id'] ?? '');
+                    $stmt = mysqli_prepare(
+                        $link,
+                        'UPDATE inquiries_tbl SET status = 1, response = ?, responded_by_user_id = ?, responded_at = NOW() WHERE id = ? LIMIT 1'
+                    );
+                    if ($stmt) {
+                        mysqli_stmt_bind_param($stmt, 'ssi', $response, $responderUserId, $inquiryId);
+                        if (mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) > 0) {
+                            $adminActionMessage = '問い合わせに返信しました。';
+                        } else {
+                            $adminActionMessage = '返信に失敗しました（対象が見つからない可能性があります）。';
+                        }
+                        mysqli_stmt_close($stmt);
                     } else {
-                        $adminActionMessage = '更新に失敗しました。';
+                        $adminActionMessage = '返信準備に失敗しました。';
                     }
-                    mysqli_stmt_close($upd);
                 }
             }
+        } else {
+            $adminActionMessage = 'この操作は許可されていません。';
         }
     }
 }
@@ -193,9 +197,8 @@ $pendingAdminRoleRequests = [];
 if ($isSuperAdmin && $hasAdminRoleRequestsTable) {
     $stmt = mysqli_prepare(
         $link,
-        "SELECT id, group_id, user_id, name, requested_at FROM admin_role_requests WHERE group_id = ? AND status = 'pending' ORDER BY requested_at DESC LIMIT 50"
+        "SELECT id, group_id, user_id, name, requested_at FROM admin_role_requests WHERE status = 'pending' ORDER BY requested_at DESC LIMIT 200"
     );
-    mysqli_stmt_bind_param($stmt, 's', $group_id);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     while ($res && ($row = mysqli_fetch_assoc($res))) {
@@ -204,13 +207,45 @@ if ($isSuperAdmin && $hasAdminRoleRequestsTable) {
     mysqli_stmt_close($stmt);
 }
 
+// スーパー管理者: お問い合わせ一覧（全ユーザー・最新200件）
+$inquiries = [];
+if ($isSuperAdmin && $hasInquiriesTable) {
+    $stmt = mysqli_prepare(
+        $link,
+        'SELECT id, group_id, user_id, category, subject, message, status, response, responded_by_user_id, created_at, responded_at FROM inquiries_tbl ORDER BY created_at DESC LIMIT 200'
+    );
+    if ($stmt) {
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        while ($res && ($row = mysqli_fetch_assoc($res))) {
+            $inquiries[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
+
+// スーパー管理者は「問い合わせ/申請受理」だけを表示（閲覧メンバー等は不要）
+if ($isSuperAdmin) {
+    mysqli_close($link);
+    $NAV_BASE = '.';
+    require_once __DIR__ . '/../HTML/admin.html.php';
+    exit;
+}
+
 require_once __DIR__ . '/user_icon_helper.php';
 
 // メンバー一覧（同じgroup）
 $members = [];
 $memberIconCache = [];
-$stmt = mysqli_prepare($link, 'SELECT user_id, name, position, is_admin FROM login_tbl WHERE group_id = ? ORDER BY name');
-mysqli_stmt_bind_param($stmt, 's', $group_id);
+
+{
+    // 管理者（先生/顧問）の閲覧対象から、管理者ユーザーは除外する
+    $stmt = mysqli_prepare(
+        $link,
+        'SELECT user_id, name, position, is_admin FROM login_tbl WHERE group_id = ? AND COALESCE(is_admin, 0) = 0 AND COALESCE(is_super_admin, 0) = 0 ORDER BY name'
+    );
+    mysqli_stmt_bind_param($stmt, 's', $group_id);
+}
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 while ($row = mysqli_fetch_assoc($result)) {
@@ -225,6 +260,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 mysqli_stmt_close($stmt);
 
 $selectedUserId = (string)($_GET['user_id'] ?? '');
+$selectedUserId = $selectedUserId !== '' ? $selectedUserId : (string)($_POST['user_id'] ?? '');
 if ($selectedUserId === '' && !empty($members)) {
     $selectedUserId = (string)$members[0]['user_id'];
 }
@@ -248,19 +284,62 @@ if (empty($members)) {
     $selectedUserId = '';
 }
 
-$diaries = [];
-if ($selectedMember !== null) {
-    $stmt = mysqli_prepare(
+// 管理画面に出す日記は「提出された日記（通知）」のみにする
+$hasDiarySubmitColumns = false;
+$hasDiarySubmitAtColumn = false;
+try {
+    $chk = mysqli_prepare(
         $link,
-        'SELECT id, diary_date, title, content, tags, created_at, updated_at FROM diary_tbl WHERE group_id = ? AND user_id = ? ORDER BY diary_date DESC, created_at DESC, id DESC LIMIT 50'
+        "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'diary_tbl' AND COLUMN_NAME IN ('submitted_to_admin','submitted_at')"
     );
-    mysqli_stmt_bind_param($stmt, 'ss', $group_id, $selectedUserId);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    while ($row = mysqli_fetch_assoc($result)) {
-        $diaries[] = $row;
+    if ($chk) {
+        mysqli_stmt_execute($chk);
+        $res = mysqli_stmt_get_result($chk);
+        while ($res && ($r = mysqli_fetch_assoc($res))) {
+            if (($r['COLUMN_NAME'] ?? '') === 'submitted_to_admin') $hasDiarySubmitColumns = true;
+            if (($r['COLUMN_NAME'] ?? '') === 'submitted_at') $hasDiarySubmitAtColumn = true;
+        }
+        mysqli_stmt_close($chk);
     }
-    mysqli_stmt_close($stmt);
+} catch (Throwable $e) {
+    $hasDiarySubmitColumns = false;
+    $hasDiarySubmitAtColumn = false;
+}
+
+$submittedDiaryCount = 0;
+$submittedDiaryNotifications = [];
+if ($hasDiarySubmitColumns) {
+    // 件数
+    $cnt = mysqli_prepare($link, 'SELECT COUNT(*) AS cnt FROM diary_tbl WHERE group_id = ? AND submitted_to_admin = 1');
+    if ($cnt) {
+        mysqli_stmt_bind_param($cnt, 's', $group_id);
+        mysqli_stmt_execute($cnt);
+        $rs = mysqli_stmt_get_result($cnt);
+        if ($rs && ($row = mysqli_fetch_assoc($rs))) {
+            $submittedDiaryCount = (int)($row['cnt'] ?? 0);
+        }
+        mysqli_stmt_close($cnt);
+    }
+
+    // 最新（通知用）
+    $sel = "SELECT d.id, d.diary_date, d.title, d.content, d.tags, d.user_id, COALESCE(l.name, d.user_id) AS user_name";
+    if ($hasDiarySubmitAtColumn) {
+        $sel .= ", d.submitted_at";
+    }
+    $sel .= " FROM diary_tbl d LEFT JOIN login_tbl l ON l.group_id = d.group_id AND l.user_id = d.user_id";
+    $sel .= " WHERE d.group_id = ? AND d.submitted_to_admin = 1";
+    $sel .= " ORDER BY " . ($hasDiarySubmitAtColumn ? "d.submitted_at DESC" : "d.diary_date DESC") . ", d.id DESC LIMIT 20";
+
+    $st = mysqli_prepare($link, $sel);
+    if ($st) {
+        mysqli_stmt_bind_param($st, 's', $group_id);
+        mysqli_stmt_execute($st);
+        $rs = mysqli_stmt_get_result($st);
+        while ($rs && ($row = mysqli_fetch_assoc($rs))) {
+            $submittedDiaryNotifications[] = $row;
+        }
+        mysqli_stmt_close($st);
+    }
 }
 
 $swimRecent = [];
@@ -309,21 +388,7 @@ if ($selectedMember !== null) {
     mysqli_stmt_close($stmt);
 }
 
-// カレンダー（今後10件）
-$calendarUpcoming = [];
-if ($selectedMember !== null) {
-    $stmt = mysqli_prepare(
-        $link,
-        'SELECT title, startdate, enddate FROM calendar_tbl WHERE group_id = ? AND user_id = ? AND startdate >= CURDATE() ORDER BY startdate ASC LIMIT 10'
-    );
-    mysqli_stmt_bind_param($stmt, 'ss', $group_id, $selectedUserId);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    while ($row = mysqli_fetch_assoc($result)) {
-        $calendarUpcoming[] = $row;
-    }
-    mysqli_stmt_close($stmt);
-}
+
 
 // バスケ（gamesテーブルに group_id があれば group で絞る。無ければ全体の最新10件）
 $basketballRecent = [];

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session_bootstrap.php';
 require_once __DIR__ . '/db.php';
 
 // 共通ナビ用：アクセスURLに応じてPHPルートへの相対パスを切り替える
@@ -17,6 +17,7 @@ $games = getAllGames($db);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>試合履歴一覧</title>
+    <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <style>
         body { font-family: sans-serif; margin:0; background:#f4f7f9; color: #333; }
         .app-header { height: 60px; background: #2c3e50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; position: sticky; top:0; z-index: 100; }

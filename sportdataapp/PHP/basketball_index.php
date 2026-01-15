@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 require_once __DIR__ . "/basketball_config/db.php";
 
 $dbError = '';
@@ -39,6 +39,7 @@ $noTeams = empty($teams);
 <head>
     <meta charset="UTF-8">
     <title>試合設定</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: sans-serif; background: #f2f2f2; margin: 0; padding: 0; }

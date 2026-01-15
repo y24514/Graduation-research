@@ -182,6 +182,157 @@ body::-webkit-scrollbar-thumb {
     margin-bottom: 40px;
 }
 
+/* 提出された日記（管理者用） */
+.submitted-section {
+    background: white;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.submitted-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.submitted-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.submitted-sub {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.submitted-empty {
+    color: var(--muted);
+    padding: 10px 0;
+}
+
+.submitted-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
+}
+
+.submitted-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    background: var(--card);
+}
+
+.submitted-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.submitted-user {
+    font-weight: 800;
+    color: var(--text);
+}
+
+.submitted-date {
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.submitted-titleline {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.submitted-content {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.submitted-feedback {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px dashed var(--border);
+}
+
+.submitted-feedback-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.submitted-feedback-input {
+    width: 100%;
+    resize: vertical;
+    min-height: 86px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: white;
+    color: var(--text);
+    outline: none;
+    transition: var(--transition);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.submitted-feedback-input:focus {
+    border-color: var(--primary);
+}
+
+.submitted-feedback-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.submitted-feedback-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 2px solid var(--primary);
+    background: var(--primary);
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.submitted-feedback-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.submitted-feedback-meta {
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.submitted-feedback-note {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
 /* 月ごとの区切り */
 .diary-month {
     margin-bottom: 32px;
@@ -239,6 +390,18 @@ body::-webkit-scrollbar-thumb {
     height: 16px;
 }
 
+.submit-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--primary);
+    background: var(--bg);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .diary-card-actions {
     display: flex;
     gap: 8px;
@@ -293,6 +456,27 @@ body::-webkit-scrollbar-thumb {
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.diary-admin-feedback {
+    margin: 10px 0 14px;
+    padding: 12px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    background: var(--bg);
+}
+
+.diary-admin-feedback-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.diary-admin-feedback-body {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 .diary-card-tags {

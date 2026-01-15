@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 /* =====================
    セッションチェック
@@ -32,6 +32,41 @@ mysqli_set_charset($link, 'utf8');
 $user_id = $_SESSION['user_id'];
 $group_id = $_SESSION['group_id'];
 $userName = $_SESSION['name'] ?? '';
+
+$isAdminUser = !empty($_SESSION['is_admin']) || !empty($_SESSION['is_super_admin']);
+$canSubmitDiaryToAdmin = !$isAdminUser;
+
+// 互換: DBに提出用カラムがある場合のみ機能ON
+$hasDiarySubmitColumns = false;
+$hasDiarySubmitAtColumn = false;
+// 互換: 管理者フィードバック用カラム
+$hasDiaryFeedbackColumn = false;
+$hasDiaryFeedbackAtColumn = false;
+$hasDiaryFeedbackByColumn = false;
+try {
+    $chk = mysqli_prepare(
+        $link,
+        "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'diary_tbl' AND COLUMN_NAME IN ('submitted_to_admin','submitted_at','admin_feedback','admin_feedback_at','admin_feedback_by_user_id')"
+    );
+    if ($chk) {
+        mysqli_stmt_execute($chk);
+        $res = mysqli_stmt_get_result($chk);
+        while ($res && ($r = mysqli_fetch_assoc($res))) {
+            if (($r['COLUMN_NAME'] ?? '') === 'submitted_to_admin') $hasDiarySubmitColumns = true;
+            if (($r['COLUMN_NAME'] ?? '') === 'submitted_at') $hasDiarySubmitAtColumn = true;
+            if (($r['COLUMN_NAME'] ?? '') === 'admin_feedback') $hasDiaryFeedbackColumn = true;
+            if (($r['COLUMN_NAME'] ?? '') === 'admin_feedback_at') $hasDiaryFeedbackAtColumn = true;
+            if (($r['COLUMN_NAME'] ?? '') === 'admin_feedback_by_user_id') $hasDiaryFeedbackByColumn = true;
+        }
+        mysqli_stmt_close($chk);
+    }
+} catch (Throwable $e) {
+    $hasDiarySubmitColumns = false;
+    $hasDiarySubmitAtColumn = false;
+    $hasDiaryFeedbackColumn = false;
+    $hasDiaryFeedbackAtColumn = false;
+    $hasDiaryFeedbackByColumn = false;
+}
 
 $success_message = '';
 $error_message = '';
@@ -78,7 +113,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_diary'])) {
    日記一覧取得
 ===================== */
 $diaries = [];
-$stmt = mysqli_prepare($link, "SELECT id, diary_date, title, content, tags, created_at, updated_at FROM diary_tbl WHERE group_id=? AND user_id=? ORDER BY diary_date DESC, created_at DESC, id DESC");
+$select = "SELECT id, diary_date, title, content, tags, created_at, updated_at";
+if ($hasDiarySubmitColumns) {
+    $select .= ", submitted_to_admin";
+}
+if ($hasDiarySubmitAtColumn) {
+    $select .= ", submitted_at";
+}
+$hasDiaryFeedbackColumns = $hasDiaryFeedbackColumn; // テンプレート用
+if ($hasDiaryFeedbackColumn) {
+    $select .= ", admin_feedback";
+}
+if ($hasDiaryFeedbackAtColumn) {
+    $select .= ", admin_feedback_at";
+}
+if ($hasDiaryFeedbackByColumn) {
+    $select .= ", admin_feedback_by_user_id";
+}
+$select .= " FROM diary_tbl WHERE group_id=? AND user_id=? ORDER BY diary_date DESC, created_at DESC, id DESC";
+$stmt = mysqli_prepare($link, $select);
 mysqli_stmt_bind_param($stmt, "ss", $group_id, $user_id);
 if (mysqli_stmt_execute($stmt)) {
     $result = mysqli_stmt_get_result($stmt);
@@ -87,6 +140,38 @@ if (mysqli_stmt_execute($stmt)) {
     }
 }
 mysqli_stmt_close($stmt);
+
+// 管理者: 提出された日記一覧
+$submittedDiaries = [];
+if ($isAdminUser && $hasDiarySubmitColumns) {
+    $sel = "SELECT d.id, d.diary_date, d.title, d.content, d.tags, d.user_id, COALESCE(l.name, d.user_id) AS user_name";
+    if ($hasDiarySubmitAtColumn) {
+        $sel .= ", d.submitted_at";
+    }
+    if ($hasDiaryFeedbackColumn) {
+        $sel .= ", d.admin_feedback";
+    }
+    if ($hasDiaryFeedbackAtColumn) {
+        $sel .= ", d.admin_feedback_at";
+    }
+    if ($hasDiaryFeedbackByColumn) {
+        $sel .= ", d.admin_feedback_by_user_id";
+    }
+    $sel .= " FROM diary_tbl d LEFT JOIN login_tbl l ON l.group_id = d.group_id AND l.user_id = d.user_id";
+    $sel .= " WHERE d.group_id = ? AND d.submitted_to_admin = 1";
+    $sel .= " ORDER BY " . ($hasDiarySubmitAtColumn ? "d.submitted_at DESC" : "d.diary_date DESC") . ", d.id DESC LIMIT 200";
+    $st = mysqli_prepare($link, $sel);
+    if ($st) {
+        mysqli_stmt_bind_param($st, 's', $group_id);
+        if (mysqli_stmt_execute($st)) {
+            $rs = mysqli_stmt_get_result($st);
+            while ($rs && ($row = mysqli_fetch_assoc($rs))) {
+                $submittedDiaries[] = $row;
+            }
+        }
+        mysqli_stmt_close($st);
+    }
+}
 
 $NAV_BASE = '.';
 

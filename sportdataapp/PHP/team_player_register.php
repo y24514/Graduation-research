@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 // バスケ用: チーム・選手登録（JSで表示・登録）
 $NAV_BASE = '.';

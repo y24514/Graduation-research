@@ -916,6 +916,23 @@ body {
   min-height: 80px;
 }
 
+.event-share-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.event-share-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
 .event-date-range {
   display: flex;
   align-items: center;

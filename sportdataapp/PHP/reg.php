@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/session_bootstrap.php';
 
 $usr = 'y24514';
 $pwd = 'Kr96main0303';
