@@ -173,7 +173,17 @@
 
                 <?php if (!empty($hasDiaryFeedbackColumns) && !empty($diary['admin_feedback'])): ?>
                     <div class="diary-admin-feedback">
-                        <div class="diary-admin-feedback-label">管理者フィードバック</div>
+                        <div class="diary-admin-feedback-label">
+                            <?php
+                                $feedbackByName = (string)($diary['admin_feedback_by_user_name'] ?? '');
+                                if ($feedbackByName === '') {
+                                    $feedbackByName = (string)($diary['admin_feedback_by_user_id'] ?? '');
+                                }
+                            ?>
+                            <?= $feedbackByName !== ''
+                                ? htmlspecialchars($feedbackByName, ENT_QUOTES, 'UTF-8') . ' からのフィードバック'
+                                : 'フィードバック' ?>
+                        </div>
                         <div class="diary-admin-feedback-body"><?= nl2br(htmlspecialchars((string)$diary['admin_feedback'], ENT_QUOTES, 'UTF-8')) ?></div>
                     </div>
                 <?php endif; ?>

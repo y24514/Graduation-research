@@ -113,24 +113,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_diary'])) {
    日記一覧取得
 ===================== */
 $diaries = [];
-$select = "SELECT id, diary_date, title, content, tags, created_at, updated_at";
+$select = "SELECT d.id, d.diary_date, d.title, d.content, d.tags, d.created_at, d.updated_at";
 if ($hasDiarySubmitColumns) {
-    $select .= ", submitted_to_admin";
+    $select .= ", d.submitted_to_admin";
 }
 if ($hasDiarySubmitAtColumn) {
-    $select .= ", submitted_at";
+    $select .= ", d.submitted_at";
 }
 $hasDiaryFeedbackColumns = $hasDiaryFeedbackColumn; // テンプレート用
 if ($hasDiaryFeedbackColumn) {
-    $select .= ", admin_feedback";
+    $select .= ", d.admin_feedback";
 }
 if ($hasDiaryFeedbackAtColumn) {
-    $select .= ", admin_feedback_at";
+    $select .= ", d.admin_feedback_at";
 }
 if ($hasDiaryFeedbackByColumn) {
-    $select .= ", admin_feedback_by_user_id";
+    $select .= ", d.admin_feedback_by_user_id";
+    $select .= ", COALESCE(fb.name, d.admin_feedback_by_user_id) AS admin_feedback_by_user_name";
 }
-$select .= " FROM diary_tbl WHERE group_id=? AND user_id=? ORDER BY diary_date DESC, created_at DESC, id DESC";
+$select .= " FROM diary_tbl d";
+if ($hasDiaryFeedbackByColumn) {
+    $select .= " LEFT JOIN login_tbl fb ON fb.group_id = d.group_id AND fb.user_id = d.admin_feedback_by_user_id";
+}
+$select .= " WHERE d.group_id=? AND d.user_id=? ORDER BY d.diary_date DESC, d.created_at DESC, d.id DESC";
 $stmt = mysqli_prepare($link, $select);
 mysqli_stmt_bind_param($stmt, "ss", $group_id, $user_id);
 if (mysqli_stmt_execute($stmt)) {

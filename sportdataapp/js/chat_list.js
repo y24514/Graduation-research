@@ -4,6 +4,28 @@ let currentChatType = null;
 let currentChatId = null;
 let messageCheckInterval = null;
 
+// タブ別セッション対応: URLの tab_id をAJAXにも付与する
+function getTabId() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('tab_id') || '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function appendTabIdToUrl(url) {
+    const tabId = getTabId();
+    if (!tabId) return url;
+    return url + (url.includes('?') ? '&' : '?') + 'tab_id=' + encodeURIComponent(tabId);
+}
+
+function withTabIdData(data) {
+    const tabId = getTabId();
+    if (!tabId) return data;
+    return Object.assign({}, data || {}, { tab_id: tabId });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // URLパラメータから自動的にチャットを開く
     const urlParams = new URLSearchParams(window.location.search);
@@ -13,8 +35,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (chatType && chatId) {
         // URLパラメータで指定されたチャットを開く
         loadChat(chatType, chatId);
-        // URLをクリーンにする（パラメータを削除）
-        window.history.replaceState({}, '', window.location.pathname);
+        // URLをクリーンにする（type/idのみ削除。tab_idは維持）
+        urlParams.delete('type');
+        urlParams.delete('id');
+        const qs = urlParams.toString();
+        window.history.replaceState({}, '', window.location.pathname + (qs ? ('?' + qs) : ''));
     } else {
         // 最初のチャットを自動選択（オプション）
         const firstChat = document.querySelector('.chat-item');
@@ -45,7 +70,7 @@ function loadChat(type, id) {
         : `type=direct&recipient=${encodeURIComponent(id)}`;
     
     $.ajax({
-        url: `chat_content.php?${params}`,
+        url: appendTabIdToUrl(`chat_content.php?${params}`),
         method: 'GET',
         success: function(response) {
             $('#chatMain').html(response);
@@ -132,12 +157,12 @@ function sendMessage() {
         : `type=direct&recipient=${encodeURIComponent(currentChatId)}`;
     
     $.ajax({
-        url: `chat_content.php?${params}`,
+        url: appendTabIdToUrl(`chat_content.php?${params}`),
         method: 'POST',
-        data: {
+        data: withTabIdData({
             send_message: '1',
             message: message
-        },
+        }),
         success: function(response) {
             $('#chatMain').html(response);
             scrollToBottom();
@@ -170,7 +195,7 @@ function refreshMessages() {
     const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 50;
     
     $.ajax({
-        url: `chat_messages.php?${params}&after_id=${Number.isFinite(lastId) ? lastId : 0}`,
+        url: appendTabIdToUrl(`chat_messages.php?${params}&after_id=${Number.isFinite(lastId) ? lastId : 0}`),
         method: 'GET',
         success: function(response) {
             const html = (response || '').trim();
@@ -282,13 +307,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             $.ajax({
-                url: '../PHP/create_group_ajax.php',
+                url: appendTabIdToUrl('../PHP/create_group_ajax.php'),
                 method: 'POST',
-                data: {
+                data: withTabIdData({
                     group_name: groupName,
                     group_description: groupDescription,
                     members: selectedMembers
-                },
+                }),
                 dataType: 'json',
                 success: function(response) {
                     console.log('Response:', response);
@@ -325,7 +350,7 @@ function loadGroupSettings(chatGroupId) {
     }
     
     $.ajax({
-        url: '../PHP/group_settings_ajax.php?chat_group_id=' + chatGroupId,
+        url: appendTabIdToUrl('../PHP/group_settings_ajax.php?chat_group_id=' + chatGroupId),
         method: 'GET',
         success: function(response) {
             $('#chatMain').html(response);
@@ -351,12 +376,12 @@ function addMember(userId, chatGroupId) {
     }
     
     $.ajax({
-        url: '../PHP/add_member_ajax.php',
+        url: appendTabIdToUrl('../PHP/add_member_ajax.php'),
         method: 'POST',
-        data: {
+        data: withTabIdData({
             user_id: userId,
             chat_group_id: chatGroupId
-        },
+        }),
         dataType: 'json',
         success: function(response) {
             if (response.success) {
@@ -379,12 +404,12 @@ function removeMember(userId, chatGroupId) {
     }
     
     $.ajax({
-        url: '../PHP/remove_member_ajax.php',
+        url: appendTabIdToUrl('../PHP/remove_member_ajax.php'),
         method: 'POST',
-        data: {
+        data: withTabIdData({
             user_id: userId,
             chat_group_id: chatGroupId
-        },
+        }),
         dataType: 'json',
         success: function(response) {
             if (response.success) {
@@ -407,11 +432,11 @@ function deleteGroup(chatGroupId) {
     }
     
     $.ajax({
-        url: '../PHP/delete_group_ajax.php',
+        url: appendTabIdToUrl('../PHP/delete_group_ajax.php'),
         method: 'POST',
-        data: {
+        data: withTabIdData({
             chat_group_id: chatGroupId
-        },
+        }),
         dataType: 'json',
         success: function(response) {
             if (response.success) {
@@ -442,9 +467,9 @@ function markAsRead(type, id) {
     console.log('Mark as read:', data);
     
     $.ajax({
-        url: '../PHP/mark_as_read.php',
+        url: appendTabIdToUrl('../PHP/mark_as_read.php'),
         method: 'POST',
-        data: data,
+        data: withTabIdData(data),
         dataType: 'json',
         success: function(response) {
             console.log('Mark as read response:', response);
@@ -518,11 +543,11 @@ function confirmDelete() {
     }
     
     $.ajax({
-        url: '../PHP/delete_message_ajax.php',
+        url: appendTabIdToUrl('../PHP/delete_message_ajax.php'),
         method: 'POST',
-        data: {
+        data: withTabIdData({
             message_id: pendingDeleteMessageId
-        },
+        }),
         dataType: 'json',
         success: function(response) {
             if (response.success) {

@@ -9,7 +9,7 @@ if ($game === null) {
     echo '<div style="padding:16px; max-width:800px; margin:0 auto;">';
     echo '<h2 style="margin:8px 0;">分析する試合がありません</h2>';
     echo '<p style="margin:8px 0;">先に「試合設定」から試合を開始してください。</p>';
-    echo '<p style="margin:12px 0;"><a href="basketball_index.php" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
+    echo '<p style="margin:12px 0;"><a href="' . htmlspecialchars(sportdata_add_tab_id('basketball_index.php', $__tabId), ENT_QUOTES, 'UTF-8') . '" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
     echo '</div>';
     exit;
 }
@@ -41,8 +41,9 @@ $qB = $analysis['B']['points'];
         th { background: #34495e; color: white; }
         .pts { font-weight: bold; color: #e67e22; }
     </style>
+    <link rel="stylesheet" href="../css/basketball.css">
 </head>
-<body>
+<body class="basketball-page basketball-analysis">
 
 <?php
 $NAV_BASE = '.';
@@ -87,9 +88,9 @@ require_once __DIR__ . '/header.php';
 
 <div style="text-align:center; margin:30px 0;">
     <?php if ($q < 4): ?>
-        <a href="game.php" style="background:#333; color:white; padding:15px 40px; border-radius:10px; text-decoration:none; font-weight:bold;">試合記録に戻る</a>
+        <a href="<?= htmlspecialchars(sportdata_add_tab_id('game.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>" style="background:#333; color:white; padding:15px 40px; border-radius:10px; text-decoration:none; font-weight:bold;">試合記録に戻る</a>
     <?php else: ?>
-        <a href="final.php" style="background:#e74c3c; color:white; padding:15px 40px; border-radius:10px; text-decoration:none; font-weight:bold;">試合終了（最終結果へ）</a>
+        <a href="<?= htmlspecialchars(sportdata_add_tab_id('final.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>" style="background:#e74c3c; color:white; padding:15px 40px; border-radius:10px; text-decoration:none; font-weight:bold;">試合終了（最終結果へ）</a>
     <?php endif; ?>
 </div>
 

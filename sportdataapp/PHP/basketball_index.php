@@ -11,7 +11,12 @@ $showPlayers = isset($_POST['show_players']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['start'])) {
     if (!empty($_POST['state'])) {
         $_SESSION['game'] = json_decode($_POST['state'], true);
-        header("Location: game.php");
+        $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? ($_POST['tab_id'] ?? '')));
+        if ($tabId !== '' && !preg_match('/^[A-Za-z0-9_-]{8,64}$/', $tabId)) {
+            $tabId = '';
+        }
+        $target = 'game.php' . ($tabId !== '' ? ('?tab_id=' . rawurlencode($tabId)) : '');
+        header('Location: ' . $target);
         exit;
     }
 }
@@ -59,8 +64,9 @@ $noTeams = empty($teams);
         .btn-green { background: #2ecc71; margin-top: 20px; }
         .btn-green:hover { background: #27ae60; }
     </style>
+    <link rel="stylesheet" href="../css/basketball.css">
 </head>
-<body>
+<body class="basketball-page basketball-setup">
 <?php
 $NAV_BASE = '..';
 $NAV_BASE = '.';
@@ -101,6 +107,10 @@ CREATE TABLE `players` (
     <?php endif; ?>
 
     <form method="post" id="setupForm">
+        <?php $tabIdHidden = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')); ?>
+        <?php if ($tabIdHidden !== '' && preg_match('/^[A-Za-z0-9_-]{8,64}$/', $tabIdHidden)): ?>
+            <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tabIdHidden, ENT_QUOTES, 'UTF-8') ?>">
+        <?php endif; ?>
         <div class="box">
             <h3>1. チーム選択</h3>
             <div class="setup-grid">

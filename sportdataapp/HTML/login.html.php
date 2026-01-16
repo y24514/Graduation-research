@@ -14,7 +14,7 @@
             <!-- ヘッダー -->
             <div class="login-header">
                 <div class="logo">
-                    <i class="fas fa-running"></i>
+                    <img src="../img/favicon.svg" alt="SAAロゴ" class="logo-img">
                     <h1>Sports Analytics App</h1>
                 </div>
                 <p class="subtitle">Sports Analytics App</p>

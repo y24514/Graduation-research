@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../session_bootstrap.php';
 $NAV_BASE = '..';
-require_once __DIR__ . '/../header.php';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -84,8 +83,13 @@ require_once __DIR__ . '/../header.php';
         }
         canvas { border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
     </style>
+    <link rel="stylesheet" href="../../css/basketball.css">
 </head>
-<body>
+<body class="basketball-page basketball-board">
+
+<?php
+require_once __DIR__ . '/../header.php';
+?>
 
     <div id="rotate-overlay">
         <div class="icon">🔄</div>

@@ -1,0 +1,221 @@
+/* Tennis pages design arrangement (no behavior changes)
+  Scoped to .tennis-page to avoid impacting other pages.
+  Uses the existing tennis pages' palette (#2c3e50/#3498db/#2ecc71/#e74c3c/#f1c40f).
+*/
+
+.tennis-page {
+  --tennis-ink: #2c3e50;
+  --tennis-muted: #7f8c8d;
+  --tennis-bg: #f4f7f9;
+  --tennis-card: #ffffff;
+  --tennis-primary: #2c3e50;
+  --tennis-accent: #3498db;
+  --tennis-success: #2ecc71;
+  --tennis-danger: #e74c3c;
+  --tennis-warning: #f1c40f;
+  --tennis-radius: 14px;
+  --tennis-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --tennis-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.tennis-page {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+.tennis-page {
+  color: var(--tennis-ink);
+}
+
+/* Avoid overriding the dark strategy-board screen */
+body.tennis-page:not(.tennis-board) {
+  background: var(--tennis-bg);
+}
+
+body.tennis-page:not(.tennis-board) a {
+  color: var(--tennis-accent);
+}
+
+body.tennis-page:not(.tennis-board) a:hover {
+  filter: brightness(0.95);
+}
+
+body.tennis-page:not(.tennis-board) a:visited {
+  color: var(--tennis-accent);
+}
+
+.tennis-page .app-header {
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.tennis-page .container {
+  padding: 18px;
+}
+
+.tennis-page .container {
+  max-width: 900px;
+}
+
+body.tennis-page:not(.tennis-board) .container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tennis-page .card,
+.tennis-page .player-card,
+.tennis-page .game-card {
+  border-radius: var(--tennis-radius);
+  box-shadow: var(--tennis-shadow-soft);
+  border: 1px solid rgba(189, 195, 199, 0.45);
+}
+
+.tennis-page .card {
+  background: var(--tennis-card);
+}
+
+.tennis-page h1,
+.tennis-page h2,
+.tennis-page h3 {
+  line-height: 1.25;
+}
+
+.tennis-page h3 {
+  letter-spacing: 0.01em;
+}
+
+.tennis-page label {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.tennis-page input[type="text"],
+.tennis-page select,
+.tennis-page textarea {
+  line-height: 1.4;
+}
+
+.tennis-page input[type="text"],
+.tennis-page select,
+.tennis-page textarea {
+  border-radius: 10px;
+}
+
+.tennis-page input[type="text"]:focus,
+.tennis-page select:focus,
+.tennis-page textarea:focus {
+  border-color: rgba(52, 152, 219, 0.6);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+  outline: none;
+}
+
+.tennis-page .btn-new,
+.tennis-page .btn-back,
+.tennis-page .btn-home,
+.tennis-page .start-btn {
+  letter-spacing: 0.02em;
+}
+
+.tennis-page :is(.btn-new, .btn-back, .btn-home, .start-btn, .footer-btn) {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.tennis-page :is(.btn-new, .btn-back, .btn-home, .start-btn, .footer-btn):hover {
+  filter: brightness(1.03);
+}
+
+.tennis-page :is(.btn-new, .btn-back, .btn-home, .start-btn, .footer-btn):active {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+.tennis-page .game-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--tennis-shadow);
+}
+
+/* History list: clearer separation */
+body.tennis-page:not(.tennis-board) .game-card {
+  gap: 12px;
+}
+
+body.tennis-page:not(.tennis-board) .game-card:focus-visible {
+  border-color: rgba(52, 152, 219, 0.65);
+}
+
+.tennis-page :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(49, 130, 206, 0.35);
+  outline-offset: 2px;
+}
+
+.tennis-page .no-data {
+  color: var(--tennis-muted);
+}
+
+.tennis-page .game-date,
+.tennis-page .total-count {
+  color: var(--tennis-muted);
+}
+
+/* Personal stats: make grids readable on narrow screens */
+@media (max-width: 640px) {
+  .tennis-page .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tennis-page .container {
+    padding: 14px;
+  }
+}
+
+/* Result screen: KPI grid should not overflow on mobile */
+@media (max-width: 760px) {
+  .tennis-result .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.tennis-result .kpi-row {
+  font-size: 14px;
+}
+
+.tennis-result .action-details {
+  line-height: 1.5;
+}
+
+/* Game screen: slightly larger tap targets */
+.tennis-game .act-btn {
+  font-size: 11px;
+  min-height: 36px;
+}
+
+.tennis-game .footer-btn {
+  min-height: 44px;
+  font-size: 13px;
+}
+
+.tennis-game .player-name {
+  font-size: 12px;
+}
+
+.tennis-game .history-item {
+  line-height: 1.5;
+}
+
+/* Personal stats: slightly larger list text */
+.tennis-personal-stats .stat-list {
+  font-size: 13px;
+}
+
+.tennis-game .btn-group {
+  scrollbar-width: thin;
+}
+
+@media (max-width: 420px) {
+  .tennis-game .score-main {
+    font-size: 44px;
+  }
+}

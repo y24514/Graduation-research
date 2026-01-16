@@ -43,8 +43,9 @@ $games = getAllGames($db);
         .no-data { text-align: center; padding: 50px; color: #95a5a6; }
         .btn-new { display: block; background: #2ecc71; color: white; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-bottom: 20px; }
     </style>
+    <link rel="stylesheet" href="../../css/tennis.css">
 </head>
-<body>
+<body class="tennis-page tennis-history">
 <?php require_once __DIR__ . '/../header.php'; ?>
 <header class="app-header">試合履歴</header>
 <div class="container">

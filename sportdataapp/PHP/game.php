@@ -3,12 +3,18 @@ require_once __DIR__ . '/session_bootstrap.php';
 $NAV_BASE = '.';
 require_once __DIR__ . '/header.php';
 
+$__tabIdForBasket = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? ($_POST['tab_id'] ?? '')));
+if ($__tabIdForBasket !== '' && !preg_match('/^[A-Za-z0-9_-]{8,64}$/', $__tabIdForBasket)) {
+    $__tabIdForBasket = '';
+}
+
 if (!isset($_SESSION['game'])) {
     http_response_code(200);
     echo '<div style="padding:16px; max-width:800px; margin:0 auto;">';
     echo '<h2 style="margin:8px 0;">試合が開始されていません</h2>';
     echo '<p style="margin:8px 0;">先に「試合設定」からチーム/スタメンを選んで試合開始してください。</p>';
-    echo '<p style="margin:12px 0;"><a href="basketball_index.php" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
+    $toSetup = 'basketball_index.php' . ($__tabIdForBasket !== '' ? ('?tab_id=' . rawurlencode($__tabIdForBasket)) : '');
+    echo '<p style="margin:12px 0;"><a href="' . htmlspecialchars($toSetup, ENT_QUOTES, 'UTF-8') . '" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
     echo '</div>';
     exit;
 }
@@ -52,8 +58,9 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
         .btn-analysis-bottom { background: #fff; color: #333; border: 2px solid #34495e; }
         .btn-q-end-bottom { background: #34495e; color: #fff; }
     </style>
+    <link rel="stylesheet" href="../css/basketball.css">
 </head>
-<body>
+<body class="basketball-page basketball-game">
 
 <div class="page-pad">
 
@@ -103,6 +110,12 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 <div id="sub-m" class="modal"><div class="m-content"><h3 style="margin-top:0;">交代して入る選手</h3><div id="b-list" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div><button onclick="closeSub()" style="width:100%; margin-top:20px; padding:15px; border-radius:10px; background:#f9f9f9;">キャンセル</button></div></div>
 
 <script>
+    const TAB_ID = <?= json_encode($__tabIdForBasket, JSON_UNESCAPED_SLASHES) ?>;
+    function withTabId(url) {
+        if (!TAB_ID) return url;
+        return url + (url.includes('?') ? '&' : '?') + 'tab_id=' + encodeURIComponent(TAB_ID);
+    }
+
     let game = { state: <?=$gameData?>, curT: 'A', selId: null };
 
     // --- 既存のrender, switchT, selectP, resetS, record, openSub, toggleDrawer, undo はそのまま ---
@@ -177,7 +190,7 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 
     // サーバー保存処理
     async function saveState() {
-    await fetch('save_game.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(game.state) });
+    await fetch(withTabId('save_game.php'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(game.state) });
     }
 
 // 📊 スタッツ分析ボタン
@@ -185,9 +198,9 @@ async function goAnalysis() {
     await saveState();
     // Q4なら直接finalへ、それ以外ならanalysisへ
     if (game.state.quarter >= 4) {
-        location.href = "final.php";
+        location.href = withTabId("final.php");
     } else {
-        location.href = "analysis.php?q=" + game.state.quarter;
+        location.href = withTabId("analysis.php?q=" + game.state.quarter);
     }
 }
 
@@ -196,7 +209,7 @@ async function nextQuarter() {
     if (game.state.quarter >= 4) {
         if (confirm("試合を終了し、最終結果を確認しますか？")) {
             await saveState();
-            location.href = "final.php";
+            location.href = withTabId("final.php");
         }
         return;
     }

@@ -112,6 +112,7 @@ switch ($action) {
         }
         if ($hasFeedbackByColumn) {
             $select .= ", admin_feedback_by_user_id";
+            $select .= ", (SELECT name FROM login_tbl WHERE group_id = diary_tbl.group_id AND user_id = diary_tbl.admin_feedback_by_user_id LIMIT 1) AS admin_feedback_by_user_name";
         }
         $select .= " FROM diary_tbl WHERE id = ? AND user_id = ? AND group_id = ?";
         $stmt = mysqli_prepare($link, $select);

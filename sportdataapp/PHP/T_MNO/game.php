@@ -119,8 +119,9 @@ $acts = ['サービスエース', 'スマッシュ', 'ボレー', 'ストロー�
         .overlay.show { display: block; }
         .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; }
     </style>
+    <link rel="stylesheet" href="../../css/tennis.css">
 </head>
-<body>
+<body class="tennis-page tennis-game">
 
 <?php require_once __DIR__ . '/../header.php'; ?>
 

@@ -101,6 +101,13 @@ body::before {
   animation: pulse 2s ease-in-out infinite;
 }
 
+.logo-img {
+  height: 3rem;
+  width: 3rem;
+  object-fit: contain;
+  animation: pulse 2s ease-in-out infinite;
+}
+
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }

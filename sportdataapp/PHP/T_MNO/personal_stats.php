@@ -39,8 +39,9 @@ $loseActions = ["ダブルフォルト", "アウト", "ネット", "ネットタ
         .total-count { font-size: 12px; color: #7f8c8d; margin-bottom: 10px; }
         .btn-back { display: block; text-align: center; padding: 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 10px; margin-top: 20px; }
     </style>
+    <link rel="stylesheet" href="../../css/tennis.css">
 </head>
-<body>
+<body class="tennis-page tennis-personal-stats">
 <?php require_once __DIR__ . '/../header.php'; ?>
 <header class="app-header">個人別・通算データ分析</header>
 <div class="container">

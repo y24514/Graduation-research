@@ -11,7 +11,7 @@ if (!isset($_SESSION['game'])) {
     echo '<div style="padding:16px; max-width:800px; margin:0 auto;">';
     echo '<h2 style="margin:8px 0;">結果を表示する試合がありません</h2>';
     echo '<p style="margin:8px 0;">先に「試合設定」から試合を開始してください。</p>';
-    echo '<p style="margin:12px 0;"><a href="basketball_index.php" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
+    echo '<p style="margin:12px 0;"><a href="' . htmlspecialchars(sportdata_add_tab_id('basketball_index.php', $__tabId), ENT_QUOTES, 'UTF-8') . '" style="display:inline-block; padding:10px 14px; border:1px solid #ccc; border-radius:10px; text-decoration:none;">試合設定へ</a></p>';
     echo '</div>';
     exit;
 }
@@ -135,8 +135,9 @@ $jsonTeams = json_encode($game['teams']);
 .mvp-label { font-size: 0.8em; font-weight: bold; letter-spacing: 2px; }
 .mvp-name { font-size: 2.2em; font-weight: 900; margin: 5px 0; }
     </style>
+    <link rel="stylesheet" href="../css/basketball.css">
 </head>
-<body>
+<body class="basketball-page basketball-final">
 
 <?php
 $NAV_BASE = '..';

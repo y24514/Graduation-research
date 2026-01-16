@@ -119,8 +119,9 @@ $winnerTeam = ($d['gamesA'] > $d['gamesB']) ? $d['teamA'] : $d['teamB'];
         .btn-home { display: block; width: 100%; padding: 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin-top: 10px; text-align: center; box-sizing: border-box; }
         canvas { margin-top: 10px; }
     </style>
+    <link rel="stylesheet" href="../../css/tennis.css">
 </head>
-<body>
+<body class="tennis-page tennis-result">
 <?php require_once __DIR__ . '/../header.php'; ?>
 <header class="app-header">分析レポート</header>
 <div class="container">

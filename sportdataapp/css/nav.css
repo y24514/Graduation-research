@@ -24,19 +24,36 @@
     align-items: center;
     justify-content: space-between;
     height: var(--nav-height);
-    padding: 0 3rem;
+    padding: 0 48px;
     background: var(--nav-bg);
     border-bottom: 1px solid #e5e7eb;
     box-shadow: var(--nav-shadow);
     position: sticky;
     top: 0;
     z-index: 1200;
-    gap: 1.5rem;
+    gap: 24px;
+
+    /* Ensure nav typography is consistent across pages */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    font-size: 16px;
+    line-height: 1.35;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Avoid page-level box sizing/font overrides affecting layout */
+.meny,
+.meny *{
+    box-sizing: border-box;
+}
+
+.meny :is(button, a){
+    font: inherit;
+    letter-spacing: inherit;
 }
 
 .meny .brand{
-    margin-right: 3rem;
-    font-size: 1.3rem;
+    margin-right: 48px;
+    font-size: 21px;
     font-weight: 700;
     color: var(--nav-text);
     letter-spacing: 0;
@@ -64,7 +81,7 @@
 
 .meny-nav ul{
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -74,11 +91,21 @@
 
 /* App title on the right side */
 .app-title{
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--nav-muted);
     letter-spacing: 0.5px;
     white-space: nowrap;
+}
+
+.app-title-logo{
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
 }
 
 /* =====================
@@ -222,7 +249,7 @@
 .logout-modal__desc{
     margin: 0 0 16px;
     color: var(--nav-muted);
-    font-size: 0.95rem;
+    font-size: 15px;
     line-height: 1.5;
 }
 
@@ -239,7 +266,7 @@
     padding: 10px 14px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 15px;
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
@@ -294,7 +321,7 @@
 
 .contact-modal__title{
     margin: 0 0 8px;
-    font-size: 1.1rem;
+    font-size: 18px;
     font-weight: 700;
     color: var(--nav-text);
 }
@@ -302,7 +329,7 @@
 .contact-modal__desc{
     margin: 0 0 12px;
     color: var(--nav-muted);
-    font-size: 0.95rem;
+    font-size: 15px;
     line-height: 1.5;
 }
 
@@ -312,7 +339,7 @@
     border-radius: 8px;
     margin: 0 0 12px;
     border: 1px solid #e5e7eb;
-    font-size: 0.95rem;
+    font-size: 15px;
     line-height: 1.4;
 }
 
@@ -338,7 +365,7 @@
     display: block;
     margin: 0 0 6px;
     color: var(--nav-muted);
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .contact-modal__input,
@@ -380,7 +407,7 @@
     padding: 10px 14px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 15px;
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
@@ -407,13 +434,13 @@
 .menu-root li button{
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.25rem;
+    gap: 8px;
+    padding: 8px 20px;
     border-radius: 0;
     border: none;
     background: transparent;
     color: var(--nav-text);
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -453,6 +480,15 @@
     text-decoration: none;
 }
 
+/*
+  Sport pages (e.g. basketball.css / tennis.css) set global anchor colors on body.
+  Their selectors can outrank generic nav selectors, causing nav links to turn blue.
+  Force nav-area link colors with higher specificity.
+*/
+.meny .menu-root li button a{
+    color: inherit;
+}
+
 .menu-root li.active button{
     color: var(--nav-accent);
     font-weight: 600;
@@ -479,7 +515,7 @@
     top: 100%;
     left: 0;
     min-width: 220px;
-    padding: 0.5rem;
+    padding: 8px;
     background: var(--nav-bg);
     border-radius: 8px;
     border: 1px solid #e5e7eb;
@@ -507,21 +543,21 @@
     transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.sub-menu li a{
+.meny .sub-menu li a{
     display: block;
-    padding: 0.7rem 0.9rem;
+    padding: 11px 14px;
     border-radius: 8px;
     color: var(--nav-text);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 15px;
     line-height: 1.35;
     position: relative;
     transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
 /* left accent bar (hover/focus) */
-.sub-menu li a::before{
+.meny .sub-menu li a::before{
     content: '';
     position: absolute;
     left: 8px;
@@ -536,25 +572,25 @@
     transition: transform 160ms ease, opacity 160ms ease;
 }
 
-.sub-menu li a:hover{
+.meny .sub-menu li a:hover{
     background: rgba(49, 130, 206, 0.08);
     color: var(--nav-accent);
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 
-.sub-menu li a:hover::before{
+.meny .sub-menu li a:hover::before{
     opacity: 1;
     transform: translateY(-50%) scaleY(1);
 }
 
-.sub-menu li a:focus-visible{
+.meny .sub-menu li a:focus-visible{
     outline: 2px solid rgba(49, 130, 206, 0.25);
     outline-offset: 2px;
     background: rgba(49, 130, 206, 0.08);
 }
 
-.sub-menu li a:focus-visible::before{
+.meny .sub-menu li a:focus-visible::before{
     opacity: 1;
     transform: translateY(-50%) scaleY(1);
 }
@@ -605,7 +641,7 @@
     }
 
     .meny {
-        padding: 0 1rem;
+        padding: 0 16px;
         position: relative;
     }
 
@@ -629,7 +665,7 @@
     .menu-root {
         flex-direction: column !important;
         width: 100%;
-        padding: 1rem 0;
+        padding: 16px 0;
     }
 
     .menu-root li {
@@ -639,13 +675,13 @@
     .menu-root li button {
         width: 100%;
         justify-content: flex-start;
-        padding: 1rem 1.5rem;
+        padding: 16px 24px;
         border-radius: 0;
     }
 
     /* Mobile only caret */
     .menu-root > li.has-sub > button{
-        padding-right: 2.75rem;
+        padding-right: 44px;
     }
 
     .menu-root > li.has-sub > button::before{
@@ -665,7 +701,7 @@
         position: static !important;
         box-shadow: none !important;
         background: rgba(49, 130, 206, 0.05);
-        padding-left: 2rem;
+        padding-left: 32px;
         margin-top: 0;
         display: none !important;
 
@@ -692,11 +728,11 @@
     }
 
     .sub-menu li a {
-        padding: 0.8rem 1rem;
+        padding: 13px 16px;
     }
 
     .app-title {
-        font-size: 0.9rem;
+        font-size: 14px;
     }
 
     .settings-container {
@@ -708,14 +744,14 @@
 @media (min-width: 768px) and (max-width: 900px) {
     .meny{
         height: 65px;
-        padding: 0 1.5rem;
+        padding: 0 24px;
     }
     .menu-root li button{
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
+        padding: 10px 16px;
+        font-size: 14px;
     }
     .meny .brand{
-        font-size: 1.2rem;
+        font-size: 19px;
     }
 }
 

@@ -78,10 +78,12 @@ $__csrfToken = (string)$_SESSION['csrf_token'];
 <?php
 // HTMLテンプレートのCSS読み込みパスから判定
 $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SERVER['REQUEST_URI'], '/basketball/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_MNO/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_board/') !== false || strpos($_SERVER['REQUEST_URI'], '/B_board/') !== false) ? '../../css/' : '../css/';
+$img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SERVER['REQUEST_URI'], '/basketball/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_MNO/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_board/') !== false || strpos($_SERVER['REQUEST_URI'], '/B_board/') !== false) ? '../../img/' : '../img/';
 ?>
 <link rel="stylesheet" href="<?= $css_depth ?>nav.css">
 <!-- 共通ナビ -->
 <div class="meny">
+    <div class="meny-inner">
     <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー">
         <span></span>
         <span></span>
@@ -198,7 +200,11 @@ $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
             <?php endif; ?>
         </ul>
     </nav>
-    <div class="app-title">Sports Analytics App</div>
+    <div class="app-title">
+        <img class="app-title-logo" src="<?= $img_depth ?>favicon.svg" alt="SAAロゴ">
+        <span>Sports Analytics App</span>
+    </div>
+    </div>
 </div>
 
 <!-- ログアウト確認モーダル（JS表示） -->

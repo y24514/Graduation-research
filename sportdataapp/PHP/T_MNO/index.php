@@ -55,8 +55,9 @@ try {
         .start-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
         .double-only { display: none; }
     </style>
+    <link rel="stylesheet" href="../../css/tennis.css">
 </head>
-<body>
+<body class="tennis-page tennis-index">
 <?php require_once __DIR__ . '/../header.php'; ?>
 <header class="app-header">テニススコア設定</header>
 <div class="container">
