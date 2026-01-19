@@ -167,57 +167,7 @@
             <p class="admin-subtitle">提出された日記の確認 / メンバーのデータ閲覧</p>
         </div>
 
-        <div class="admin-grid">
-            <div class="admin-card">
-                <div class="admin-card-header">
-                    <h2 class="admin-card-title">共有（カレンダー）</h2>
-                </div>
-                <div class="admin-card-body">
-                    <p class="empty">管理者からメンバー全員へ予定を共有できます（メンバーのホームのカレンダーに表示されます）。</p>
-                    <form method="post" action="calendarsave.php<?= !empty($_GET['tab_id']) ? ('?tab_id=' . urlencode((string)$_GET['tab_id'])) : '' ?>" class="admin-actions">
-                        <input type="hidden" name="is_shared" value="1">
-                        <?php
-                            $redir = 'admin.php';
-                            $params = [];
-                            if (!empty($selectedMember['user_id'])) {
-                                $params[] = 'user_id=' . urlencode((string)$selectedMember['user_id']);
-                            }
-                            if (!empty($_GET['tab_id'])) {
-                                $params[] = 'tab_id=' . urlencode((string)$_GET['tab_id']);
-                            }
-                            if (!empty($params)) {
-                                $redir .= '?' . implode('&', $params);
-                            }
-                        ?>
-                        <input type="hidden" name="redirect_to" value="<?= htmlspecialchars($redir, ENT_QUOTES, 'UTF-8') ?>">
-
-                        <div class="admin-kv">
-                            <div class="row">
-                                <div class="k">タイトル</div>
-                                <div class="v"><input class="admin-input" type="text" name="title" maxlength="100" required></div>
-                            </div>
-                            <div class="row">
-                                <div class="k">メモ</div>
-                                <div class="v"><input class="admin-input" type="text" name="memo" maxlength="100"></div>
-                            </div>
-                            <div class="row">
-                                <div class="k">開始日</div>
-                                <div class="v"><input class="admin-input" type="date" name="startdate" required></div>
-                            </div>
-                            <div class="row">
-                                <div class="k">終了日</div>
-                                <div class="v"><input class="admin-input" type="date" name="enddate" required></div>
-                            </div>
-                        </div>
-
-                        <div style="margin-top:12px;">
-                            <button type="submit" class="admin-btn">共有する</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+        <div class="admin-grid admin-main">
         <div class="admin-group">
 
         <div class="admin-card">
@@ -620,8 +570,85 @@
 
         </div>
 
+        <div class="admin-card admin-calendar-card">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">共有（カレンダー）</h2>
+            </div>
+            <div class="admin-card-body">
+                <p class="empty">管理者からメンバー全員へ予定を共有できます（メンバーのホームのカレンダーに表示されます）。</p>
+
+                <div id="calendar-area" class="calendar-area"></div>
+
+                <form method="post" action="calendarsave.php<?= !empty($_GET['tab_id']) ? ('?tab_id=' . urlencode((string)$_GET['tab_id'])) : '' ?>" class="admin-actions">
+                    <input type="hidden" name="is_shared" value="1">
+                    <?php
+                        $redir = 'admin.php';
+                        $params = [];
+                        if (!empty($selectedMember['user_id'])) {
+                            $params[] = 'user_id=' . urlencode((string)$selectedMember['user_id']);
+                        }
+                        if (!empty($_GET['tab_id'])) {
+                            $params[] = 'tab_id=' . urlencode((string)$_GET['tab_id']);
+                        }
+                        if (!empty($params)) {
+                            $redir .= '?' . implode('&', $params);
+                        }
+                    ?>
+                    <input type="hidden" name="redirect_to" value="<?= htmlspecialchars($redir, ENT_QUOTES, 'UTF-8') ?>">
+
+                    <div class="admin-kv">
+                        <div class="row">
+                            <div class="k">タイトル</div>
+                            <div class="v"><input class="admin-input" id="shared-title" type="text" name="title" maxlength="100" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="k">メモ</div>
+                            <div class="v"><input class="admin-input" id="shared-memo" type="text" name="memo" maxlength="100"></div>
+                        </div>
+                        <div class="row">
+                            <div class="k">開始日</div>
+                            <div class="v"><input class="admin-input" id="shared-startdate" type="date" name="startdate" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="k">終了日</div>
+                            <div class="v"><input class="admin-input" id="shared-enddate" type="date" name="enddate" required></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <button type="submit" class="admin-btn">共有する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        </div>
+
     </div>
 </div>
+
+<script>
+    const eventsFromPHP = <?= json_encode($calendarSharedRecords ?? [], JSON_UNESCAPED_UNICODE); ?>;
+
+    // admin画面では「日付選択→下の共有フォームに反映」だけ行う
+    function openEventModal(info) {
+        const startEl = document.getElementById('shared-startdate');
+        const endEl = document.getElementById('shared-enddate');
+        const titleEl = document.getElementById('shared-title');
+        const memoEl = document.getElementById('shared-memo');
+
+        if (startEl) startEl.value = info.startStr;
+        if (endEl) endEl.value = info.endStr;
+        if (titleEl) {
+            titleEl.value = '';
+            titleEl.focus();
+        }
+        if (memoEl) memoEl.value = '';
+    }
+</script>
+
+<script src="../js/fullcalendar/dist/index.global.min.js"></script>
+<script src="../js/calendar.js"></script>
 
 </body>
 </html>

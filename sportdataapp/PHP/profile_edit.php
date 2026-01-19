@@ -26,6 +26,12 @@ $success_message = '';
 $user_id = $_SESSION['user_id'];
 $group_id = $_SESSION['group_id'];
 
+// CSRFトークン（削除など破壊的操作用）
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrfToken = (string)$_SESSION['csrf_token'];
+
 // 互換: login_tbl に sport 列がある場合のみ、種目を保存/出し分けに利用
 $hasSportColumn = false;
 $sportAllowed = ['all', 'swim', 'basketball', 'tennis'];
@@ -45,6 +51,121 @@ mysqli_stmt_close($stmt);
 if(!$user_data){
     header('Location: login.php');
     exit();
+}
+
+// アカウント削除（退会）
+if (isset($_POST['delete_account'])) {
+    $postedToken = (string)($_POST['csrf_token'] ?? '');
+    $deletePassword = (string)($_POST['delete_password'] ?? '');
+
+    if (!hash_equals($csrfToken, $postedToken)) {
+        http_response_code(400);
+        $errors[] = '不正なリクエストです。';
+    } elseif (!empty($user_data['is_super_admin'])) {
+        $errors[] = 'スーパー管理者アカウントは削除できません。';
+    } elseif ($deletePassword === '') {
+        $errors[] = '削除の確認のため、現在のパスワードを入力してください。';
+    } elseif (!password_verify($deletePassword, (string)($user_data['password'] ?? ''))) {
+        $errors[] = 'パスワードが正しくありません。';
+    }
+
+    if (empty($errors)) {
+        mysqli_begin_transaction($link);
+        try {
+            // グループ内の最後のユーザーか判定（group_id 外部キー対策）
+            $isLastUserInGroup = false;
+            $stmt = mysqli_prepare($link, 'SELECT COUNT(*) FROM login_tbl WHERE group_id = ?');
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 's', $group_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_result($stmt, $groupUserCount);
+                mysqli_stmt_fetch($stmt);
+                mysqli_stmt_close($stmt);
+                $isLastUserInGroup = ((int)$groupUserCount <= 1);
+            }
+
+            // チャット: 履歴は残しつつ、本人の発言は論理削除（内容非表示）
+            $stmt = mysqli_prepare($link, "UPDATE chat_tbl SET is_deleted = 1, deleted_at = NOW() WHERE group_id = ? AND user_id = ?");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'ss', $group_id, $user_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+
+            // チャット参加/既読状態の整理
+            $stmt = mysqli_prepare($link, 'DELETE FROM chat_group_member_tbl WHERE group_id = ? AND user_id = ?');
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'ss', $group_id, $user_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+
+            $stmt = mysqli_prepare($link, 'DELETE FROM chat_read_status_tbl WHERE group_id = ? AND user_id = ?');
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'ss', $group_id, $user_id);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+
+            // 個人データ（代表的なもの）
+            foreach (['pi_tbl', 'swim_tbl', 'swim_best_tbl', 'swim_practice_tbl', 'goal_tbl', 'diary_tbl', 'calendar_tbl'] as $tbl) {
+                $sql = "DELETE FROM {$tbl} WHERE group_id = ? AND user_id = ?";
+                $stmt = mysqli_prepare($link, $sql);
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, 'ss', $group_id, $user_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            }
+
+            // グループ内最後のユーザーなら、group_id参照が残らないようグループ全体の関連データも削除
+            if ($isLastUserInGroup) {
+                foreach (['calendar_tbl', 'goal_tbl', 'pi_tbl', 'swim_tbl', 'swim_best_tbl'] as $tbl) {
+                    $sql = "DELETE FROM {$tbl} WHERE group_id = ?";
+                    $stmt = mysqli_prepare($link, $sql);
+                    if ($stmt) {
+                        mysqli_stmt_bind_param($stmt, 's', $group_id);
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
+                    }
+                }
+            }
+
+            // ユーザー本体
+            $stmt = mysqli_prepare($link, 'DELETE FROM login_tbl WHERE group_id = ? AND user_id = ? LIMIT 1');
+            if (!$stmt) {
+                throw new RuntimeException('ユーザー削除の準備に失敗しました。');
+            }
+            mysqli_stmt_bind_param($stmt, 'ss', $group_id, $user_id);
+            mysqli_stmt_execute($stmt);
+            $affected = mysqli_stmt_affected_rows($stmt);
+            mysqli_stmt_close($stmt);
+
+            if ($affected <= 0) {
+                throw new RuntimeException('ユーザーの削除に失敗しました（対象が見つからない可能性があります）。');
+            }
+
+            mysqli_commit($link);
+
+            // アイコンファイル削除
+            sportdata_delete_user_icons($group_id, $user_id);
+
+            // セッション破棄してログインへ
+            $_SESSION = [];
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            }
+            session_destroy();
+
+            header('Location: login.php');
+            exit();
+        } catch (Throwable $e) {
+            mysqli_rollback($link);
+            $errors[] = '削除に失敗しました。もう一度お試しください。';
+            error_log('delete_account failed: ' . $e->getMessage());
+        }
+    }
 }
 
 $colSportRes = mysqli_query(

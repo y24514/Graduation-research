@@ -65,6 +65,12 @@ body {
   gap: 16px;
 }
 
+/* 管理者画面のメイン2カラム: 左=データ閲覧、右=共有カレンダー */
+.admin-grid.admin-main {
+  grid-template-columns: 2fr 1fr;
+  align-items: start;
+}
+
 /* 2カラムのグリッドでも、カードが1枚だけの行は全幅にして隙間を作らない */
 .admin-grid > .admin-card:only-child {
   grid-column: 1 / -1;
@@ -273,6 +279,37 @@ body {
 
 .admin-actions {
   margin-top: 12px;
+}
+
+/* 共有カレンダー（FullCalendar） */
+.calendar-area {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card);
+  min-height: 520px;
+}
+
+/* ===== カレンダー 土日・祝日 ===== */
+.fc-day-sat {
+  background-color: #e3f2fd !important;
+}
+
+.fc-day-sun,
+.fc-day-holiday {
+  background-color: #ffebee !important;
+}
+
+.fc-day-sat .fc-daygrid-day-number {
+  color: #1976d2 !important;
+  font-weight: 600;
+}
+
+.fc-day-sun .fc-daygrid-day-number,
+.fc-day-holiday .fc-daygrid-day-number {
+  color: #d32f2f !important;
+  font-weight: 600;
 }
 
 .admin-btn {

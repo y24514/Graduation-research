@@ -798,7 +798,8 @@ ALTER TABLE `game_actions`
 ALTER TABLE `goal_tbl`
   ADD PRIMARY KEY (`goal_id`),
   ADD KEY `goal_group` (`group_id`) USING BTREE,
-  ADD KEY `goal_user` (`user_id`) USING BTREE;
+  ADD KEY `goal_user` (`user_id`) USING BTREE,
+  ADD KEY `idx_goal_group_user` (`group_id`,`user_id`) USING BTREE;
 
 --
 -- テーブルのインデックス `login_tbl`
@@ -806,6 +807,7 @@ ALTER TABLE `goal_tbl`
 ALTER TABLE `login_tbl`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`password`) USING BTREE,
+  ADD UNIQUE KEY `uniq_login_group_user` (`group_id`,`user_id`) USING BTREE,
   ADD KEY `group_id` (`group_id`),
   ADD KEY `idx_login_tbl_is_super_admin` (`is_super_admin`),
   ADD KEY `idx_login_tbl_sport` (`sport`);
@@ -816,7 +818,8 @@ ALTER TABLE `login_tbl`
 ALTER TABLE `pi_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pi_group` (`group_id`) USING BTREE,
-  ADD KEY `pi_user` (`user_id`) USING BTREE;
+  ADD KEY `pi_user` (`user_id`) USING BTREE,
+  ADD KEY `idx_pi_group_user` (`group_id`,`user_id`) USING BTREE;
 
 --
 -- テーブルのインデックス `players`
@@ -846,7 +849,8 @@ ALTER TABLE `swim_practice_tbl`
 ALTER TABLE `swim_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `swim_group_id` (`group_id`),
-  ADD KEY `swim_user_id` (`user_id`);
+  ADD KEY `swim_user_id` (`user_id`),
+  ADD KEY `idx_swim_group_user` (`group_id`,`user_id`);
 
 --
 -- テーブルのインデックス `teams`
@@ -974,8 +978,7 @@ ALTER TABLE `teams`
 -- テーブルの制約 `calendar_tbl`
 --
 ALTER TABLE `calendar_tbl`
-  ADD CONSTRAINT `calendar_group` FOREIGN KEY (`group_id`) REFERENCES `login_tbl` (`group_id`),
-  ADD CONSTRAINT `calendar_user` FOREIGN KEY (`user_id`) REFERENCES `login_tbl` (`user_id`);
+  ADD CONSTRAINT `fk_calendar_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `chat_group_member_tbl`
@@ -999,15 +1002,13 @@ ALTER TABLE `game_actions`
 -- テーブルの制約 `goal_tbl`
 --
 ALTER TABLE `goal_tbl`
-  ADD CONSTRAINT `goal_group` FOREIGN KEY (`group_id`) REFERENCES `login_tbl` (`group_id`),
-  ADD CONSTRAINT `goal_user` FOREIGN KEY (`user_id`) REFERENCES `login_tbl` (`user_id`);
+  ADD CONSTRAINT `fk_goal_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `pi_tbl`
 --
 ALTER TABLE `pi_tbl`
-  ADD CONSTRAINT `pi_group` FOREIGN KEY (`group_id`) REFERENCES `login_tbl` (`group_id`),
-  ADD CONSTRAINT `pi_user` FOREIGN KEY (`user_id`) REFERENCES `login_tbl` (`user_id`);
+  ADD CONSTRAINT `fk_pi_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `players`
@@ -1019,15 +1020,13 @@ ALTER TABLE `players`
 -- テーブルの制約 `swim_best_tbl`
 --
 ALTER TABLE `swim_best_tbl`
-  ADD CONSTRAINT `swimbest_group_id` FOREIGN KEY (`group_id`) REFERENCES `login_tbl` (`group_id`),
-  ADD CONSTRAINT `swimbest_user_id` FOREIGN KEY (`user_id`) REFERENCES `login_tbl` (`user_id`);
+  ADD CONSTRAINT `fk_swim_best_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `swim_tbl`
 --
 ALTER TABLE `swim_tbl`
-  ADD CONSTRAINT `swim_group_id` FOREIGN KEY (`group_id`) REFERENCES `login_tbl` (`group_id`),
-  ADD CONSTRAINT `swim_user_id` FOREIGN KEY (`user_id`) REFERENCES `login_tbl` (`user_id`);
+  ADD CONSTRAINT `fk_swim_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

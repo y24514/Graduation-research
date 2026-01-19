@@ -246,7 +246,64 @@
                 <i class="fas fa-times"></i> キャンセル
             </a>
         </div>
+
+        <!-- 危険ゾーン（アカウント削除） -->
+        <div class="danger-zone" aria-label="危険ゾーン">
+            <h3 class="danger-zone__title"><i class="fas fa-triangle-exclamation"></i> アカウント削除</h3>
+            <p class="danger-zone__text">
+                アカウントを削除すると、個人データ（目標・記録・日記・予定など）が削除されます。チャットは履歴を残すため、あなたの発言は非表示扱いになります。
+            </p>
+            <div class="form-group">
+                <label for="delete_password"><i class="fas fa-lock"></i> 現在のパスワード（確認）</label>
+                <div class="password-wrapper">
+                    <input type="password"
+                           id="delete_password"
+                           name="delete_password"
+                           autocomplete="current-password"
+                           placeholder="削除の確認のため入力">
+                    <button type="button" class="toggle-password" onclick="togglePassword('delete_password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <small class="field-hint">この操作は取り消せません</small>
+                <div id="delete_password_error" class="danger-zone__error" style="display:none;"></div>
+            </div>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="delete_account" id="delete_account_hidden" value="">
+            <button type="button" id="deleteAccountButton" class="btn-danger" onclick="openDeleteConfirmModal();">
+                <i class="fas fa-user-slash"></i> アカウントを削除する
+            </button>
+        </div>
     </form>
+</div>
+
+<!-- 削除確認モーダル -->
+<div id="deleteConfirmModal" class="modal-overlay" aria-hidden="true" style="display:none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle" aria-describedby="deleteConfirmBody">
+        <div class="modal__header">
+            <h3 id="deleteConfirmTitle" class="modal__title"><i class="fas fa-triangle-exclamation"></i> アカウント削除の確認</h3>
+            <button type="button" class="modal__close" aria-label="閉じる" onclick="closeDeleteConfirmModal();">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+        <div id="deleteConfirmBody" class="modal__body">
+            <p class="modal__text">
+                アカウントを削除すると、個人データ（目標・記録・日記・予定など）が削除されます。
+            </p>
+            <p class="modal__text">
+                チャットは履歴を残すため、あなたの発言は非表示扱いになります。
+            </p>
+            <p class="modal__text modal__text--danger">この操作は取り消せません。</p>
+        </div>
+        <div class="modal__actions">
+            <button type="button" class="btn-secondary" onclick="closeDeleteConfirmModal();">
+                キャンセル
+            </button>
+            <button type="button" id="deleteConfirmNext" class="btn-danger" onclick="advanceDeleteConfirm();">
+                次へ
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -367,17 +424,44 @@ document.getElementById('new_password_confirm').addEventListener('input', functi
     }
 });
 
+// 送信ボタン判定（古いブラウザ対策）
+(function () {
+    const form = document.getElementById('profileEditForm');
+    if (!form) return;
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            form.dataset.submitButtonName = this.name || '';
+        });
+    });
+})();
+
 // フォーム送信
 document.getElementById('profileEditForm').addEventListener('submit', function(e) {
+    let submitter = e.submitter;
+    if (!submitter && this.dataset.submitButtonName) {
+        submitter = this.querySelector('button[name="' + this.dataset.submitButtonName + '"]');
+    }
+    if (!submitter) {
+        submitter = this.querySelector('button[type="submit"]');
+    }
+
+    const submitterName = (submitter && submitter.name) ? submitter.name : (this.dataset.submitButtonName || '');
+    // アカウント削除は通常POSTで処理（PHP側でリダイレクト/セッション破棄するため）
+    if (submitterName === 'delete_account') {
+        return;
+    }
+
     e.preventDefault();
     
-    const submitter = e.submitter || this.querySelector('button[type="submit"]');
     const formData = new FormData(this);
 
     // どの送信ボタンが押されたかをFormDataに反映（FormData(form)だけだと入らないブラウザがある）
     if (submitter && submitter.name) {
         formData.set(submitter.name, submitter.value || '1');
     }
+
+    // 送信ボタン名の退避をクリア
+    this.dataset.submitButtonName = '';
 
     const submitButton = submitter || this.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.innerHTML;
@@ -480,6 +564,107 @@ document.querySelectorAll('input').forEach(input => {
         }
     });
 });
+</script>
+
+<script>
+let __deleteConfirmStep = 1;
+
+function openDeleteConfirmModal() {
+    const pw = document.getElementById('delete_password');
+    const err = document.getElementById('delete_password_error');
+    if (err) {
+        err.textContent = '';
+        err.style.display = 'none';
+    }
+
+    if (!pw || pw.value.trim() === '') {
+        if (err) {
+            err.textContent = '削除の確認のため、現在のパスワードを入力してください。';
+            err.style.display = 'block';
+        }
+        if (pw) pw.focus();
+        return;
+    }
+
+    __deleteConfirmStep = 1;
+    updateDeleteConfirmModal();
+
+    const overlay = document.getElementById('deleteConfirmModal');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+}
+
+function closeDeleteConfirmModal() {
+    const overlay = document.getElementById('deleteConfirmModal');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+}
+
+function updateDeleteConfirmModal() {
+    const title = document.getElementById('deleteConfirmTitle');
+    const body = document.getElementById('deleteConfirmBody');
+    const nextBtn = document.getElementById('deleteConfirmNext');
+
+    if (!title || !body || !nextBtn) return;
+
+    if (__deleteConfirmStep === 1) {
+        title.innerHTML = '<i class="fas fa-triangle-exclamation"></i> アカウント削除の確認';
+        body.innerHTML = `
+            <p class="modal__text">アカウントを削除すると、個人データ（目標・記録・日記・予定など）が削除されます。</p>
+            <p class="modal__text">チャットは履歴を残すため、あなたの発言は非表示扱いになります。</p>
+            <p class="modal__text modal__text--danger">この操作は取り消せません。</p>
+        `;
+        nextBtn.textContent = '次へ';
+    } else {
+        title.innerHTML = '<i class="fas fa-triangle-exclamation"></i> 最終確認';
+        body.innerHTML = `
+            <p class="modal__text modal__text--danger">最終確認：本当にアカウントを削除しますか？</p>
+            <p class="modal__text">削除後は元に戻せません。</p>
+        `;
+        nextBtn.textContent = '削除する';
+    }
+}
+
+function advanceDeleteConfirm() {
+    if (__deleteConfirmStep === 1) {
+        __deleteConfirmStep = 2;
+        updateDeleteConfirmModal();
+        return;
+    }
+
+    // 送信前に削除フラグを立てる（programmatic submitでもPHP側が判定できるように）
+    const deleteHidden = document.getElementById('delete_account_hidden');
+    if (deleteHidden) deleteHidden.value = '1';
+
+    closeDeleteConfirmModal();
+
+    const form = document.getElementById('profileEditForm');
+    if (form) {
+        // 送信ボタン名判定（AJAX回避）
+        form.dataset.submitButtonName = 'delete_account';
+        form.submit();
+    }
+}
+
+// overlayクリックやEscで閉じる
+(function () {
+    const overlay = document.getElementById('deleteConfirmModal');
+    if (overlay) {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closeDeleteConfirmModal();
+        });
+    }
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            const ov = document.getElementById('deleteConfirmModal');
+            if (ov && ov.style.display !== 'none') closeDeleteConfirmModal();
+        }
+    });
+})();
 </script>
 
 
