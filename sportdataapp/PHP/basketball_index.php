@@ -112,7 +112,10 @@ CREATE TABLE `players` (
             <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tabIdHidden, ENT_QUOTES, 'UTF-8') ?>">
         <?php endif; ?>
         <div class="box">
-            <h3>1. チーム選択</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <h3 style="margin:0;">1. チーム選択</h3>
+                <a href="<?= htmlspecialchars(sportdata_add_tab_id('register_team.php', $tabIdHidden), ENT_QUOTES, 'UTF-8') ?>" style="text-decoration:none; background:#e67e22; color:#fff; padding:6px 12px; border-radius:8px; font-size:0.85em; font-weight:bold; white-space:nowrap;">＋ 新チーム登録</a>
+            </div>
             <div class="setup-grid">
                 <div><label>Team A</label><select name="teamA" id="selectA"><?php foreach($teams as $t): ?><option value="<?=$t['id']?>" <?=$teamA_id==$t['id']?'selected':''?>><?=$t['name']?></option><?php endforeach; ?></select></div>
                 <div><label>Team B</label><select name="teamB" id="selectB"><?php foreach($teams as $t): ?><option value="<?=$t['id']?>" <?=$teamB_id==$t['id']?'selected':''?>><?=$t['name']?></option><?php endforeach; ?></select></div>

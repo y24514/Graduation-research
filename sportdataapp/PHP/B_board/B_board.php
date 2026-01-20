@@ -308,15 +308,81 @@ require_once __DIR__ . '/../header.php';
 
     function loadList() {
         const list = document.getElementById('strategy-list');
-        list.innerHTML = "読込中...";
-        fetch('bapi.php?action=list').then(r => r.json()).then(data => {
-            list.innerHTML = data.map(i => `
-                <div style="background:#fff; margin-bottom:5px; padding:5px; border-radius:4px;">
-                    <span style="font-size:12px; color:#333">${i.name}</span><br>
-                    <button onclick="loadData(${i.id})" style="width:auto; min-height:24px; padding:2px 10px; background:var(--accent-blue)">開く</button>
-                </div>
-            `).join('');
-        });
+        list.textContent = "読込中...";
+        fetch('bapi.php?action=list')
+            .then(r => r.json())
+            .then(data => {
+                list.innerHTML = '';
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.textContent = '保存された作戦がありません';
+                    empty.style.fontSize = '12px';
+                    empty.style.color = '#333';
+                    list.appendChild(empty);
+                    return;
+                }
+
+                data.forEach((item) => {
+                    const wrap = document.createElement('div');
+                    wrap.style.background = '#fff';
+                    wrap.style.marginBottom = '6px';
+                    wrap.style.borderRadius = '6px';
+                    wrap.style.overflow = 'hidden';
+                    wrap.style.border = '1px solid #dcdcdc';
+
+                    const titleBtn = document.createElement('button');
+                    titleBtn.type = 'button';
+                    titleBtn.textContent = String(item?.name ?? '（無題）');
+                    titleBtn.style.width = '100%';
+                    titleBtn.style.minHeight = '36px';
+                    titleBtn.style.padding = '8px 10px';
+                    titleBtn.style.background = '#ffffff';
+                    titleBtn.style.color = '#333';
+                    titleBtn.style.border = 'none';
+                    titleBtn.style.textAlign = 'left';
+                    titleBtn.style.fontSize = '12px';
+                    titleBtn.style.cursor = 'pointer';
+
+                    const detail = document.createElement('div');
+                    detail.style.display = 'none';
+                    detail.style.padding = '8px 10px';
+                    detail.style.borderTop = '1px solid #eee';
+                    detail.style.background = '#fafafa';
+
+                    const actions = document.createElement('div');
+                    actions.style.display = 'flex';
+                    actions.style.gap = '8px';
+
+                    const openBtn = document.createElement('button');
+                    openBtn.type = 'button';
+                    openBtn.textContent = '開く';
+                    openBtn.style.width = 'auto';
+                    openBtn.style.minHeight = '28px';
+                    openBtn.style.padding = '2px 12px';
+                    openBtn.style.background = 'var(--accent-blue)';
+                    openBtn.onclick = () => loadData(Number(item?.id || 0));
+
+                    actions.appendChild(openBtn);
+                    detail.appendChild(actions);
+
+                    titleBtn.onclick = () => {
+                        // クリックしたものだけ詳細表示（他は閉じる）
+                        Array.from(list.querySelectorAll('[data-detail="1"]')).forEach((el) => {
+                            if (el !== detail) el.style.display = 'none';
+                        });
+                        detail.style.display = (detail.style.display === 'none') ? 'block' : 'none';
+                    };
+
+                    detail.setAttribute('data-detail', '1');
+                    wrap.appendChild(titleBtn);
+                    wrap.appendChild(detail);
+                    list.appendChild(wrap);
+                });
+            })
+            .catch(() => {
+                list.textContent = '読み込みに失敗しました';
+            });
     }
 
     function loadData(id) {

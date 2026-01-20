@@ -190,6 +190,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                 <button>バスケ</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/basketball_index.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
+                    <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/basketball_team.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">チーム管理</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/game.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合記録</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/analysis.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">分析</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/final.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">最終結果</a></li>

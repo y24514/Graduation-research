@@ -30,9 +30,58 @@ mysqli_set_charset($link, 'utf8');
 $errors = [];
 $showSuccess = isset($_GET['success']);
 
+// 種別（Kick/Pull等）: グループごとに管理
+$defaultKinds = ['W-up', 'SKP', 'Pull', 'Kick', 'Swim', 'Drill', 'Main', 'Down'];
+$kindOptions = $defaultKinds;
+
+$hasKindTable = false;
+$kindTblRes = mysqli_query(
+    $link,
+    "SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'swim_practice_kind_tbl' LIMIT 1"
+);
+if ($kindTblRes && mysqli_num_rows($kindTblRes) > 0) {
+    $hasKindTable = true;
+}
+if ($kindTblRes) {
+    mysqli_free_result($kindTblRes);
+}
+
+if ($hasKindTable) {
+    // 初回: デフォルト種別をこのgroupにシード（存在していれば無視）
+    $seedStmt = mysqli_prepare($link, "INSERT IGNORE INTO swim_practice_kind_tbl (group_id, kind_name, sort_order) VALUES (?, ?, ?)");
+    if ($seedStmt) {
+        foreach ($defaultKinds as $idx => $k) {
+            $order = $idx + 1;
+            mysqli_stmt_bind_param($seedStmt, 'ssi', $group_id, $k, $order);
+            @mysqli_stmt_execute($seedStmt);
+        }
+        mysqli_stmt_close($seedStmt);
+    }
+
+    $kinds = [];
+    $kStmt = mysqli_prepare($link, "SELECT kind_name FROM swim_practice_kind_tbl WHERE group_id = ? ORDER BY sort_order ASC, id ASC");
+    if ($kStmt) {
+        mysqli_stmt_bind_param($kStmt, 's', $group_id);
+        if (mysqli_stmt_execute($kStmt)) {
+            $r = mysqli_stmt_get_result($kStmt);
+            while ($r && ($row = mysqli_fetch_assoc($r))) {
+                $name = (string)($row['kind_name'] ?? '');
+                if ($name !== '') {
+                    $kinds[] = $name;
+                }
+            }
+        }
+        mysqli_stmt_close($kStmt);
+    }
+    if (!empty($kinds)) {
+        $kindOptions = $kinds;
+    }
+}
+
 $practice_total = 0;
 $latest_practice_date = null;
 $practices = [];
+$practiceEvents = [];
 
 // テーブルがあるか確認（未作成でも画面が壊れないように）
 $hasPracticeTable = false;
@@ -80,11 +129,31 @@ if ($hasPracticeTable) {
     } else {
         error_log('Prepare failed (list swim_practice_tbl): ' . mysqli_error($link));
     }
+
+    // カレンダー表示用（FullCalendar events）
+    foreach ($practices as $p) {
+        $id = (int)($p['id'] ?? 0);
+        $date = (string)($p['practice_date'] ?? '');
+        // YYYY-MM-DD 以外が来てもなるべく安全に
+        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : '';
+        if ($id <= 0 || $date === '') continue;
+
+        $titleText = trim((string)($p['title'] ?? ''));
+        if ($titleText === '') $titleText = '（無題）';
+
+        $practiceEvents[] = [
+            'id' => (string)$id,
+            'title' => $titleText,
+            'start' => $date,
+            'allDay' => true,
+        ];
+    }
 }
 
 $practice_date = $_POST['practice_date'] ?? date('Y-m-d');
 $title = $_POST['title'] ?? '';
 $menu_text = $_POST['menu_text'] ?? '';
+$menu_json = $_POST['menu_json'] ?? '';
 $memo = $_POST['memo'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -95,6 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $practice_date = trim((string)$practice_date);
     $title = trim((string)$title);
     $menu_text = trim((string)$menu_text);
+    $menu_json = trim((string)$menu_json);
     $memo = trim((string)$memo);
 
     if ($practice_date === '') {

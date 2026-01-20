@@ -10,8 +10,35 @@
     <link rel="stylesheet" href="../../css/swim_practice.css">
     <link rel="stylesheet" href="../../css/site.css">
 
+    <script src="../../js/fullcalendar/dist/index.global.min.js" defer></script>
+    <script src="../../js/swim_practice_create.js" defer></script>
+
     <script>
-        const showLoader = <?= $showLoader ? 'true' : 'false' ?>;
+        // JS から globalThis/window 経由で参照するため、const ではなく window に載せる
+        window.showLoader = <?= $showLoader ? 'true' : 'false' ?>;
+        window.tabId = <?= json_encode((string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        window.initialMenuJson = <?= json_encode((string)($menu_json ?? ''), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        window.initialMenuText = <?= json_encode((string)($menu_text ?? ''), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        window.kindOptions = <?= json_encode($kindOptions ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        window.practiceEvents = <?= json_encode($practiceEvents ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        window.practiceCache = <?php
+            $cache = [];
+            if (!empty($practices) && is_array($practices)) {
+                foreach ($practices as $p) {
+                    $id = (int)($p['id'] ?? 0);
+                    if ($id <= 0) continue;
+                    $cache[(string)$id] = [
+                        'id' => $id,
+                        'practice_date' => (string)($p['practice_date'] ?? ''),
+                        'title' => (string)($p['title'] ?? ''),
+                        'menu_text' => (string)($p['menu_text'] ?? ''),
+                        'memo' => (string)($p['memo'] ?? ''),
+                        'created_at' => (string)($p['created_at'] ?? ''),
+                    ];
+                }
+            }
+            echo json_encode($cache, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        ?>;
     </script>
 </head>
 <body>
@@ -29,21 +56,7 @@
         <div class="success-banner">練習メニューを保存しました</div>
     <?php endif; ?>
 
-    <!-- 練習サマリー -->
-    <div class="stats-summary practice-summary">
-        <div class="stat-card">
-            <div class="stat-content">
-                <div class="stat-label">作成済み</div>
-                <div class="stat-value"><?= (int)$practice_total ?><span class="stat-unit">件</span></div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-content">
-                <div class="stat-label">最新日</div>
-                <div class="stat-value"><?= !empty($latest_practice_date) ? htmlspecialchars($latest_practice_date, ENT_QUOTES, 'UTF-8') : '—' ?></div>
-            </div>
-        </div>
-    </div>
+    <!-- 練習サマリー（不要なら非表示） -->
 
     <?php if (!empty($errors)): ?>
         <div class="error-box" style="margin: 16px 0;">
@@ -69,12 +82,120 @@
                     <label>タイトル</label>
                     <input type="text" name="title" value="<?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>" placeholder="例: メイン 100m×10" required>
 
-                    <label>メニュー</label>
-                    <textarea name="menu_text" rows="8" placeholder="例:
+                    <label>練習スケジュール</label>
+                    <div class="lane-planner" data-lane-planner>
+                        <div class="lane-tabs" role="tablist" aria-label="レーン切り替え">
+                            <button type="button" class="lane-tab is-active" data-lane-tab data-lane="attendance" role="tab" aria-selected="true">出席設定</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="all" role="tab" aria-selected="false">全体</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="1" role="tab" aria-selected="false">レーン1</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="2" role="tab" aria-selected="false">レーン2</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="3" role="tab" aria-selected="false">レーン3</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="4" role="tab" aria-selected="false">レーン4</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="5" role="tab" aria-selected="false">レーン5</button>
+                            <button type="button" class="lane-tab" data-lane-tab data-lane="6" role="tab" aria-selected="false">レーン6</button>
+                        </div>
+
+                        <div class="lane-toolbar">
+                            <div class="lane-toolbar__left">
+                                <button type="button" class="lane-btn" data-action="add-row">行を追加</button>
+                                <button type="button" class="lane-btn" data-action="add-kind">種類を追加</button>
+                                <button type="button" class="lane-btn" data-action="duplicate-row" disabled>行を複製</button>
+                                <button type="button" class="lane-btn lane-btn--danger" data-action="delete-row" disabled>行を削除</button>
+                            </div>
+                            <div class="lane-toolbar__right">
+                                <button type="button" class="lane-btn" data-action="print">印刷プレビュー</button>
+                                <button type="button" class="lane-btn" data-action="copy-from-lane">他レーンから複製</button>
+                                <button type="button" class="lane-btn" data-action="help">使い方ヒント</button>
+                            </div>
+                        </div>
+
+                        <div class="lane-panel is-active" data-lane-panel data-lane="attendance">
+                            <div class="lane-empty">
+                                出席設定（この画面では未実装）。レーンタブを選んで練習メニューを作成してください。
+                            </div>
+                        </div>
+
+                        <div class="lane-panel" data-lane-panel data-lane="all">
+                            <div class="lane-empty" style="margin-bottom: 10px;">
+                                「全体」で編集すると、全レーンに同じ内容が同時反映されます（あとから各レーンで個別に調整も可能）。
+                            </div>
+
+                            <div class="lane-table-wrap">
+                                <table class="lane-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="col-kind">種類</th>
+                                        <th class="col-dist">距離</th>
+                                        <th class="col-reps">本数</th>
+                                        <th class="col-cycle">サイクル</th>
+                                        <th class="col-set">セット間</th>
+                                        <th class="col-stroke">種目</th>
+                                        <th class="col-note">内容</th>
+                                        <th class="col-intensity">強度</th>
+                                        <th class="col-total">折距離</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-lane-tbody data-lane="all"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="lane-footer">
+                                <div class="lane-footer__left">
+                                    <span class="lane-total-label">合計</span>
+                                    <span class="lane-total" data-lane-total data-lane="all">0m</span>
+                                </div>
+                                <div class="lane-footer__right">
+                                    <span class="lane-hint">行をクリックして選択できます</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php for ($i = 1; $i <= 6; $i++): ?>
+                            <div class="lane-panel" data-lane-panel data-lane="<?= $i ?>">
+                                <div class="lane-table-wrap">
+                                    <table class="lane-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-kind">種類</th>
+                                            <th class="col-dist">距離</th>
+                                            <th class="col-reps">本数</th>
+                                            <th class="col-cycle">サイクル</th>
+                                            <th class="col-set">セット間</th>
+                                            <th class="col-stroke">種目</th>
+                                            <th class="col-note">内容</th>
+                                            <th class="col-intensity">強度</th>
+                                            <th class="col-total">折距離</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody data-lane-tbody data-lane="<?= $i ?>"></tbody>
+                                    </table>
+                                </div>
+
+                                <div class="lane-footer">
+                                    <div class="lane-footer__left">
+                                        <span class="lane-total-label">合計</span>
+                                        <span class="lane-total" data-lane-total data-lane="<?= $i ?>">0m</span>
+                                    </div>
+                                    <div class="lane-footer__right">
+                                        <span class="lane-hint">行をクリックして選択できます</span>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endfor; ?>
+
+                        <input type="hidden" name="menu_json" value="" data-menu-json>
+                        <textarea name="menu_text" data-menu-text hidden><?= htmlspecialchars($menu_text, ENT_QUOTES, 'UTF-8') ?></textarea>
+
+                        <details class="lane-raw-editor">
+                            <summary>テキストで直接編集（互換モード）</summary>
+                            <p class="lane-raw-editor__note">表で入力した内容は保存時にこのテキストへ変換されます。ここを編集すると表の内容とは同期しません。</p>
+                            <textarea rows="8" data-menu-text-editor placeholder="例:
 W-up 200
 Kick 50×8 (1:10)
 Main 100×10 (1:30)
 Down 200"><?= htmlspecialchars($menu_text, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        </details>
+                    </div>
 
                     <label>メモ</label>
                     <textarea name="memo" rows="4" placeholder="例: 体調、目標、意識したことなど"><?= htmlspecialchars($memo, ENT_QUOTES, 'UTF-8') ?></textarea>
@@ -96,39 +217,75 @@ Down 200"><?= htmlspecialchars($menu_text, ENT_QUOTES, 'UTF-8') ?></textarea>
         <!-- 右カラム: 一覧 -->
         <div class="info-panel practice-list-panel">
             <div class="info-section">
-                <h3 class="section-title">作成済み練習（最新20件）</h3>
+                <div class="practice-list-header">
+                    <h3 class="section-title">作成済み練習（最新20件）</h3>
+                    <div class="practice-view-toggle" role="tablist" aria-label="表示切替">
+                        <button type="button" class="practice-view-btn is-active" data-action="practice-view" data-view="list" aria-selected="true">リスト</button>
+                        <button type="button" class="practice-view-btn" data-action="practice-view" data-view="calendar" aria-selected="false">カレンダー</button>
+                    </div>
+                </div>
+
+                <div class="practice-list-tools" data-practice-list-tools>
+                    <div class="practice-search">
+                        <input type="search" class="practice-search__input" placeholder="検索（タイトル / 日付）" data-practice-search>
+                        <button type="button" class="practice-search__clear" data-action="practice-search-clear" aria-label="検索をクリア" hidden>×</button>
+                    </div>
+                    <div class="practice-list-meta">
+                        <span class="practice-count" data-practice-count></span>
+                    </div>
+                </div>
 
                 <?php if (empty($hasPracticeTable)): ?>
                     <div class="no-data">DBテーブル未作成のため一覧を表示できません</div>
                 <?php elseif (empty($practices)): ?>
                     <div class="no-data">まだ練習がありません。左のフォームから作成してください。</div>
                 <?php else: ?>
-                    <div class="practice-list">
+                    <div class="practice-list" data-practice-list>
+                        <?php $today = date('Y-m-d'); ?>
                         <?php foreach ($practices as $p): ?>
                             <?php
                             $pDate = $p['practice_date'] ?? '';
                             $pTitle = $p['title'] ?? '';
-                            $pMenu = $p['menu_text'] ?? '';
-                            $pMemo = $p['memo'] ?? '';
+                            $isToday = ($pDate === $today);
                             ?>
-                            <div class="practice-card">
-                                <div class="practice-card__top">
-                                    <div class="practice-card__date"><?= htmlspecialchars((string)$pDate, ENT_QUOTES, 'UTF-8') ?></div>
-                                    <div class="practice-card__title"><?= htmlspecialchars((string)$pTitle, ENT_QUOTES, 'UTF-8') ?></div>
-                                </div>
-                                <?php if (trim((string)$pMenu) !== ''): ?>
-                                    <pre class="practice-card__menu"><?= htmlspecialchars((string)$pMenu, ENT_QUOTES, 'UTF-8') ?></pre>
-                                <?php endif; ?>
-                                <?php if (trim((string)$pMemo) !== ''): ?>
-                                    <div class="practice-card__memo">
-                                        <span class="practice-card__memo-label">メモ</span>
-                                        <div class="practice-card__memo-text"><?= nl2br(htmlspecialchars((string)$pMemo, ENT_QUOTES, 'UTF-8')) ?></div>
-                                    </div>
-                                <?php endif; ?>
+                            <div class="practice-card<?= $isToday ? ' is-today' : '' ?>" data-practice-card data-practice-id="<?= (int)($p['id'] ?? 0) ?>" data-practice-date="<?= htmlspecialchars((string)$pDate, ENT_QUOTES, 'UTF-8') ?>" data-practice-title="<?= htmlspecialchars((string)$pTitle, ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="button" class="practice-card__header" data-action="open-practice" data-practice-id="<?= (int)($p['id'] ?? 0) ?>">
+                                    <span class="practice-card__date"><?= htmlspecialchars((string)$pDate, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span class="practice-card__title"><?= htmlspecialchars((string)$pTitle, ENT_QUOTES, 'UTF-8') ?></span>
+                                </button>
+                                <button type="button" class="practice-card__quick" data-action="quote-practice" data-practice-id="<?= (int)($p['id'] ?? 0) ?>">引用</button>
                             </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <div class="practice-calendar" data-practice-calendar hidden></div>
                 <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 練習詳細モーダル（リスト/カレンダー共通） -->
+<div class="practice-modal" data-practice-modal hidden>
+    <div class="practice-modal__backdrop" data-action="close-practice-modal" aria-hidden="true"></div>
+    <div class="practice-modal__dialog" role="dialog" aria-modal="true" aria-label="練習の詳細">
+        <div class="practice-modal__header">
+            <div class="practice-modal__meta">
+                <div class="practice-modal__date" data-practice-modal-date></div>
+                <div class="practice-modal__title" data-practice-modal-title></div>
+            </div>
+            <button type="button" class="practice-modal__close" data-action="close-practice-modal" aria-label="閉じる">×</button>
+        </div>
+
+        <div class="practice-modal__actions">
+            <button type="button" class="lane-btn" data-action="quote-practice" data-practice-id="" data-practice-modal-quote>この練習を引用</button>
+        </div>
+
+        <div class="practice-modal__body">
+            <pre class="practice-modal__menu" data-practice-modal-menu></pre>
+            <div class="practice-modal__memo" data-practice-modal-memo hidden>
+                <div class="practice-modal__memo-label">メモ</div>
+                <div class="practice-modal__memo-text" data-practice-modal-memo-text></div>
             </div>
         </div>
     </div>

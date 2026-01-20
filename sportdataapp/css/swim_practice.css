@@ -4,13 +4,253 @@
    既存: swim_input.css の変数/トーンに合わせる
 ===================== */
 
-.practice-grid {
-  grid-template-columns: 1fr 520px;
+/* このページは2カラムで横幅が必要。
+   site.css の :where(.container){ width: min(1200px, ...) } が上限になっていたため、ここで上書きする。 */
+.container {
+  width: min(calc(1600px + 2rem), calc(100% - 32px));
+  margin-left: auto;
+  margin-right: auto;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 767px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+}
+
+.practice-grid {
+  /* 2カラム時: 左1000px / 右600px（content-grid の gap=2rem を想定） */
+  grid-template-columns: minmax(0, 1000px) minmax(0, 600px);
+  max-width: calc(1600px + 2rem);
+}
+
+/* 699px以下: 縦積み */
+@media (max-width: 699px) {
   .practice-grid {
     grid-template-columns: 1fr;
+    max-width: 1600px;
+  }
+}
+
+/* =====================
+   Right Panel (Practice List)
+   左のメニュー作成サイズは維持しつつ、右の一覧は画面内に収める
+===================== */
+
+.practice-list-panel {
+  align-self: start;
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 120px);
+}
+
+.practice-list-panel .info-section {
+  height: 100%;
+  max-height: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.practice-list-panel .section-title {
+  flex: 0 0 auto;
+}
+
+.practice-list-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+/* hidden属性が author CSS に負ける環境があるので明示的に強制 */
+.practice-list[hidden],
+.practice-calendar[hidden],
+.practice-list-tools[hidden] {
+  display: none !important;
+}
+
+.practice-list-tools {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.practice-search {
+  position: relative;
+  width: 100%;
+}
+
+.practice-search__input {
+  width: 100%;
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 34px 10px 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.practice-search__input::placeholder {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.practice-search__input:focus {
+  outline: none;
+  border-color: rgba(49, 130, 206, 0.5);
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.12);
+}
+
+.practice-search__clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.practice-search__clear:hover {
+  border-color: var(--primary);
+}
+
+.practice-list-meta {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.practice-count {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.practice-view-toggle {
+  display: inline-flex;
+  align-self: flex-end;
+  max-width: 100%;
+
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.practice-view-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.practice-view-btn.is-active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.practice-view-btn:hover {
+  background: rgba(49, 130, 206, 0.10);
+  color: var(--text);
+}
+
+.practice-view-btn:active {
+  transform: translateY(0.5px);
+}
+
+.practice-view-btn:focus {
+  outline: none;
+}
+
+.practice-view-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.18);
+}
+
+/* 軽いアイコン（CSSだけ） */
+.practice-view-btn[data-view="list"]::before {
+  content: "≡";
+  font-weight: 900;
+  opacity: 0.85;
+}
+
+.practice-view-btn[data-view="calendar"]::before {
+  content: "▦";
+  font-weight: 900;
+  opacity: 0.85;
+}
+
+.practice-list-panel .practice-list {
+  flex: 1 1 auto;
+  overflow: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+}
+
+.practice-calendar {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+/* FullCalendar: 300pxでも破綻しにくいように微調整 */
+.practice-calendar .fc {
+  font-size: 0.78rem;
+}
+
+.practice-calendar .fc .fc-toolbar {
+  margin-bottom: 6px;
+}
+
+.practice-calendar .fc .fc-button {
+  padding: 0.28em 0.55em;
+  font-size: 0.85rem;
+  border-radius: 10px;
+}
+
+.practice-calendar .fc .fc-toolbar-title {
+  font-size: 0.92rem;
+}
+
+.practice-calendar .fc .fc-toolbar-title {
+  font-size: 0.95rem;
+}
+
+.practice-calendar .fc .fc-daygrid-day-number {
+  padding: 2px 4px;
+}
+
+@media (max-width: 699px) {
+  .practice-list-panel {
+    position: static;
+    max-height: none;
+  }
+
+  .practice-list-panel .practice-list {
+    overflow: visible;
   }
 }
 
@@ -26,13 +266,53 @@
   margin-top: 12px;
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: stretch;
+}
+
+/* 保存/戻る を同じ比率・サイズに */
+.practice-actions > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* swim_input.css の submit ボタンの margin-top/width を、このページのフッターでは抑制 */
+.practice-actions button[type="submit"] {
+  margin-top: 0;
+  width: 100%;
 }
 
 .practice-link {
   text-decoration: none;
   display: inline-flex;
   justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: #ffffff;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.practice-link:hover {
+  transform: translateY(-3px);
+  border-color: rgba(49, 130, 206, 0.55);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+}
+
+.practice-link:active {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 520px) {
+  .practice-actions {
+    flex-direction: column;
+  }
 }
 
 .practice-list {
@@ -45,33 +325,230 @@
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.practice-card.is-today {
+  border-color: rgba(49, 130, 206, 0.55);
+  box-shadow: 0 2px 12px rgba(49, 130, 206, 0.12);
 }
 
 .practice-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow);
+  border-color: var(--border);
+}
+
+.practice-card__header {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 6px 6px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  text-align: left;
+  border-radius: 10px;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+.practice-card__quick {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.practice-card__quick:hover {
   border-color: var(--primary);
 }
 
-.practice-card__top {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 10px;
-  align-items: baseline;
-  margin-bottom: 8px;
+.practice-card__header:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.practice-card__header:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  background: var(--card);
+}
+
+.practice-card__header:hover {
+  background: var(--card);
+}
+
+.practice-card__header[aria-expanded="true"] {
+  background: var(--card);
 }
 
 .practice-card__date {
   font-weight: 700;
   color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .practice-card__title {
   font-weight: 800;
   color: var(--text);
+  font-size: 0.95rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.practice-card__details {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+
+  min-width: 0;
+}
+
+/* =====================
+   Practice Detail Modal
+===================== */
+
+.practice-modal[hidden] {
+  display: none;
+}
+
+.practice-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.practice-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.practice-modal__dialog {
+  position: relative;
+  width: min(680px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  margin: 12px auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.practice-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.practice-modal__meta {
+  min-width: 0;
+}
+
+.practice-modal__date {
+  color: var(--text-secondary);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.practice-modal__title {
+  color: var(--text);
+  font-weight: 900;
+  font-size: 1.05rem;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.practice-modal__close {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.practice-modal__close:hover {
+  border-color: var(--primary);
+}
+
+.practice-modal__actions {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.practice-modal__body {
+  padding: 0 14px 14px;
+  overflow: auto;
+}
+
+.practice-modal__menu {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.practice-modal__memo {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.practice-modal__memo-label {
+  font-weight: 900;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.practice-modal__memo-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .practice-card__menu {
@@ -86,16 +563,26 @@
   line-height: 1.5;
   color: var(--text);
 
-  display: -webkit-box;
-  -webkit-line-clamp: 7;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  /* 詳細内でスクロール（長文対策） */
+  max-height: 240px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.practice-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 6px 0 10px;
 }
 
 .practice-card__memo {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px dashed var(--border);
+
+  flex: 0 0 auto;
 }
 
 .practice-card__memo-label {
@@ -114,4 +601,263 @@
 
 .practice-summary .stat-card {
   min-height: 110px;
+}
+
+/* =====================
+   Lane Planner UI
+===================== */
+
+.lane-planner {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  overflow: hidden;
+  width: 1000px;
+  max-width: 100%;
+}
+
+.lane-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0));
+}
+
+.lane-tab {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lane-tab:hover {
+  border-color: var(--primary);
+}
+
+.lane-tab.is-active {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.lane-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.lane-toolbar__left,
+.lane-toolbar__right {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.lane-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.lane-btn:hover {
+  border-color: var(--primary);
+}
+
+.lane-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lane-btn--danger:hover {
+  border-color: #e5484d;
+}
+
+.lane-panel {
+  display: none;
+  padding: 10px;
+}
+
+.lane-panel.is-active {
+  display: block;
+}
+
+.lane-empty {
+  padding: 14px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.02);
+
+  min-width: 0;
+  width: 100%;
+}
+
+.lane-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+
+  min-width: 0;
+  width: 100%;
+}
+
+.lane-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.lane-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--card) !important;
+  color: var(--text) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  text-shadow: none !important;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 8px;
+  font-size: 0.9rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lane-table tbody td {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 6px 8px;
+  vertical-align: middle;
+  background: var(--bg);
+}
+
+.lane-row.is-selected td {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.lane-table .lane-cell {
+  width: 100%;
+  border: 2px solid #94a3b8;
+  border-radius: 10px;
+  padding: 7px 8px;
+  background: #ffffff;
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text);
+  font-size: 0.9rem;
+}
+
+.lane-table .lane-cell::placeholder {
+  color: var(--muted);
+}
+
+.lane-table .lane-cell:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.15);
+}
+
+.lane-table select.lane-cell {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234a5568' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.1rem;
+}
+
+.lane-table select.lane-cell option {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
+/* 何らかの全体CSSでselect文字色が白に上書きされるケースを潰す */
+.lane-table select.lane-cell,
+.lane-table input.lane-cell {
+  color: var(--text) !important;
+  background-color: #ffffff !important;
+}
+
+.lane-cell--num {
+  text-align: right;
+}
+
+.lane-total-cell {
+  font-weight: 800;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.col-kind { width: 110px; }
+.col-dist { width: 90px; }
+.col-reps { width: 70px; }
+.col-cycle { width: 110px; }
+.col-set { width: 110px; }
+.col-stroke { width: 90px; }
+.col-note { width: 240px; }
+.col-intensity { width: 90px; }
+.col-total { width: 90px; text-align: right; }
+
+.lane-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 2px 0;
+  align-items: center;
+}
+
+.lane-total-label {
+  font-weight: 800;
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.lane-total {
+  font-weight: 900;
+  color: var(--text);
+}
+
+.lane-hint {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.lane-raw-editor {
+  margin: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.lane-raw-editor summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.lane-raw-editor__note {
+  margin: 10px 0 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.lane-raw-editor textarea {
+  width: 100%;
+  border-radius: 12px;
 }
