@@ -1,0 +1,267 @@
+@startuml
+title SportDataApp ER図（主要テーブル）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+
+package "Core" {
+  entity "login_tbl" as login {
+    *id : int
+    --
+    *group_id : varchar
+    *user_id : varchar
+    password : varchar
+    name : varchar
+    sport : varchar
+    is_admin : tinyint
+    is_super_admin : tinyint
+  }
+
+  entity "admin_role_requests" as admin_role_requests {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    status : enum
+    actioned_by : varchar
+    requested_at : datetime
+  }
+
+  entity "goal_tbl" as goal {
+    *goal_id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    goal : text
+    progress : int
+    deadline : date
+  }
+
+  entity "pi_tbl" as pi {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    height : decimal
+    weight : decimal
+    sleeptime : time
+    memo : text
+  }
+
+  entity "diary_tbl" as diary {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    diary_date : date
+    title : varchar
+    content : text
+    submitted_to_admin : tinyint
+    admin_feedback : text
+  }
+
+  entity "calendar_tbl" as cal {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    title : varchar
+    startdate : date
+    enddate : date
+    is_shared : tinyint
+  }
+
+  entity "inquiries_tbl" as inq {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    status : tinyint
+    responded_by_user_id : varchar
+  }
+}
+
+package "Chat" {
+  entity "chat_group_tbl" as chat_group {
+    *chat_group_id : int
+    --
+    group_id : varchar
+    group_name : varchar
+    created_by : varchar
+  }
+
+  entity "chat_group_member_tbl" as chat_group_member {
+    *id : int
+    --
+    chat_group_id : int
+    group_id : varchar
+    user_id : varchar
+  }
+
+  entity "chat_tbl" as chat {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    chat_type : enum
+    chat_group_id : int
+    recipient_id : varchar
+    message : text
+    image_path : varchar
+    is_deleted : tinyint
+  }
+
+  entity "chat_read_status_tbl" as chat_read {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    chat_type : enum
+    chat_group_id : int
+    recipient_id : varchar
+    last_read_message_id : int
+  }
+}
+
+package "Swim" {
+  entity "swim_tbl" as swim {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    pool : enum
+    event : enum
+    distance : int
+    total_time : decimal
+    stroke_json : json
+    lap_json : json
+  }
+
+  entity "swim_best_tbl" as swimbest {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    pool : enum
+    event : varchar
+    distance : int
+    best_time : decimal
+  }
+
+  entity "swim_practice_tbl" as swimprac {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    practice_date : date
+    title : varchar
+  }
+}
+
+package "Basketball" {
+  entity "teams" as teams {
+    *id : int
+    --
+    name : varchar
+  }
+
+  entity "players" as players {
+    *id : int
+    --
+    team_id : int
+    number : int
+    name : varchar
+  }
+
+  entity "games" as games {
+    *id : bigint
+    --
+    team_a_name : varchar
+    team_b_name : varchar
+    group_id : varchar
+    saved_by_user_id : varchar
+  }
+
+  entity "game_actions" as game_actions {
+    *id : bigint
+    --
+    game_id : bigint
+    quarter : tinyint
+    team : char
+    player_id : int
+    action_type : varchar
+    point : tinyint
+  }
+
+  entity "basketball_strategies" as bb_strategy {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    name : varchar
+    json_data : longtext
+  }
+}
+
+package "Tennis" {
+  entity "tennis_games" as t_games {
+    *id : int
+    --
+    team_a : varchar
+    team_b : varchar
+    games_a : int
+    games_b : int
+    group_id : varchar
+    saved_by_user_id : varchar
+  }
+
+  entity "tennis_actions" as t_actions {
+    *id : int
+    --
+    game_id : int
+    player_name : varchar
+    action_type : varchar
+    score_a : int
+    score_b : int
+  }
+
+  entity "tennis_strategies" as t_strategy {
+    *id : int
+    --
+    group_id : varchar
+    user_id : varchar
+    name : varchar
+    json_data : longtext
+  }
+}
+
+' --- Relations (logical; group_id/user_id are not always FK constrained) ---
+login ||--o{ goal : "(group_id,user_id)"
+login ||--o{ pi : "(group_id,user_id)"
+login ||--o{ diary : "(group_id,user_id)"
+login ||--o{ cal : "(group_id,user_id)"
+login ||--o{ inq : "(group_id,user_id)"
+login ||--o{ chat : "(group_id,user_id)"
+
+chat_group ||--o{ chat_group_member : members
+chat_group ||--o{ chat : group_messages
+
+players }o--|| teams : team_id
+
+games ||--o{ game_actions : actions
+players ||--o{ game_actions : player_id
+
+login ||--o{ swim : "(group_id,user_id)"
+login ||--o{ swimbest : "(group_id,user_id)"
+login ||--o{ swimprac : "(group_id,user_id)"
+
+t_games ||--o{ t_actions : actions
+login ||--o{ t_games : saved
+login ||--o{ t_strategy : strategies
+login ||--o{ bb_strategy : strategies
+
+login ||--o{ admin_role_requests : requests
+
+@enduml

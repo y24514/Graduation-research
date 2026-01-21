@@ -75,6 +75,7 @@
         <div class="form-panel practice-form-panel">
             <h2 class="panel-title">練習メニュー作成</h2>
             <form method="post" class="practice-form">
+                <input type="hidden" name="tab_id" value="<?= htmlspecialchars((string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="form-basic practice-form-basic">
                     <label>日付</label>
                     <input type="date" name="practice_date" value="<?= htmlspecialchars($practice_date, ENT_QUOTES, 'UTF-8') ?>" required>
@@ -85,8 +86,7 @@
                     <label>練習スケジュール</label>
                     <div class="lane-planner" data-lane-planner>
                         <div class="lane-tabs" role="tablist" aria-label="レーン切り替え">
-                            <button type="button" class="lane-tab is-active" data-lane-tab data-lane="attendance" role="tab" aria-selected="true">出席設定</button>
-                            <button type="button" class="lane-tab" data-lane-tab data-lane="all" role="tab" aria-selected="false">全体</button>
+                            <button type="button" class="lane-tab is-active" data-lane-tab data-lane="all" role="tab" aria-selected="true">全体</button>
                             <button type="button" class="lane-tab" data-lane-tab data-lane="1" role="tab" aria-selected="false">レーン1</button>
                             <button type="button" class="lane-tab" data-lane-tab data-lane="2" role="tab" aria-selected="false">レーン2</button>
                             <button type="button" class="lane-tab" data-lane-tab data-lane="3" role="tab" aria-selected="false">レーン3</button>
@@ -109,13 +109,7 @@
                             </div>
                         </div>
 
-                        <div class="lane-panel is-active" data-lane-panel data-lane="attendance">
-                            <div class="lane-empty">
-                                出席設定（この画面では未実装）。レーンタブを選んで練習メニューを作成してください。
-                            </div>
-                        </div>
-
-                        <div class="lane-panel" data-lane-panel data-lane="all">
+                        <div class="lane-panel is-active" data-lane-panel data-lane="all">
                             <div class="lane-empty" style="margin-bottom: 10px;">
                                 「全体」で編集すると、全レーンに同じ内容が同時反映されます（あとから各レーンで個別に調整も可能）。
                             </div>
@@ -202,7 +196,7 @@ Down 200"><?= htmlspecialchars($menu_text, ENT_QUOTES, 'UTF-8') ?></textarea>
 
                     <div class="practice-actions">
                         <button type="submit" class="submit-btn">保存</button>
-                        <a href="swim_input.php" class="submit-btn practice-link">記録へ戻る</a>
+                        <a href="swim_input.php?tab_id=<?= rawurlencode((string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? ''))) ?>" class="submit-btn practice-link">記録へ戻る</a>
                     </div>
 
                     <?php if (empty($hasPracticeTable)): ?>
@@ -279,6 +273,7 @@ Down 200"><?= htmlspecialchars($menu_text, ENT_QUOTES, 'UTF-8') ?></textarea>
 
         <div class="practice-modal__actions">
             <button type="button" class="lane-btn" data-action="quote-practice" data-practice-id="" data-practice-modal-quote>この練習を引用</button>
+            <button type="button" class="lane-btn lane-btn--danger" data-action="delete-practice" data-practice-id="" data-practice-modal-delete>削除</button>
         </div>
 
         <div class="practice-modal__body">

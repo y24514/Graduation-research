@@ -1,0 +1,22 @@
+@startuml
+title シーケンス図: チャット送信（個人/グループ）
+
+actor User as "利用者"
+boundary Browser as "ブラウザ"
+control ChatPHP as "PHP/chat.php"
+database DB as "sportdata_db\nchat_tbl"
+
+User -> Browser : メッセージ入力/送信
+Browser -> ChatPHP : POST(chat_type, chat_group_id/recipient_id, message, (image))
+ChatPHP -> ChatPHP : セッション確認\n(group_id,user_id)
+ChatPHP -> DB : INSERT INTO chat_tbl(...) VALUES(...)
+DB --> ChatPHP : OK(新規id)
+ChatPHP --> Browser : JSON/HTMLで結果返却
+Browser -> Browser : UIに送信メッセージ反映
+
+note over DB
+既読は chat_read_status_tbl で管理
+(一覧や取得時に更新)
+end note
+
+@enduml

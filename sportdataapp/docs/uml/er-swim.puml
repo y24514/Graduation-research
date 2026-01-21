@@ -1,0 +1,58 @@
+@startuml
+title ER図: Swim（水泳記録/ベスト/練習）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+skinparam ArrowFontSize 10
+
+entity "login_tbl" as login {
+  *id : int
+  --
+  *group_id : varchar
+  *user_id : varchar
+  name : varchar
+}
+
+entity "swim_tbl" as swim {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  pool : enum
+  event : enum
+  distance : int
+  total_time : decimal
+}
+
+entity "swim_best_tbl" as swimbest {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  pool : enum
+  event : varchar
+  distance : int
+  best_time : decimal
+}
+
+entity "swim_practice_tbl" as swimprac {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  practice_date : date
+  title : varchar
+}
+
+login ||--o{ swim
+login ||--o{ swimbest
+login ||--o{ swimprac
+
+legend right
+  共通の論理キー:
+  - (group_id, user_id)
+endlegend
+
+@enduml

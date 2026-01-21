@@ -1,0 +1,36 @@
+@startuml
+title シーケンス図: 日記提出と管理者フィードバック
+
+actor User as "一般ユーザー"
+actor Admin as "管理者"
+boundary Browser as "ブラウザ"
+control DiaryAPI as "PHP/diary_api.php"
+control AdminPage as "PHP/admin.php / diary画面"
+database DB as "sportdata_db\ndiary_tbl"
+
+User -> Browser : 日記を提出(提出ボタン)
+Browser -> DiaryAPI : POST(action=submit, diary_id)
+DiaryAPI -> DiaryAPI : セッション確認\n(group_id,user_id)
+DiaryAPI -> DB : UPDATE diary_tbl\nSET submitted_to_admin=1, submitted_at=NOW()\nWHERE id=? AND group_id=? AND user_id=?
+DB --> DiaryAPI : OK
+DiaryAPI --> Browser : 成功レスポンス
+
+Admin -> Browser : 提出一覧を閲覧
+Browser -> AdminPage : GET
+AdminPage -> DB : SELECT ... FROM diary_tbl\nWHERE group_id=? AND submitted_to_admin=1
+DB --> AdminPage : 一覧
+AdminPage --> Browser : 提出日記一覧表示
+
+Admin -> Browser : フィードバック入力/送信
+Browser -> AdminPage : POST(diary_id, admin_feedback)
+AdminPage -> DB : UPDATE diary_tbl\nSET admin_feedback=?, admin_feedback_at=NOW(),\nadmin_feedback_by_user_id=?\nWHERE id=? AND group_id=?
+DB --> AdminPage : OK
+AdminPage --> Browser : 完了表示
+
+note over DB
+submitted_to_admin/admin_feedback系の列は
+環境によっては存在しない可能性があるため
+実装側で列存在チェックの互換処理がある
+end note
+
+@enduml

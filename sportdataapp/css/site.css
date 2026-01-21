@@ -5,6 +5,7 @@
     --accent:#1976d2;
     --shadow: 0 6px 18px rgba(15,23,42,0.08);
     --radius:10px;
+    --container-max: 1400px;
 }
 
 /* =====================
@@ -21,13 +22,32 @@
     -webkit-text-size-adjust: 100%;
 }
 
+html{
+    font-size: 16px;
+}
+
 :where(body){
     margin: 0;
+}
+
+body{
+    font-size: 1rem;
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
 }
 
 :where(img, video, canvas){
     max-width: 100%;
     height: auto;
+}
+
+:where(pre){
+    max-width: 100%;
+    overflow: auto;
+}
+
+:where(table){
+    max-width: 100%;
 }
 
 /* Unbroken text (IDs/URLs/long names) shouldn't break layout */
@@ -41,16 +61,53 @@
     max-width: 100%;
 }
 
+:where(button, a){
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Common: grid/flex children should be allowed to shrink (prevents overflow) */
+:where(.content-grid, .content-grid > *, .content-grid *),
+:where([class*="grid"], [class*="grid"] > *),
+:where([class*="row"], [class*="row"] > *){
+    min-width: 0;
+}
+
 /* Common wrapper: if a page uses .container without styling, make it responsive */
 :where(.container){
-    width: min(1200px, calc(100% - 32px));
+    width: 100%;
+    max-width: var(--container-max);
     margin-left: auto;
     margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+:where(.container > *){
+    min-width: 0;
 }
 
 @media (max-width: 767px){
+    html{
+        font-size: 15px;
+    }
+
     :where(.container){
-        width: calc(100% - 24px);
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Headings: slightly smaller to reduce wrapping */
+    h1{ font-size: 1.35rem; line-height: 1.25; }
+    h2{ font-size: 1.15rem; line-height: 1.3; }
+    h3{ font-size: 1.05rem; line-height: 1.35; }
+
+    /* Make common buttons more tappable without redesigning each page */
+    :where(button, .btn, .btn-act, .btn-bottom, input[type="submit"], a.button){
+        min-height: 44px;
     }
 }
 

@@ -70,6 +70,7 @@
 - 管理者権限申請テーブル: `db/add_admin_role_requests.sql`
 - お問い合わせテーブル: `db/add_inquiries_tbl.sql`
 - カレンダー共有（is_shared）: `db/add_calendar_shared_events.sql`
+- テニスDB統合（tennis_db → sportdata_db へ追記）: `db/migrate_tennis_db_into_sportdata_db.sql`
 
 ---
 

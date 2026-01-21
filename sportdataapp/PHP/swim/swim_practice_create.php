@@ -190,7 +190,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
-            header('Location: swim_practice_create.php?success=1');
+            $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_POST['tab_id'] ?? ($_GET['tab_id'] ?? '')));
+            $target = 'swim_practice_create.php?success=1';
+            if ($tabId !== '') {
+                $target .= '&tab_id=' . rawurlencode($tabId);
+            }
+            header('Location: ' . $target);
             exit;
         }
     }

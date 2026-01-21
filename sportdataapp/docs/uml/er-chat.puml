@@ -1,0 +1,71 @@
+@startuml
+title ER図: Chat（個人/グループ/既読）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+skinparam ArrowFontSize 10
+
+entity "login_tbl" as login {
+  *id : int
+  --
+  *group_id : varchar
+  *user_id : varchar
+  name : varchar
+}
+
+entity "chat_group_tbl" as chat_group {
+  *chat_group_id : int
+  --
+  group_id : varchar
+  group_name : varchar
+  created_by : varchar
+}
+
+entity "chat_group_member_tbl" as chat_group_member {
+  *id : int
+  --
+  chat_group_id : int
+  group_id : varchar
+  user_id : varchar
+}
+
+entity "chat_tbl" as chat {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  chat_type : enum
+  chat_group_id : int
+  recipient_id : varchar
+  is_deleted : tinyint
+}
+
+entity "chat_read_status_tbl" as chat_read {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  chat_type : enum
+  chat_group_id : int
+  recipient_id : varchar
+  last_read_message_id : int
+}
+
+' 関係（ラベル省略して被り回避）
+login ||--o{ chat
+login ||--o{ chat_read
+chat_group ||--o{ chat_group_member
+chat_group ||--o{ chat
+
+legend right
+  個人チャット:
+  - chat.recipient_id が相手 user_id
+  グループチャット:
+  - chat.chat_group_id を使用
+  既読:
+  - chat_read は chat_type + (chat_group_id|recipient_id)
+endlegend
+
+@enduml

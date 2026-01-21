@@ -9,7 +9,7 @@ $model_id = 'gemini-2.0-flash-latest';   // 指定された最新モデルID
 
 // データベース接続設定
 $host   = 'localhost';
-$dbname = 'tennis_db';
+$dbname = 'sportdata_db';
 $user   = 'root';
 $pass   = '';
 
@@ -29,7 +29,7 @@ try {
 
     // --- 4. 試合データの取得 ---
     // 基本情報
-    $stmt = $db->prepare("SELECT * FROM games WHERE id = ?");
+    $stmt = $db->prepare("SELECT * FROM tennis_games WHERE id = ?");
     $stmt->execute([$gameId]);
     $game = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -38,7 +38,7 @@ try {
     }
 
     // 詳細アクション（スタッツ用）
-    $stmtAct = $db->prepare("SELECT * FROM actions WHERE game_id = ? ORDER BY id ASC");
+    $stmtAct = $db->prepare("SELECT * FROM tennis_actions WHERE game_id = ? ORDER BY id ASC");
     $stmtAct->execute([$gameId]);
     $history = $stmtAct->fetchAll(PDO::FETCH_ASSOC);
 
@@ -109,7 +109,7 @@ try {
     }
 
     // --- 7. DBにAIコメントを保存 ---
-    $update = $db->prepare("UPDATE games SET ai_comment = ? WHERE id = ?");
+    $update = $db->prepare("UPDATE tennis_games SET ai_comment = ? WHERE id = ?");
     $update->execute([$ai_comment, $gameId]);
 
     // --- 8. 成功レスポンスを返す ---

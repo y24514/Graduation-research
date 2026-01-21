@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2026-01-14 08:46:33
+-- 生成日時: 2026-01-21 05:27:52
 -- サーバのバージョン： 10.4.32-MariaDB
 -- PHP のバージョン: 8.2.12
 
@@ -44,7 +44,8 @@ CREATE TABLE `admin_role_requests` (
 
 INSERT INTO `admin_role_requests` (`id`, `group_id`, `user_id`, `name`, `requested_at`, `status`, `actioned_by`, `actioned_at`) VALUES
 (1, 'cis', 'mainte', 'mainte', '2026-01-14 10:34:31', 'approved', 'host', '2026-01-14 10:36:00'),
-(2, 'cis', 'harunaabe', '顧問の安倍', '2026-01-14 11:24:09', 'pending', NULL, NULL);
+(2, 'cis', 'harunaabe', '顧問の安倍', '2026-01-14 11:24:09', 'approved', 'host', '2026-01-15 14:45:03'),
+(3, '花巻東水泳部', 'hanatou', 'host', '2026-01-19 11:49:42', 'approved', 'host', '2026-01-19 11:51:05');
 
 -- --------------------------------------------------------
 
@@ -75,6 +76,7 @@ CREATE TABLE `calendar_tbl` (
   `memo` varchar(100) NOT NULL,
   `startdate` date NOT NULL,
   `enddate` date NOT NULL,
+  `is_shared` tinyint(1) NOT NULL DEFAULT 0,
   `create_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -82,11 +84,13 @@ CREATE TABLE `calendar_tbl` (
 -- テーブルのデータのダンプ `calendar_tbl`
 --
 
-INSERT INTO `calendar_tbl` (`id`, `group_id`, `user_id`, `title`, `memo`, `startdate`, `enddate`, `create_at`) VALUES
-(6, 'cis', 'abe', 'あああ', 'あああ', '2025-12-03', '2025-12-04', '2025-12-03 14:42:20'),
-(8, 'cis', 'y24514', '合宿', 'きつい', '2025-12-09', '2025-12-12', '2025-12-16 09:33:47'),
-(9, 'cis', 'y24514', '遠征', '', '2025-12-20', '2025-12-22', '2025-12-23 08:57:16'),
-(10, 'cis', 'y24514', '年末 off', '', '2025-12-29', '2026-01-01', '2025-12-23 08:57:34');
+INSERT INTO `calendar_tbl` (`id`, `group_id`, `user_id`, `title`, `memo`, `startdate`, `enddate`, `is_shared`, `create_at`) VALUES
+(6, 'cis', 'abe', 'あああ', 'あああ', '2025-12-03', '2025-12-04', 0, '2025-12-03 14:42:20'),
+(8, 'cis', 'y24514', '合宿', 'きつい', '2025-12-09', '2025-12-12', 0, '2025-12-16 09:33:47'),
+(9, 'cis', 'y24514', '遠征', '', '2025-12-20', '2025-12-22', 0, '2025-12-23 08:57:16'),
+(10, 'cis', 'y24514', '年末 off', '', '2025-12-29', '2026-01-01', 0, '2025-12-23 08:57:34'),
+(11, 'cis', 'mainte', '遠征', '', '2026-01-15', '2026-01-20', 1, '2026-01-15 14:47:31'),
+(12, 'cis', 'mainte', 'テスト', '', '2026-01-28', '2026-02-01', 1, '2026-01-19 10:32:21');
 
 -- --------------------------------------------------------
 
@@ -101,15 +105,6 @@ CREATE TABLE `chat_group_member_tbl` (
   `user_id` varchar(50) NOT NULL,
   `joined_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- テーブルのデータのダンプ `chat_group_member_tbl`
---
-
-INSERT INTO `chat_group_member_tbl` (`id`, `chat_group_id`, `group_id`, `user_id`, `joined_at`) VALUES
-(5, 2, 'cis', 'y24514', '2025-12-23 11:33:16'),
-(6, 2, 'cis', 'y24520', '2025-12-23 11:33:16'),
-(7, 2, 'cis', 'y24515', '2025-12-23 11:33:16');
 
 -- --------------------------------------------------------
 
@@ -126,13 +121,6 @@ CREATE TABLE `chat_group_tbl` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- テーブルのデータのダンプ `chat_group_tbl`
---
-
-INSERT INTO `chat_group_tbl` (`chat_group_id`, `group_id`, `group_name`, `group_description`, `created_by`, `created_at`, `updated_at`) VALUES
-(2, 'cis', 'チームA', '', 'y24514', '2025-12-23 11:33:16', '2025-12-23 11:33:16');
 
 -- --------------------------------------------------------
 
@@ -168,15 +156,10 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (10, 'cis', 'y24514', 'direct', NULL, 'y24520', 11, '2025-12-22 16:00:45'),
 (11, 'cis', 'y24514', 'direct', NULL, 'y24515', 6, '2025-12-22 16:34:09'),
 (12, 'cis', 'y24514', 'direct', NULL, 'y24520', 11, '2025-12-22 16:34:35'),
-(13, 'cis', 'y24515', 'direct', NULL, 'y24514', 6, '2025-12-22 16:38:45'),
-(14, 'cis', 'y24515', 'direct', NULL, 'y24514', 6, '2025-12-22 16:39:17'),
-(15, 'cis', 'y24515', 'direct', NULL, 'y24514', 6, '2025-12-22 16:39:26'),
 (16, 'cis', 'y24514', 'direct', NULL, 'y24513', 1, '2025-12-22 16:39:39'),
 (17, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2025-12-22 16:39:40'),
 (18, 'cis', 'y24514', 'direct', NULL, 'y24515', 6, '2025-12-22 16:39:41'),
 (19, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-22 16:40:21'),
-(20, 'cis', 'y24515', 'direct', NULL, 'y24514', 14, '2025-12-22 16:40:59'),
-(21, 'cis', 'y24515', 'direct', NULL, 'y24514', 14, '2025-12-22 16:41:02'),
 (22, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-22 16:41:19'),
 (23, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-22 16:41:25'),
 (24, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-22 16:41:26'),
@@ -195,12 +178,6 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (37, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-23 09:09:42'),
 (38, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2025-12-23 09:09:44'),
 (39, 'cis', 'y24514', 'direct', NULL, 'y24515', 14, '2025-12-23 09:09:47'),
-(40, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:10:22'),
-(41, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:13:41'),
-(42, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:13:46'),
-(43, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:15:51'),
-(44, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:16:42'),
-(45, 'cis', 'y24515', 'direct', NULL, 'y24514', 15, '2025-12-23 09:18:14'),
 (46, 'cis', 'y24514', 'direct', NULL, 'y24515', 16, '2025-12-23 09:18:49'),
 (47, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2025-12-23 10:02:06'),
 (48, 'cis', 'y24514', 'direct', NULL, 'y24515', 16, '2025-12-23 10:02:07'),
@@ -210,7 +187,6 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (52, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2025-12-23 10:02:12'),
 (53, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2025-12-23 10:04:01'),
 (58, 'cis', 'y24520', 'direct', NULL, 'y24514', 12, '2025-12-23 10:08:17'),
-(59, 'cis', 'y24515', 'direct', NULL, 'y24514', 16, '2025-12-23 10:08:38'),
 (66, 'cis', 'y24520', 'direct', NULL, 'y24514', 20, '2025-12-23 10:09:51'),
 (67, 'cis', 'y24520', 'direct', NULL, 'y24514', 20, '2025-12-23 10:09:53'),
 (68, 'cis', 'y24514', 'direct', NULL, 'y24515', 19, '2025-12-23 10:11:00'),
@@ -299,7 +275,6 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (162, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-08 13:10:19'),
 (163, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-08 13:10:23'),
 (164, 'cis', 'y24514', 'direct', NULL, 'y24515', 24, '2026-01-08 13:10:32'),
-(165, 'cis', 'y24515', 'direct', NULL, 'y24514', 30, '2026-01-08 13:11:02'),
 (166, 'cis', 'y24514', 'direct', NULL, 'y24515', 31, '2026-01-08 13:11:50'),
 (167, 'cis', 'abe', 'direct', NULL, 'y24514', 29, '2026-01-08 13:32:59'),
 (168, 'cis', 'abe', 'direct', NULL, 'y24514', 29, '2026-01-08 13:33:01'),
@@ -315,11 +290,19 @@ INSERT INTO `chat_read_status_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `c
 (178, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:24:12'),
 (179, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:31:28'),
 (180, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-13 11:38:25'),
-(181, 'cis', 'y24515', 'direct', NULL, 'y24514', 31, '2026-01-13 11:39:10'),
 (182, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 09:55:05'),
 (183, 'cis', 'y24514', 'direct', NULL, 'y24514_3', 32, '2026-01-14 10:32:33'),
 (184, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 11:41:11'),
-(185, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 11:41:19');
+(185, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-14 11:41:19'),
+(186, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-16 10:10:22'),
+(187, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-16 10:11:26'),
+(188, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-16 13:55:05'),
+(189, 'cis', 'y24514', 'direct', NULL, 'y24520', 12, '2026-01-19 09:38:30'),
+(190, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-20 14:02:10'),
+(191, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-20 14:02:17'),
+(192, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-21 09:52:21'),
+(193, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-21 09:52:22'),
+(194, 'cis', 'y24514', 'direct', NULL, 'abe', 29, '2026-01-21 09:52:23');
 
 -- --------------------------------------------------------
 
@@ -351,7 +334,7 @@ INSERT INTO `chat_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `chat_group_id
 (2, 'cis', 'y24514_2', 'direct', NULL, 'y24514', 'こんちゃｔ', NULL, NULL, 0, NULL, '2025-12-22 10:20:25'),
 (3, 'cis', 'y24514_2', 'direct', NULL, 'y24514', 'こんちゃｔ', NULL, NULL, 0, NULL, '2025-12-22 10:20:34'),
 (4, 'cis', 'y24514_2', 'direct', NULL, 'y24514', 'こんにちは', NULL, NULL, 0, NULL, '2025-12-22 10:53:53'),
-(5, 'cis', 'y24515', 'direct', NULL, 'y24514', 'こんにちは', NULL, NULL, 0, NULL, '2025-12-22 11:00:20'),
+(5, 'cis', 'y24515', 'direct', NULL, 'y24514', 'こんにちは', NULL, NULL, 1, '2026-01-19 14:30:04', '2025-12-22 11:00:20'),
 (6, 'cis', 'y24514', 'direct', NULL, 'y24515', 'こんにちは', NULL, NULL, 0, NULL, '2025-12-22 11:02:08'),
 (7, 'cis', 'y24514', 'direct', NULL, 'y24514_2', 'こんにちは', NULL, NULL, 0, NULL, '2025-12-22 14:20:15'),
 (8, 'cis', 'y24520', 'direct', NULL, 'y24514', '今週試合いつだっけ？？', NULL, NULL, 0, NULL, '2025-12-22 15:24:45'),
@@ -360,9 +343,9 @@ INSERT INTO `chat_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `chat_group_id
 (11, 'cis', 'y24514', 'direct', NULL, 'y24520', 'はーい', NULL, NULL, 1, '2025-12-23 11:29:41', '2025-12-22 15:30:50'),
 (12, 'cis', 'y24514', 'direct', NULL, 'y24520', '間に合う？？', NULL, NULL, 1, '2025-12-23 11:27:55', '2025-12-22 16:34:57'),
 (13, 'cis', 'y24514', 'direct', NULL, 'y24515', 'どうも', NULL, NULL, 1, '2025-12-23 11:32:11', '2025-12-22 16:39:48'),
-(14, 'cis', 'y24515', 'direct', NULL, 'y24514', 'ぺこぺこ', NULL, NULL, 0, NULL, '2025-12-22 16:40:04'),
-(16, 'cis', 'y24515', 'direct', NULL, 'y24514', '楽しいね', NULL, NULL, 0, NULL, '2025-12-23 09:18:30'),
-(19, 'cis', 'y24515', 'direct', NULL, 'y24514', 'たのしいなあああ！？', NULL, NULL, 0, NULL, '2025-12-23 10:08:44'),
+(14, 'cis', 'y24515', 'direct', NULL, 'y24514', 'ぺこぺこ', NULL, NULL, 1, '2026-01-19 14:30:04', '2025-12-22 16:40:04'),
+(16, 'cis', 'y24515', 'direct', NULL, 'y24514', '楽しいね', NULL, NULL, 1, '2026-01-19 14:30:04', '2025-12-23 09:18:30'),
+(19, 'cis', 'y24515', 'direct', NULL, 'y24514', 'たのしいなあああ！？', NULL, NULL, 1, '2026-01-19 14:30:04', '2025-12-23 10:08:44'),
 (24, 'cis', 'y24514', 'direct', NULL, 'y24515', '楽しいなぁぁぁああああ', NULL, NULL, 1, '2025-12-24 09:03:17', '2025-12-23 14:27:25'),
 (25, 'cis', 'abe', 'direct', NULL, 'y24514', 'こんにちは！卒研進んでいますか？', NULL, NULL, 0, NULL, '2026-01-08 10:01:58'),
 (26, 'cis', 'abe', 'direct', NULL, 'y24520', 'こんにちは！卒研進んでいますか？', NULL, NULL, 0, NULL, '2026-01-08 10:02:02'),
@@ -370,7 +353,7 @@ INSERT INTO `chat_tbl` (`id`, `group_id`, `user_id`, `chat_type`, `chat_group_id
 (28, 'cis', 'y24514', 'direct', NULL, 'abe', '送れています。', NULL, NULL, 1, '2026-01-08 11:37:34', '2026-01-08 11:37:26'),
 (29, 'cis', 'y24514', 'direct', NULL, 'abe', '遅れている状況です', NULL, NULL, 0, NULL, '2026-01-08 11:37:48'),
 (30, 'cis', 'y24514', 'direct', NULL, 'y24515', 'テスト　送信', NULL, NULL, 0, NULL, '2026-01-08 13:10:40'),
-(31, 'cis', 'y24515', 'direct', NULL, 'y24514', 'テスト送信確認', NULL, NULL, 0, NULL, '2026-01-08 13:11:20'),
+(31, 'cis', 'y24515', 'direct', NULL, 'y24514', 'テスト送信確認', NULL, NULL, 1, '2026-01-19 14:30:04', '2026-01-08 13:11:20'),
 (32, 'cis', 'y24514_3', 'direct', NULL, 'y24514', 'ばーか', NULL, NULL, 0, NULL, '2026-01-14 10:31:32');
 
 -- --------------------------------------------------------
@@ -386,6 +369,11 @@ CREATE TABLE `diary_tbl` (
   `diary_date` date NOT NULL,
   `title` varchar(200) DEFAULT NULL,
   `content` text NOT NULL,
+  `submitted_to_admin` tinyint(1) NOT NULL DEFAULT 0,
+  `submitted_at` datetime DEFAULT NULL,
+  `admin_feedback` text DEFAULT NULL,
+  `admin_feedback_at` datetime DEFAULT NULL,
+  `admin_feedback_by_user_id` varchar(255) DEFAULT NULL,
   `tags` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -395,15 +383,14 @@ CREATE TABLE `diary_tbl` (
 -- テーブルのデータのダンプ `diary_tbl`
 --
 
-INSERT INTO `diary_tbl` (`id`, `group_id`, `user_id`, `diary_date`, `title`, `content`, `tags`, `created_at`, `updated_at`) VALUES
-(4, 'cis', 'abe', '2026-01-08', 'おれはジャイアン', 'ガキ大将', '#じゃいあん', '2026-01-08 10:02:47', '2026-01-08 10:02:47'),
-(10, 'cis', 'abe', '2026-01-07', '昨日のこと', '昨日のこと書くの忘れてた', '#練習', '2026-01-08 10:06:25', '2026-01-08 10:06:25'),
-(11, 'cis', 'abe', '2026-01-01', 'あけましておめでとうございます', '今年もがんばるぞ', '#意気込み', '2026-01-08 10:06:52', '2026-01-08 10:06:52'),
-(12, 'cis', 'abe', '2025-12-25', 'クリスマス', 'クリスマスも練習だ！がんばるぞ！', '#練習', '2026-01-08 10:07:19', '2026-01-08 10:07:19'),
-(13, '花巻東', 'y24514', '2026-01-08', 'ｇｇｇ', 'ｇｇｇｇ', 'ｇｇｇ', '2026-01-08 10:07:28', '2026-01-08 10:07:28'),
-(19, '花巻東', 'y24514', '2026-01-22', 'ｈ', 'あったかい', 'ｈｈｈ', '2026-01-08 10:09:19', '2026-01-08 10:09:19'),
-(20, '花巻東', 'y24514', '2026-01-08', 'ああああ', 'ああああ', 'ああああ', '2026-01-08 10:12:51', '2026-01-08 10:12:51'),
-(21, 'cis', 'harunaabe', '2026-01-14', 'おれはジャイアン', 'a', '', '2026-01-14 11:41:34', '2026-01-14 11:41:34');
+INSERT INTO `diary_tbl` (`id`, `group_id`, `user_id`, `diary_date`, `title`, `content`, `submitted_to_admin`, `submitted_at`, `admin_feedback`, `admin_feedback_at`, `admin_feedback_by_user_id`, `tags`, `created_at`, `updated_at`) VALUES
+(4, 'cis', 'abe', '2026-01-08', 'おれはジャイアン', 'ガキ大将', 0, NULL, NULL, NULL, NULL, '#じゃいあん', '2026-01-08 10:02:47', '2026-01-08 10:02:47'),
+(10, 'cis', 'abe', '2026-01-07', '昨日のこと', '昨日のこと書くの忘れてた', 0, NULL, NULL, NULL, NULL, '#練習', '2026-01-08 10:06:25', '2026-01-08 10:06:25'),
+(11, 'cis', 'abe', '2026-01-01', 'あけましておめでとうございます', '今年もがんばるぞ', 0, NULL, NULL, NULL, NULL, '#意気込み', '2026-01-08 10:06:52', '2026-01-08 10:06:52'),
+(12, 'cis', 'abe', '2025-12-25', 'クリスマス', 'クリスマスも練習だ！がんばるぞ！', 0, NULL, NULL, NULL, NULL, '#練習', '2026-01-08 10:07:19', '2026-01-08 10:07:19'),
+(21, 'cis', 'harunaabe', '2026-01-14', 'おれはジャイアン', 'a', 0, NULL, NULL, NULL, NULL, '', '2026-01-14 11:41:34', '2026-01-14 11:41:34'),
+(22, 'cis', 'y24514', '2026-01-15', '合宿', '合宿にいきました', 1, '2026-01-21 09:12:00', 'よく頑張りました', '2026-01-16 10:04:02', 'mainte', '', '2026-01-15 12:51:59', '2026-01-21 09:12:00'),
+(23, 'cis', 'y24514', '2026-01-15', '遠征', 'テスト', 1, '2026-01-15 13:30:31', 'よく頑張りました', '2026-01-16 10:04:01', 'mainte', '', '2026-01-15 13:30:27', '2026-01-16 10:04:01');
 
 -- --------------------------------------------------------
 
@@ -470,6 +457,34 @@ INSERT INTO `goal_tbl` (`goal_id`, `group_id`, `user_id`, `goal`, `progress`, `d
 -- --------------------------------------------------------
 
 --
+-- テーブルの構造 `inquiries_tbl`
+--
+
+CREATE TABLE `inquiries_tbl` (
+  `id` int(11) NOT NULL,
+  `group_id` varchar(100) NOT NULL,
+  `user_id` varchar(50) NOT NULL,
+  `category` varchar(20) NOT NULL,
+  `subject` varchar(120) NOT NULL,
+  `message` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0:未対応 1:返信済み',
+  `response` text DEFAULT NULL,
+  `responded_by_user_id` varchar(50) DEFAULT NULL,
+  `responded_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `inquiries_tbl`
+--
+
+INSERT INTO `inquiries_tbl` (`id`, `group_id`, `user_id`, `category`, `subject`, `message`, `status`, `response`, `responded_by_user_id`, `responded_at`, `created_at`) VALUES
+(1, 'cis', 'mainte', 'improve', 'テスト', 'テスト', 1, 'テスト', 'host', '2026-01-15 15:30:26', '2026-01-15 15:09:05'),
+(2, 'cis', 'mainte', 'improve', 'テスト', 'ｈｒｈ', 1, 'テスト', 'host', '2026-01-19 11:51:17', '2026-01-15 15:50:15');
+
+-- --------------------------------------------------------
+
+--
 -- テーブルの構造 `login_tbl`
 --
 
@@ -494,18 +509,12 @@ CREATE TABLE `login_tbl` (
 
 INSERT INTO `login_tbl` (`id`, `group_id`, `user_id`, `password`, `name`, `dob`, `height`, `weight`, `position`, `sport`, `is_admin`, `is_super_admin`) VALUES
 (13, 'cis', 'y24514', '$2y$10$MVyXrYFuMD/ULyZMNG40d.8yDyCa2FU4Ydm2EghYzPTmg2nj.lSYK', '藤原大輔', '2006-03-03', 170.0, 59.0, '学生会役員', NULL, 0, 0),
-(16, '花巻東', 'y24514', '$2y$10$irKSeqOAkgWJ3hAlF3m2ru.SAsNgv7YiSbY7nd5fdbPbFuRlxdSpm', '藤原大輔', '2006-03-03', 170.0, 59.0, 'fly/fr', NULL, 0, 0),
-(17, 'cis', 'y24513', '$2y$10$T2CgtBtyPu43inv7IY53reJ5v7f9YCJFboy9AI6rpPZlr9Xv9VCsq', '藤原啄都', '2025-12-18', 172.0, 59.0, 'バタフライ', NULL, 0, 0),
 (18, 'sangitan', 'h-abe', '$2y$10$3077kKiMdxYuVABAokwcwOON0P5z5.psI.GWsh2ZlywJLrHYHJHwG', '安倍春菜', '2026-07-03', 190.0, 100.0, 'DF', NULL, 0, 0),
-(19, 'cis', 'y24520', '$2y$10$UN6nKQIqkmpClpFUVdQM8ONs76V2bkS2CwuJy2gdC4rdL6TL6c98O', '吉田稜', '2025-07-21', 164.0, 60.0, '前衛', NULL, 0, 0),
 (20, 'cis', 'abe', '$2y$10$5rnhaBbn/ycTIjygFdip1utCRMa/G7oh2CKa.ocM2R8f9JqS82yGO', '剛田武', '2025-11-12', 200.0, 100.0, 'OF', 'all', 0, 0),
-(21, 'cis', 'y24514_2', '$2y$10$ZT6N5Ll9v.abrtWzETvWr.4pcIATYVuQVoqUmehSen6il6uK3hUp.', '藤原大輔２', '2006-03-03', 170.0, 59.0, 'fly', NULL, 0, 0),
-(22, 'cis', 'y24515', '$2y$10$7CRF5eZTnCErAstv1jdyuuP8id/fscLSIfjp7C2hGzvRL9vzC/75i', '藤原叶夢', '2006-02-05', 182.0, 55.0, '二年生', NULL, 0, 0),
-(23, 'cis', 'y24510', '$2y$10$QwHSD73GmvpdHH2nybBJluekIlV1UeYF.zgR/V/UPSDUbGnHx31qi', '田村淳道', '2005-10-24', 180.0, 65.0, '二年生', NULL, 0, 0),
 (26, 'system', 'host', '$2y$10$TlJs197Yt7J67hbxydxSYeHuyPNA5mPY4vZd0VyBFxuEYAC/n8K6u', 'host', '2000-01-01', 170.0, 60.0, '作成者', NULL, 1, 1),
-(27, 'cis', 'y24514_3', '$2y$10$f3FtUbCV/.PQVbnusRTRSekmyiAQ5vi3zDp31S4HdR8BMT.VrHizC', '藤原大輔', '2006-03-03', 170.0, 59.0, 'バタフライ', 'swim', 0, 0),
 (28, 'cis', 'mainte', '$2y$10$dHGgYNzX9wNr.Dz6blcEi.1VeQhwE7grRI8f8aXQrhd.k4trxzLZu', 'mainte', '1900-01-01', 0.0, 0.0, '管理者', 'all', 1, 0),
-(29, 'cis', 'harunaabe', '$2y$10$e53yk0vW9wbeeE2axN76y.ffnIgu9uQ4TFqBdMnKfU2WYumTu9FHi', '顧問の安倍', '1900-01-01', 0.0, 0.0, '顧問', 'all', 0, 0);
+(29, 'cis', 'harunaabe', '$2y$10$e53yk0vW9wbeeE2axN76y.ffnIgu9uQ4TFqBdMnKfU2WYumTu9FHi', '顧問の安倍', '1900-01-01', 0.0, 0.0, '顧問', 'all', 1, 0),
+(30, '花巻東水泳部', 'hanatou', '$2y$10$h7DRGtmHGUTHHshA9dF/Oe8BbAXWQVQavFOQkL2r5Tc7bRUsxRIra', 'host', '1900-01-01', 0.0, 0.0, '指導者', 'swim', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -699,7 +708,139 @@ CREATE TABLE `teams` (
 
 INSERT INTO `teams` (`id`, `name`) VALUES
 (1, 'Team A'),
-(2, 'Team B');
+(2, 'Team B'),
+(3, '産技短');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `tennis_actions`
+--
+
+CREATE TABLE `tennis_actions` (
+  `id` int(11) NOT NULL,
+  `game_id` int(11) NOT NULL,
+  `player_name` varchar(255) NOT NULL,
+  `action_type` varchar(255) NOT NULL,
+  `score_a` int(11) NOT NULL,
+  `score_b` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- テーブルのデータのダンプ `tennis_actions`
+--
+
+INSERT INTO `tennis_actions` (`id`, `game_id`, `player_name`, `action_type`, `score_a`, `score_b`, `created_at`) VALUES
+(1, 1, '田中', 'サービスエース', 1, 0, '2026-01-08 09:31:41'),
+(2, 1, '田中', 'サービスエース', 2, 0, '2026-01-08 09:31:41'),
+(3, 1, '田中', 'サービスエース', 3, 0, '2026-01-08 09:31:41'),
+(4, 1, '田中', 'サービスエース', 4, 0, '2026-01-08 09:31:41'),
+(5, 1, '田中', 'サービスエース', 1, 0, '2026-01-08 09:31:41'),
+(6, 1, '田中', 'サービスエース', 2, 0, '2026-01-08 09:31:41'),
+(7, 1, '田中', 'サービスエース', 3, 0, '2026-01-08 09:31:41'),
+(8, 1, '田中', 'サービスエース', 4, 0, '2026-01-08 09:31:41'),
+(9, 1, '田中', 'サービスエース', 1, 0, '2026-01-08 09:31:41'),
+(10, 1, '田中', 'サービスエース', 2, 0, '2026-01-08 09:31:41'),
+(11, 1, '田中', 'サービスエース', 3, 0, '2026-01-08 09:31:41'),
+(12, 1, '田中', 'サービスエース', 4, 0, '2026-01-08 09:31:41'),
+(13, 2, '田中', 'リターンエース', 1, 0, '2026-01-08 10:14:59'),
+(14, 2, '田中', 'リターンエース', 2, 0, '2026-01-08 10:14:59'),
+(15, 2, '田中', 'リターンエース', 3, 0, '2026-01-08 10:14:59'),
+(16, 2, '田中', 'リターンエース', 4, 0, '2026-01-08 10:14:59'),
+(17, 2, '田中', 'リターンエース', 1, 0, '2026-01-08 10:14:59'),
+(18, 2, '田中', 'リターンエース', 2, 0, '2026-01-08 10:14:59'),
+(19, 2, '田中', 'リターンエース', 3, 0, '2026-01-08 10:14:59'),
+(20, 2, '田中', 'リターンエース', 4, 0, '2026-01-08 10:14:59'),
+(21, 2, '田中', 'リターンエース', 1, 0, '2026-01-08 10:14:59'),
+(22, 2, '田中', 'リターンエース', 2, 0, '2026-01-08 10:14:59'),
+(23, 2, '田中', 'リターンエース', 3, 0, '2026-01-08 10:14:59'),
+(24, 2, '田中', 'リターンエース', 4, 0, '2026-01-08 10:14:59'),
+(25, 3, '田中', 'ストローク', 1, 0, '2026-01-08 10:15:42'),
+(26, 3, '田中', 'ストローク', 2, 0, '2026-01-08 10:15:42'),
+(27, 3, '田中', 'ストローク', 3, 0, '2026-01-08 10:15:42'),
+(28, 3, '田中', 'ストローク', 4, 0, '2026-01-08 10:15:42'),
+(29, 3, '田中', 'ストローク', 1, 0, '2026-01-08 10:15:42'),
+(30, 3, '田中', 'ストローク', 2, 0, '2026-01-08 10:15:42'),
+(31, 3, '田中', 'ストローク', 3, 0, '2026-01-08 10:15:42'),
+(32, 3, '田中', 'ストローク', 4, 0, '2026-01-08 10:15:42'),
+(33, 3, '田中', 'ストローク', 1, 0, '2026-01-08 10:15:43'),
+(34, 3, '田中', 'ストローク', 2, 0, '2026-01-08 10:15:43'),
+(35, 3, '田中', 'ストローク', 3, 0, '2026-01-08 10:15:43'),
+(36, 3, '佐藤', 'ネットタッチ', 4, 0, '2026-01-08 10:15:43'),
+(37, 4, 'くまさん', 'サービスエース', 1, 0, '2026-01-08 13:11:20'),
+(38, 4, 'くまさん', 'スマッシュ', 2, 0, '2026-01-08 13:11:20'),
+(39, 4, 'うさぎさん', 'ネットイン', 2, 1, '2026-01-08 13:11:20'),
+(40, 4, 'うさぎさん', 'ネットイン', 2, 2, '2026-01-08 13:11:20'),
+(41, 4, 'くまさん', 'リターンエース', 3, 2, '2026-01-08 13:11:20'),
+(42, 4, 'くまさん', 'リターンエース', 4, 2, '2026-01-08 13:11:20'),
+(43, 4, 'くまさん', 'リターンエース', 1, 0, '2026-01-08 13:11:20'),
+(44, 4, 'くまさん', 'リターンエース', 2, 0, '2026-01-08 13:11:20'),
+(45, 4, 'くまさん', 'リターンエース', 3, 0, '2026-01-08 13:11:20'),
+(46, 4, 'くまさん', 'リターンエース', 4, 0, '2026-01-08 13:11:20'),
+(47, 4, 'くまさん', 'ダブルフォルト', 0, 1, '2026-01-08 13:11:20'),
+(48, 4, 'くまさん', 'ダブルフォルト', 0, 2, '2026-01-08 13:11:20'),
+(49, 4, 'くまさん', 'ダブルフォルト', 0, 3, '2026-01-08 13:11:20'),
+(50, 4, 'くまさん', 'アウト', 0, 4, '2026-01-08 13:11:20'),
+(51, 4, 'くまさん', 'アウト', 0, 1, '2026-01-08 13:11:20'),
+(52, 4, 'うさぎさん', 'アウト', 1, 1, '2026-01-08 13:11:20'),
+(53, 4, 'うさぎさん', 'ネット', 2, 1, '2026-01-08 13:11:20'),
+(54, 4, 'うさぎさん', 'ネットタッチ', 3, 1, '2026-01-08 13:11:20'),
+(55, 4, 'うさぎさん', 'ネットタッチ', 4, 1, '2026-01-08 13:11:20');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `tennis_games`
+--
+
+CREATE TABLE `tennis_games` (
+  `id` int(11) NOT NULL,
+  `team_a` varchar(255) NOT NULL,
+  `team_b` varchar(255) NOT NULL,
+  `games_a` int(11) NOT NULL DEFAULT 0,
+  `games_b` int(11) NOT NULL DEFAULT 0,
+  `player_a1` varchar(255) DEFAULT NULL,
+  `player_a2` varchar(255) DEFAULT NULL,
+  `player_b1` varchar(255) DEFAULT NULL,
+  `player_b2` varchar(255) DEFAULT NULL,
+  `ai_comment` text DEFAULT NULL,
+  `match_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `group_id` varchar(64) DEFAULT NULL,
+  `saved_by_user_id` varchar(64) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- テーブルのデータのダンプ `tennis_games`
+--
+
+INSERT INTO `tennis_games` (`id`, `team_a`, `team_b`, `games_a`, `games_b`, `player_a1`, `player_a2`, `player_b1`, `player_b2`, `ai_comment`, `match_date`, `group_id`, `saved_by_user_id`) VALUES
+(1, 'teamA', 'teamB', 3, 0, '田中', '', '佐藤', '', NULL, '2026-01-08 09:31:41', NULL, NULL),
+(2, 'teamA', 'teamB', 3, 0, '田中', '', '佐藤', '', NULL, '2026-01-08 10:14:59', NULL, NULL),
+(3, 'teamA', 'teamB', 3, 0, '田中', '', '佐藤', '', NULL, '2026-01-08 10:15:42', NULL, NULL),
+(4, 'くまさんチーム', 'うさぎさんチーム', 3, 1, 'くまさん', '', 'うさぎさん', '', NULL, '2026-01-08 13:11:20', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `tennis_strategies`
+--
+
+CREATE TABLE `tennis_strategies` (
+  `id` int(11) NOT NULL,
+  `group_id` varchar(64) DEFAULT NULL,
+  `user_id` varchar(64) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `json_data` longtext NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `tennis_strategies`
+--
+
+INSERT INTO `tennis_strategies` (`id`, `group_id`, `user_id`, `name`, `json_data`, `created_at`) VALUES
+(1, 'cis', 'harunaabe', '作戦A', '{\"version\":\"5.3.0\",\"objects\":[{\"type\":\"rect\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":30,\"top\":30,\"width\":1658.92,\"height\":819.06,\"fill\":\"\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"rx\":0,\"ry\":0},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":859.46,\"top\":30,\"width\":0,\"height\":819.06,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":4,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":0,\"x2\":0,\"y1\":-409.53,\"y2\":409.53},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":30,\"top\":161.86,\"width\":1658.92,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-829.46,\"x2\":829.46,\"y1\":0,\"y2\":0},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":30,\"top\":717.2,\"width\":1658.92,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-829.46,\"x2\":829.46,\"y1\":0,\"y2\":0},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":408.16,\"top\":161.86,\"width\":0,\"height\":555.34,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":0,\"x2\":0,\"y1\":-277.67100000000005,\"y2\":277.67100000000005},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":1310.76,\"top\":161.86,\"width\":0,\"height\":555.34,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":0,\"x2\":0,\"y1\":-277.67100000000005,\"y2\":277.67100000000005},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":408.16,\"top\":439.53,\"width\":902.6,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-451.2976000000001,\"x2\":451.2976000000001,\"y1\":0,\"y2\":0},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":30,\"top\":439.53,\"width\":15,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-7.5,\"x2\":7.5,\"y1\":0,\"y2\":0},{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":1673.92,\"top\":439.53,\"width\":15,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"white\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-7.5,\"x2\":7.5,\"y1\":0,\"y2\":0},{\"type\":\"group\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":238.9,\"top\":337.98,\"width\":38,\"height\":38,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"objects\":[{\"type\":\"circle\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":36,\"height\":36,\"fill\":\"#3498db\",\"stroke\":\"#fff\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"radius\":18,\"startAngle\":0,\"endAngle\":360},{\"type\":\"text\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":8,\"height\":18.08,\"fill\":\"#fff\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"fontFamily\":\"Times New Roman\",\"fontWeight\":\"bold\",\"fontSize\":16,\"text\":\"1\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"left\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":[],\"direction\":\"ltr\",\"path\":null,\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\"}]},{\"type\":\"group\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":566.73,\"top\":557.97,\"width\":38,\"height\":38,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"objects\":[{\"type\":\"circle\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":36,\"height\":36,\"fill\":\"#3498db\",\"stroke\":\"#fff\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"radius\":18,\"startAngle\":0,\"endAngle\":360},{\"type\":\"text\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":8,\"height\":18.08,\"fill\":\"#fff\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"fontFamily\":\"Times New Roman\",\"fontWeight\":\"bold\",\"fontSize\":16,\"text\":\"2\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"left\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":[],\"direction\":\"ltr\",\"path\":null,\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\"}]},{\"type\":\"path\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":251.32,\"top\":160.01,\"width\":0.01,\"height\":0,\"fill\":null,\"stroke\":\"#ffffff\",\"strokeWidth\":4,\"strokeDashArray\":null,\"strokeLineCap\":\"round\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"round\",\"strokeUniform\":false,\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"path\":[[\"M\",253.31549822743386,162.00698554897883],[\"L\",253.32349822743384,162.00698554897883]]},{\"type\":\"group\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":264.89,\"top\":563.97,\"width\":38,\"height\":38,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"objects\":[{\"type\":\"circle\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":36,\"height\":36,\"fill\":\"#3498db\",\"stroke\":\"#fff\",\"strokeWidth\":2,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"radius\":18,\"startAngle\":0,\"endAngle\":360},{\"type\":\"text\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":0,\"top\":0,\"width\":8,\"height\":18.08,\"fill\":\"#fff\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"fontFamily\":\"Times New Roman\",\"fontWeight\":\"bold\",\"fontSize\":16,\"text\":\"2\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"left\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":[],\"direction\":\"ltr\",\"path\":null,\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\"}]},{\"type\":\"path\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":182.36,\"top\":155.01,\"width\":0.99,\"height\":1,\"fill\":null,\"stroke\":\"#ffffff\",\"strokeWidth\":4,\"strokeDashArray\":null,\"strokeLineCap\":\"round\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"round\",\"strokeUniform\":false,\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"path\":[[\"M\",185.3513495136806,157.00725217298566],[\"Q\",185.35534951368058,157.00725217298566,184.85561312607945,157.507225510585],[\"L\",184.3598767384783,158.0071988481843]]},{\"type\":\"group\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":291.76,\"top\":337.54,\"width\":93,\"height\":16,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":12.09,\"scaleY\":3.19,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"objects\":[{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"center\",\"left\":-46.5,\"top\":0,\"width\":80,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"#fff\",\"strokeWidth\":4,\"strokeDashArray\":[8,4],\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-40,\"x2\":40,\"y1\":0,\"y2\":0},{\"type\":\"triangle\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":38.5,\"top\":0,\"width\":15,\"height\":15,\"fill\":\"#fff\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":90,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}]},{\"type\":\"group\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"top\",\"left\":579.01,\"top\":554.82,\"width\":93,\"height\":16,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":271.38,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"objects\":[{\"type\":\"line\",\"version\":\"5.3.0\",\"originX\":\"left\",\"originY\":\"center\",\"left\":-46.5,\"top\":0,\"width\":80,\"height\":0,\"fill\":\"rgb(0,0,0)\",\"stroke\":\"#f1c40f\",\"strokeWidth\":4,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"x1\":-40,\"x2\":40,\"y1\":0,\"y2\":0},{\"type\":\"triangle\",\"version\":\"5.3.0\",\"originX\":\"center\",\"originY\":\"center\",\"left\":38.5,\"top\":0,\"width\":15,\"height\":15,\"fill\":\"#f1c40f\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":90,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}]}],\"background\":\"#2e7d32\"}', '2026-01-14 02:30:01');
 
 --
 -- ダンプしたテーブルのインデックス
@@ -726,7 +867,8 @@ ALTER TABLE `basketball_strategies`
 ALTER TABLE `calendar_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `calendar_user` (`user_id`),
-  ADD KEY `calendar_group_id` (`group_id`,`user_id`) USING BTREE;
+  ADD KEY `calendar_group_id` (`group_id`,`user_id`) USING BTREE,
+  ADD KEY `idx_calendar_shared` (`group_id`,`is_shared`,`startdate`);
 
 --
 -- テーブルのインデックス `chat_group_member_tbl`
@@ -772,7 +914,9 @@ ALTER TABLE `diary_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_user` (`group_id`,`user_id`),
   ADD KEY `idx_date` (`diary_date`),
-  ADD KEY `idx_user_date` (`group_id`,`user_id`,`diary_date`);
+  ADD KEY `idx_user_date` (`group_id`,`user_id`,`diary_date`),
+  ADD KEY `idx_submitted` (`group_id`,`submitted_to_admin`,`submitted_at`),
+  ADD KEY `idx_admin_feedback` (`group_id`,`admin_feedback_at`);
 
 --
 -- テーブルのインデックス `games`
@@ -799,7 +943,15 @@ ALTER TABLE `goal_tbl`
   ADD PRIMARY KEY (`goal_id`),
   ADD KEY `goal_group` (`group_id`) USING BTREE,
   ADD KEY `goal_user` (`user_id`) USING BTREE,
-  ADD KEY `idx_goal_group_user` (`group_id`,`user_id`) USING BTREE;
+  ADD KEY `idx_goal_group_user` (`group_id`,`user_id`);
+
+--
+-- テーブルのインデックス `inquiries_tbl`
+--
+ALTER TABLE `inquiries_tbl`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_inquiries_group_status_created` (`group_id`,`status`,`created_at`),
+  ADD KEY `idx_inquiries_user_created` (`group_id`,`user_id`,`created_at`);
 
 --
 -- テーブルのインデックス `login_tbl`
@@ -807,7 +959,7 @@ ALTER TABLE `goal_tbl`
 ALTER TABLE `login_tbl`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`,`password`) USING BTREE,
-  ADD UNIQUE KEY `uniq_login_group_user` (`group_id`,`user_id`) USING BTREE,
+  ADD UNIQUE KEY `uniq_login_group_user` (`group_id`,`user_id`),
   ADD KEY `group_id` (`group_id`),
   ADD KEY `idx_login_tbl_is_super_admin` (`is_super_admin`),
   ADD KEY `idx_login_tbl_sport` (`sport`);
@@ -819,7 +971,7 @@ ALTER TABLE `pi_tbl`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pi_group` (`group_id`) USING BTREE,
   ADD KEY `pi_user` (`user_id`) USING BTREE,
-  ADD KEY `idx_pi_group_user` (`group_id`,`user_id`) USING BTREE;
+  ADD KEY `idx_pi_group_user` (`group_id`,`user_id`);
 
 --
 -- テーブルのインデックス `players`
@@ -848,7 +1000,6 @@ ALTER TABLE `swim_practice_tbl`
 --
 ALTER TABLE `swim_tbl`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `swim_group_id` (`group_id`),
   ADD KEY `swim_user_id` (`user_id`),
   ADD KEY `idx_swim_group_user` (`group_id`,`user_id`);
 
@@ -859,6 +1010,28 @@ ALTER TABLE `teams`
   ADD PRIMARY KEY (`id`);
 
 --
+-- テーブルのインデックス `tennis_actions`
+--
+ALTER TABLE `tennis_actions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_tennis_actions_game_id` (`game_id`);
+
+--
+-- テーブルのインデックス `tennis_games`
+--
+ALTER TABLE `tennis_games`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_tennis_games_group_id_match_date` (`group_id`,`match_date`),
+  ADD KEY `idx_tennis_games_saved_by` (`saved_by_user_id`,`match_date`);
+
+--
+-- テーブルのインデックス `tennis_strategies`
+--
+ALTER TABLE `tennis_strategies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_tennis_strategies_group_created` (`group_id`,`created_at`);
+
+--
 -- ダンプしたテーブルの AUTO_INCREMENT
 --
 
@@ -866,7 +1039,7 @@ ALTER TABLE `teams`
 -- テーブルの AUTO_INCREMENT `admin_role_requests`
 --
 ALTER TABLE `admin_role_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- テーブルの AUTO_INCREMENT `basketball_strategies`
@@ -878,7 +1051,7 @@ ALTER TABLE `basketball_strategies`
 -- テーブルの AUTO_INCREMENT `calendar_tbl`
 --
 ALTER TABLE `calendar_tbl`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- テーブルの AUTO_INCREMENT `chat_group_member_tbl`
@@ -896,7 +1069,7 @@ ALTER TABLE `chat_group_tbl`
 -- テーブルの AUTO_INCREMENT `chat_read_status_tbl`
 --
 ALTER TABLE `chat_read_status_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=186;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=195;
 
 --
 -- テーブルの AUTO_INCREMENT `chat_tbl`
@@ -908,7 +1081,7 @@ ALTER TABLE `chat_tbl`
 -- テーブルの AUTO_INCREMENT `diary_tbl`
 --
 ALTER TABLE `diary_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- テーブルの AUTO_INCREMENT `games`
@@ -929,10 +1102,16 @@ ALTER TABLE `goal_tbl`
   MODIFY `goal_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- テーブルの AUTO_INCREMENT `inquiries_tbl`
+--
+ALTER TABLE `inquiries_tbl`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- テーブルの AUTO_INCREMENT `login_tbl`
 --
 ALTER TABLE `login_tbl`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- テーブルの AUTO_INCREMENT `pi_tbl`
@@ -956,7 +1135,7 @@ ALTER TABLE `swim_best_tbl`
 -- テーブルの AUTO_INCREMENT `swim_practice_tbl`
 --
 ALTER TABLE `swim_practice_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- テーブルの AUTO_INCREMENT `swim_tbl`
@@ -968,7 +1147,25 @@ ALTER TABLE `swim_tbl`
 -- テーブルの AUTO_INCREMENT `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- テーブルの AUTO_INCREMENT `tennis_actions`
+--
+ALTER TABLE `tennis_actions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+
+--
+-- テーブルの AUTO_INCREMENT `tennis_games`
+--
+ALTER TABLE `tennis_games`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- テーブルの AUTO_INCREMENT `tennis_strategies`
+--
+ALTER TABLE `tennis_strategies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- ダンプしたテーブルの制約
@@ -978,7 +1175,7 @@ ALTER TABLE `teams`
 -- テーブルの制約 `calendar_tbl`
 --
 ALTER TABLE `calendar_tbl`
-  ADD CONSTRAINT `fk_calendar_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_calendar_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `chat_group_member_tbl`
@@ -1002,13 +1199,13 @@ ALTER TABLE `game_actions`
 -- テーブルの制約 `goal_tbl`
 --
 ALTER TABLE `goal_tbl`
-  ADD CONSTRAINT `fk_goal_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_goal_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `pi_tbl`
 --
 ALTER TABLE `pi_tbl`
-  ADD CONSTRAINT `fk_pi_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_pi_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `players`
@@ -1020,13 +1217,19 @@ ALTER TABLE `players`
 -- テーブルの制約 `swim_best_tbl`
 --
 ALTER TABLE `swim_best_tbl`
-  ADD CONSTRAINT `fk_swim_best_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_swim_best_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `swim_tbl`
 --
 ALTER TABLE `swim_tbl`
-  ADD CONSTRAINT `fk_swim_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`,`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_swim_group_user` FOREIGN KEY (`group_id`,`user_id`) REFERENCES `login_tbl` (`group_id`, `user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- テーブルの制約 `tennis_actions`
+--
+ALTER TABLE `tennis_actions`
+  ADD CONSTRAINT `fk_tennis_actions_game` FOREIGN KEY (`game_id`) REFERENCES `tennis_games` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

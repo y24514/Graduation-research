@@ -1,0 +1,57 @@
+@startuml
+title ER図: Tennis（試合/アクション/作戦盤）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+skinparam ArrowFontSize 10
+
+entity "login_tbl" as login {
+  *id : int
+  --
+  *group_id : varchar
+  *user_id : varchar
+  name : varchar
+}
+
+entity "tennis_games" as t_games {
+  *id : int
+  --
+  team_a : varchar
+  team_b : varchar
+  games_a : int
+  games_b : int
+  group_id : varchar
+  saved_by_user_id : varchar
+}
+
+entity "tennis_actions" as t_actions {
+  *id : int
+  --
+  game_id : int
+  player_name : varchar
+  action_type : varchar
+  score_a : int
+  score_b : int
+}
+
+entity "tennis_strategies" as t_strategy {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  name : varchar
+}
+
+t_games ||--o{ t_actions
+login ||--o{ t_games
+login ||--o{ t_strategy
+
+legend right
+  共通の論理キー:
+  - (group_id, user_id)
+  t_actions.game_id は tennis_games.id に対応
+endlegend
+
+@enduml

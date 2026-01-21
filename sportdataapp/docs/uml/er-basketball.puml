@@ -1,0 +1,61 @@
+@startuml
+title ER図: Basketball（チーム/選手/試合/アクション/作戦盤）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+skinparam ArrowFontSize 10
+
+entity "teams" as teams {
+  *id : int
+  --
+  name : varchar
+}
+
+entity "players" as players {
+  *id : int
+  --
+  team_id : int
+  number : int
+  name : varchar
+}
+
+entity "games" as games {
+  *id : bigint
+  --
+  team_a_name : varchar
+  team_b_name : varchar
+  group_id : varchar
+  saved_by_user_id : varchar
+}
+
+entity "game_actions" as game_actions {
+  *id : bigint
+  --
+  game_id : bigint
+  quarter : tinyint
+  team : char
+  player_id : int
+  action_type : varchar
+  point : tinyint
+}
+
+entity "basketball_strategies" as bb_strategy {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  name : varchar
+}
+
+players }o--|| teams
+games ||--o{ game_actions
+players ||--o{ game_actions
+
+legend right
+  games.saved_by_user_id / basketball_strategies.user_id は
+  login_tbl.user_id と論理的に対応
+endlegend
+
+@enduml

@@ -5,9 +5,10 @@
 ===================== */
 
 /* このページは2カラムで横幅が必要。
-   site.css の :where(.container){ width: min(1200px, ...) } が上限になっていたため、ここで上書きする。 */
+   site.css の :where(.container){ width: min(1200px, ...) } を上書きし、全画面幅で使えるようにする。 */
 .container {
-  width: min(calc(1600px + 2rem), calc(100% - 32px));
+  width: calc(100% - 32px);
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
 }
@@ -19,16 +20,23 @@
 }
 
 .practice-grid {
-  /* 2カラム時: 左1000px / 右600px（content-grid の gap=2rem を想定） */
-  grid-template-columns: minmax(0, 1000px) minmax(0, 600px);
-  max-width: calc(1600px + 2rem);
+  /* 2カラム時: 左は可変で広く、右は読みやすい幅で可変（大画面でも使い切る） */
+  grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 600px);
+  max-width: none;
+}
+
+/* 中画面: 右カラムを少し控えめに */
+@media (max-width: 1024px) {
+  .practice-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  }
 }
 
 /* 699px以下: 縦積み */
 @media (max-width: 699px) {
   .practice-grid {
     grid-template-columns: 1fr;
-    max-width: 1600px;
+    max-width: none;
   }
 }
 

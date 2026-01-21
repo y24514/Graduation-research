@@ -441,17 +441,17 @@ if ($basketballHasGroup) {
     }
 }
 
-// テニス（tennis_db / games。group_id列があれば絞る。メンバー名が含まれる試合を優先）
+// テニス（sportdata_db / tennis_games。group_id列があれば絞る。メンバー名が含まれる試合を優先）
 $tennisRecent = [];
 $tennisMode = 'global';
 try {
     $tennisDb = null;
-    $tennisDsn = 'mysql:host=localhost;dbname=tennis_db;charset=utf8mb4';
+    $tennisDsn = 'mysql:host=localhost;dbname=sportdata_db;charset=utf8mb4';
     $tennisDb = new PDO($tennisDsn, 'root', '');
     $tennisDb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $hasGroupCol = false;
-    $colStmt = $tennisDb->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'tennis_db' AND TABLE_NAME = 'games' AND COLUMN_NAME IN ('group_id')");
+    $colStmt = $tennisDb->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sportdata_db' AND TABLE_NAME = 'tennis_games' AND COLUMN_NAME IN ('group_id')");
     foreach ($colStmt->fetchAll(PDO::FETCH_ASSOC) as $c) {
         if (($c['COLUMN_NAME'] ?? '') === 'group_id') $hasGroupCol = true;
     }
@@ -461,13 +461,13 @@ try {
         if ($name !== '') {
             if ($hasGroupCol) {
                 $stmt = $tennisDb->prepare(
-                    'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM games WHERE group_id = ? AND (player_a1 = ? OR player_a2 = ? OR player_b1 = ? OR player_b2 = ?) ORDER BY match_date DESC LIMIT 10'
+                    'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM tennis_games WHERE group_id = ? AND (player_a1 = ? OR player_a2 = ? OR player_b1 = ? OR player_b2 = ?) ORDER BY match_date DESC LIMIT 10'
                 );
                 $stmt->execute([$group_id, $name, $name, $name, $name]);
                 $tennisMode = 'member';
             } else {
                 $stmt = $tennisDb->prepare(
-                    'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM games WHERE (player_a1 = ? OR player_a2 = ? OR player_b1 = ? OR player_b2 = ?) ORDER BY match_date DESC LIMIT 10'
+                    'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM tennis_games WHERE (player_a1 = ? OR player_a2 = ? OR player_b1 = ? OR player_b2 = ?) ORDER BY match_date DESC LIMIT 10'
                 );
                 $stmt->execute([$name, $name, $name, $name]);
                 $tennisMode = 'member';
@@ -478,17 +478,17 @@ try {
 
     if (empty($tennisRecent)) {
         if ($hasGroupCol) {
-            $stmt = $tennisDb->prepare('SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM games WHERE group_id = ? ORDER BY match_date DESC LIMIT 10');
+            $stmt = $tennisDb->prepare('SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM tennis_games WHERE group_id = ? ORDER BY match_date DESC LIMIT 10');
             $stmt->execute([$group_id]);
             $tennisMode = 'group';
         } else {
-            $stmt = $tennisDb->query('SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM games ORDER BY match_date DESC LIMIT 10');
+            $stmt = $tennisDb->query('SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, match_date FROM tennis_games ORDER BY match_date DESC LIMIT 10');
             $tennisMode = 'global';
         }
         $tennisRecent = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (Throwable $e) {
-    // tennis_db が無い/接続できない場合は空のまま
+    // sportdata_db が無い/接続できない場合は空のまま
     $tennisRecent = [];
     $tennisMode = 'unavailable';
 }

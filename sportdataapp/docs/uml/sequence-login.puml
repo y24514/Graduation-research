@@ -1,0 +1,30 @@
+@startuml
+title シーケンス図: ログイン
+
+actor User as "利用者"
+boundary Browser as "ブラウザ"
+control LoginPHP as "PHP/login.php"
+database DB as "sportdata_db\nlogin_tbl"
+
+User -> Browser : ログインフォーム入力
+Browser -> LoginPHP : POST(user_id,password,group_id)
+LoginPHP -> DB : SELECT ... FROM login_tbl\nWHERE group_id=? AND user_id=?
+DB --> LoginPHP : ユーザー情報(パスワードハッシュ等)
+LoginPHP -> LoginPHP : password_verify()
+alt 認証成功
+  LoginPHP -> LoginPHP : $_SESSIONへ保存\n(user_id,group_id,is_admin,...)
+  alt is_admin=1
+    LoginPHP --> Browser : redirect admin.php
+  else 一般
+    LoginPHP --> Browser : redirect home.php
+  end
+else 認証失敗
+  LoginPHP --> Browser : エラー表示
+end
+
+note over LoginPHP
+セッション名は session_bootstrap.php により
+URLの tab_id を元に切替される
+end note
+
+@enduml

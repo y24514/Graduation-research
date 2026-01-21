@@ -54,7 +54,7 @@
 
   /** @type {{activeLane: string, lanes: Record<string, any[]>}} */
   const state = {
-    activeLane: 'attendance',
+    activeLane: 'all',
     lanes: Object.fromEntries(Array.from({ length: LANE_COUNT }, (_, i) => [`${i + 1}`, [defaultRow()]])),
   };
 
@@ -530,10 +530,81 @@
   const practiceModalMemoWrap = document.querySelector('[data-practice-modal-memo]');
   const practiceModalMemoText = document.querySelector('[data-practice-modal-memo-text]');
   const practiceModalQuoteBtn = document.querySelector('[data-practice-modal-quote]');
+  const practiceModalDeleteBtn = document.querySelector('[data-practice-modal-delete]');
 
   const closePracticeModal = () => {
     if (!(practiceModal instanceof HTMLElement)) return;
     practiceModal.hidden = true;
+  };
+
+  const removePracticeFromUi = (practiceId) => {
+    const id = String(practiceId ?? '').trim();
+    if (!id) return;
+
+    // list
+    const card = document.querySelector(`[data-practice-card][data-practice-id="${CSS.escape(id)}"]`);
+    if (card && card.parentElement) card.parentElement.removeChild(card);
+
+    // cache
+    try {
+      if (globalThis.practiceCache && typeof globalThis.practiceCache === 'object') {
+        delete globalThis.practiceCache[id];
+      }
+    } catch {
+      // ignore
+    }
+
+    // events array (used for dateClick)
+    try {
+      if (Array.isArray(globalThis.practiceEvents)) {
+        globalThis.practiceEvents = globalThis.practiceEvents.filter((e) => String(e && e.id ? e.id : '') !== id);
+      }
+    } catch {
+      // ignore
+    }
+
+    // FullCalendar
+    try {
+      const cal = globalThis._swimPracticeCalendar;
+      if (cal && typeof cal.getEventById === 'function') {
+        const ev = cal.getEventById(id);
+        if (ev && typeof ev.remove === 'function') ev.remove();
+      }
+    } catch {
+      // ignore
+    }
+
+    // 件数表示を更新
+    try {
+      if (typeof updatePracticeCount === 'function') updatePracticeCount();
+    } catch {
+      // ignore
+    }
+  };
+
+  const deletePracticeById = async (practiceId) => {
+    const id = String(practiceId ?? '').trim();
+    if (!id) throw new Error('invalid_id');
+
+    const res = await fetch('../../PHP/swim/swim_practice_delete_ajax.php', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: withTabIdParams({ id }),
+    });
+
+    let data = null;
+    try { data = await res.json(); } catch { /* ignore */ }
+
+    if (!res.ok) {
+      const code = (data && data.error) ? String(data.error) : 'http_error';
+      throw new Error(code);
+    }
+    if (!data || data.ok !== true) {
+      const code = (data && data.error) ? String(data.error) : 'delete_failed';
+      throw new Error(code);
+    }
+
+    return true;
   };
 
   const openPracticeModal = async (practiceId) => {
@@ -552,6 +623,10 @@
 
       if (practiceModalQuoteBtn instanceof HTMLElement) {
         practiceModalQuoteBtn.setAttribute('data-practice-id', String(p.id ?? practiceId));
+      }
+
+      if (practiceModalDeleteBtn instanceof HTMLElement) {
+        practiceModalDeleteBtn.setAttribute('data-practice-id', String(p.id ?? practiceId));
       }
 
       const memo = String(p.memo ?? '').trim();
@@ -831,6 +906,52 @@
     openPracticeModal(id);
   });
 
+  // モーダルの「削除」
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="delete-practice"]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-practice-id');
+    if (!id) return;
+
+    // 表示用にタイトル/日付を拾う（あれば）
+    let label = '';
+    try {
+      const cache = (globalThis.practiceCache && typeof globalThis.practiceCache === 'object') ? globalThis.practiceCache : null;
+      const p = cache ? cache[String(id)] : null;
+      const d = p ? String(p.practice_date ?? '').trim() : '';
+      const t = p ? String(p.title ?? '').trim() : '';
+      label = [d, t].filter(Boolean).join(' ');
+    } catch {
+      // ignore
+    }
+
+    const ok = confirm(label
+      ? `この練習を削除します。よろしいですか？\n\n${label}`
+      : 'この練習を削除します。よろしいですか？');
+    if (!ok) return;
+
+    deletePracticeById(id)
+      .then(() => {
+        closePracticeModal();
+        removePracticeFromUi(id);
+        alert('削除しました');
+      })
+      .catch((err) => {
+        const code = String(err && err.message ? err.message : 'failed');
+        if (code === 'unauthorized') {
+          alert('ログイン状態が切れています。ページを再読み込みしてログインし直してください。');
+          return;
+        }
+        if (code === 'not_found') {
+          closePracticeModal();
+          removePracticeFromUi(id);
+          alert('すでに削除されています');
+          return;
+        }
+        alert('削除に失敗しました');
+      });
+  });
+
   // モーダルを閉じる（×/背景クリック）
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action="close-practice-modal"]');
@@ -938,7 +1059,8 @@
         },
         dateClick: (info) => {
           try { hidePracticeTooltip(); } catch { /* ignore */ }
-          const hit = events.find((ev) => ev.start === info.dateStr);
+          const current = getPracticeEvents();
+          const hit = current.find((ev) => ev.start === info.dateStr);
           if (hit) openPracticeCardById(hit.id);
         },
       });
@@ -1117,5 +1239,5 @@
 
   // 初期描画
   renderAllLanes();
-  setActiveLane('attendance');
+  setActiveLane('all');
 })();

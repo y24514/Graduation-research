@@ -1,0 +1,69 @@
+<?php
+require_once __DIR__ . '/../session_bootstrap.php';
+
+header('Content-Type: application/json; charset=UTF-8');
+
+if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
+    http_response_code(401);
+    echo json_encode(['ok' => false, 'error' => 'unauthorized'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['ok' => false, 'error' => 'method_not_allowed'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+$group_id = $_SESSION['group_id'];
+$user_id  = $_SESSION['user_id'];
+
+$id = $_POST['id'] ?? '';
+$id = trim((string)$id);
+if ($id === '' || !ctype_digit($id)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'invalid_id'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+$practiceId = (int)$id;
+
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbUser = getenv('DB_USER') ?: 'y24514';
+$dbPass = getenv('DB_PASS') ?: 'Kr96main0303';
+$dbName = getenv('DB_NAME') ?: 'sportdata_db';
+
+$link = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
+if (!$link) {
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => 'db_connect_failed'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+mysqli_set_charset($link, 'utf8');
+
+$stmt = mysqli_prepare(
+    $link,
+    'DELETE FROM swim_practice_tbl WHERE id = ? AND group_id = ? AND user_id = ? LIMIT 1'
+);
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => 'prepare_failed'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+mysqli_stmt_bind_param($stmt, 'iss', $practiceId, $group_id, $user_id);
+if (!mysqli_stmt_execute($stmt)) {
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => 'execute_failed'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+$affected = mysqli_stmt_affected_rows($stmt);
+mysqli_stmt_close($stmt);
+
+if ($affected < 1) {
+    http_response_code(404);
+    echo json_encode(['ok' => false, 'error' => 'not_found'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+echo json_encode(['ok' => true, 'deleted' => ['id' => $practiceId]], JSON_UNESCAPED_UNICODE);

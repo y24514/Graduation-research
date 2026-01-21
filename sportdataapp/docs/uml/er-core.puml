@@ -1,0 +1,94 @@
+@startuml
+title ER図: Core（認証/目標/PI/日記/予定/問い合わせ/申請）
+top to bottom direction
+hide circle
+skinparam linetype ortho
+skinparam nodesep 25
+skinparam ranksep 30
+skinparam ArrowFontSize 10
+
+entity "login_tbl" as login {
+  *id : int
+  --
+  *group_id : varchar
+  *user_id : varchar
+  name : varchar
+  sport : varchar
+  is_admin : tinyint
+  is_super_admin : tinyint
+}
+
+entity "admin_role_requests" as admin_role_requests {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  status : enum
+  requested_at : datetime
+}
+
+entity "goal_tbl" as goal {
+  *goal_id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  goal : text
+  progress : int
+  deadline : date
+}
+
+entity "pi_tbl" as pi {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  height : decimal
+  weight : decimal
+  sleeptime : time
+}
+
+entity "diary_tbl" as diary {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  diary_date : date
+  title : varchar
+  submitted_to_admin : tinyint
+}
+
+entity "calendar_tbl" as cal {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  title : varchar
+  startdate : date
+  enddate : date
+  is_shared : tinyint
+}
+
+entity "inquiries_tbl" as inq {
+  *id : int
+  --
+  group_id : varchar
+  user_id : varchar
+  category : varchar
+  status : tinyint
+}
+
+' 関係（線上ラベルは被りやすいので省略。共通キーは凡例へ）
+login ||--o{ goal
+login ||--o{ pi
+login ||--o{ diary
+login ||--o{ cal
+login ||--o{ inq
+login ||--o{ admin_role_requests
+
+legend right
+  共通の論理キー:
+  - (group_id, user_id)
+  ※FK制約は必ずしも張られていない
+endlegend
+
+@enduml

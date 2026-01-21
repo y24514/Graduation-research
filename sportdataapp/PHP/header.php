@@ -80,6 +80,7 @@ $__csrfToken = (string)$_SESSION['csrf_token'];
 $css_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SERVER['REQUEST_URI'], '/basketball/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_MNO/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_board/') !== false || strpos($_SERVER['REQUEST_URI'], '/B_board/') !== false) ? '../../css/' : '../css/';
 $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SERVER['REQUEST_URI'], '/basketball/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_MNO/') !== false || strpos($_SERVER['REQUEST_URI'], '/T_board/') !== false || strpos($_SERVER['REQUEST_URI'], '/B_board/') !== false) ? '../../img/' : '../img/';
 ?>
+<link rel="stylesheet" href="<?= $css_depth ?>site.css">
 <link rel="stylesheet" href="<?= $css_depth ?>nav.css">
 <!-- 共通ナビ -->
 <div class="meny">

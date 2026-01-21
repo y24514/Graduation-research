@@ -2,7 +2,7 @@
 // --- データベース接続設定 ---
 function getDbConnection() {
     $host   = 'localhost';
-    $dbname = 'tennis_db';
+    $dbname = 'sportdata_db';
     $user   = 'root';
     $pass   = '';
 
@@ -23,7 +23,7 @@ function saveGameResult($db, $d) {
     $savedByUserId = $d['saved_by_user_id'] ?? null;
 
     try {
-        $stmt = $db->prepare("INSERT INTO games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, group_id, saved_by_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO tennis_games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, group_id, saved_by_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $d['teamA'], $d['teamB'], $d['gamesA'], $d['gamesB'],
             $d['a1'], $d['a2'] ?? '', $d['b1'], $d['b2'] ?? '',
@@ -31,7 +31,7 @@ function saveGameResult($db, $d) {
         ]);
     } catch (PDOException $e) {
         // 互換: 既存DBに列が無い場合
-        $stmt = $db->prepare("INSERT INTO games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO tennis_games (team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $d['teamA'], $d['teamB'], $d['gamesA'], $d['gamesB'],
             $d['a1'], $d['a2'] ?? '', $d['b1'], $d['b2'] ?? ''
@@ -40,7 +40,7 @@ function saveGameResult($db, $d) {
     $gameId = $db->lastInsertId();
 
     // 2. actionsテーブルに全履歴を保存
-    $stmtAct = $db->prepare("INSERT INTO actions (game_id, player_name, action_type, score_a, score_b) VALUES (?, ?, ?, ?, ?)");
+    $stmtAct = $db->prepare("INSERT INTO tennis_actions (game_id, player_name, action_type, score_a, score_b) VALUES (?, ?, ?, ?, ?)");
     foreach ($d['history'] as $h) {
         $stmtAct->execute([$gameId, $h['player'], $h['action'], $h['sA'], $h['sB']]);
     }
@@ -50,13 +50,13 @@ function saveGameResult($db, $d) {
 
 // --- 特定の試合データを取得する関数 ---
 function getGameDetail($db, $gameId) {
-    $stmt = $db->prepare("SELECT * FROM games WHERE id = ?");
+    $stmt = $db->prepare("SELECT * FROM tennis_games WHERE id = ?");
     $stmt->execute([$gameId]);
     $game = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$game) return null;
 
-    $stmtAct = $db->prepare("SELECT * FROM actions WHERE game_id = ?");
+    $stmtAct = $db->prepare("SELECT * FROM tennis_actions WHERE game_id = ?");
     $stmtAct->execute([$gameId]);
     $actions = $stmtAct->fetchAll(PDO::FETCH_ASSOC);
 
@@ -66,13 +66,13 @@ function getGameDetail($db, $gameId) {
 // --- 試合一覧（全件）を取得する関数 ---
 function getAllGames($db) {
     // 新しい順（id DESC）に取得
-    $stmt = $db->query("SELECT * FROM games ORDER BY id DESC");
+    $stmt = $db->query("SELECT * FROM tennis_games ORDER BY id DESC");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // --- 選手ごとの勝率・戦績を取得する関数 ---
 function getPlayerStats($db) {
-    $games = $db->query("SELECT * FROM games")->fetchAll(PDO::FETCH_ASSOC);
+    $games = $db->query("SELECT * FROM tennis_games")->fetchAll(PDO::FETCH_ASSOC);
     $stats = [];
 
     foreach ($games as $g) {
@@ -112,7 +112,7 @@ function getPlayerStats($db) {
 // --- 全選手の通算アクション統計を取得する関数 ---
 function getAllPlayerActionStats($db) {
     // 全アクションを新しい順に取得
-    $stmt = $db->query("SELECT player_name, action_type FROM actions");
+    $stmt = $db->query("SELECT player_name, action_type FROM tennis_actions");
     $allActions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $stats = [];

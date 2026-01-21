@@ -5,14 +5,17 @@
 
 :root{
     --nav-bg: #ffffff;
+    /* Header only: slight translucency for a modern “glass” feel */
+    --nav-glass-bg: rgba(255, 255, 255, 0.92);
     --nav-accent: #3182ce;
     --nav-accent-hover: #2c5aa0;
     --nav-text: #1a202c;
     --nav-muted: #718096;
     --nav-contrast: #000000;
-    --nav-radius: 0px;
+    --nav-radius: 12px;
     --nav-height: 60px;
-    --nav-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --nav-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    --nav-ring: 0 0 0 3px rgba(49, 130, 206, 0.18);
 }
 
 /* =====================
@@ -25,9 +28,11 @@
     justify-content: space-between;
     height: var(--nav-height);
     padding: 0 48px;
-    background: var(--nav-bg);
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--nav-glass-bg);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.95);
     box-shadow: var(--nav-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
     z-index: 1200;
@@ -49,6 +54,11 @@
 .meny :is(button, a){
     font: inherit;
     letter-spacing: inherit;
+}
+
+.meny :is(button, a):focus-visible{
+    outline: none;
+    box-shadow: var(--nav-ring);
 }
 
 .meny .brand{
@@ -134,6 +144,11 @@
 .settings-btn:hover {
     background: rgba(49, 130, 206, 0.08);
     color: var(--nav-accent);
+}
+
+.settings-btn:focus-visible{
+    outline: none;
+    box-shadow: var(--nav-ring);
 }
 
 .settings-btn svg {
@@ -435,8 +450,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 20px;
-    border-radius: 0;
+    padding: 9px 14px;
+    border-radius: 999px;
     border: none;
     background: transparent;
     color: var(--nav-text);
@@ -447,24 +462,9 @@
     position: relative;
 }
 
-.menu-root li button::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 80%;
-    height: 2px;
-    background: var(--nav-accent);
-    transition: transform 0.2s ease;
-}
-
-.menu-root li button:hover::after {
-    transform: translateX(-50%) scaleX(1);
-}
-
 .menu-root li button:hover{
     color: var(--nav-accent);
+    background: rgba(49, 130, 206, 0.08);
 }
 
 .menu-root li button:active{
@@ -473,6 +473,10 @@
 
 .menu-root li button:focus{
     outline: none;
+}
+
+.menu-root li button:focus-visible{
+    box-shadow: var(--nav-ring);
 }
 
 .menu-root li button a{
@@ -492,10 +496,7 @@
 .menu-root li.active button{
     color: var(--nav-accent);
     font-weight: 600;
-}
-
-.menu-root li.active button::after {
-    transform: translateX(-50%) scaleX(1);
+    background: rgba(49, 130, 206, 0.12);
 }
 
 /* Submenu toggle indicator (caret)
@@ -516,7 +517,9 @@
     left: 0;
     min-width: 220px;
     padding: 8px;
-    background: var(--nav-bg);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 8px;
     border: 1px solid #e5e7eb;
     box-shadow: var(--nav-shadow);
@@ -614,6 +617,17 @@
     order: -2;
 }
 
+.hamburger-btn:hover{
+    background: rgba(49, 130, 206, 0.06);
+    border-radius: 10px;
+}
+
+.hamburger-btn:focus-visible{
+    outline: none;
+    box-shadow: var(--nav-ring);
+    border-radius: 10px;
+}
+
 .hamburger-btn span {
     width: 100%;
     height: 3px;
@@ -650,7 +664,9 @@
         top: var(--nav-height);
         left: 0;
         width: 100%;
-        background: var(--nav-bg);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         max-height: 0;
         overflow: hidden;
@@ -752,6 +768,17 @@
     }
     .meny .brand{
         font-size: 19px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .meny *,
+    .meny *::before,
+    .meny *::after{
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
     }
 }
 

@@ -1,0 +1,76 @@
+@startuml
+title SportDataApp ユースケース図（概要）
+left to right direction
+skinparam packageStyle rectangle
+
+actor "一般ユーザー" as User
+actor "管理者" as Admin
+actor "スーパー管理者" as SuperAdmin
+
+rectangle "SportDataApp" {
+  (ログイン) as UC_Login
+  (ユーザー登録) as UC_Reg
+  (ホーム閲覧) as UC_Home
+
+  (目標を登録/更新) as UC_Goal
+  (PIを記録) as UC_PI
+  (日記を投稿/編集/削除) as UC_DiaryCRUD
+  (日記を管理者へ提出) as UC_DiarySubmit
+
+  (チャット送信) as UC_ChatSend
+  (チャット閲覧/未読管理) as UC_ChatRead
+  (グループチャット作成) as UC_GroupCreate
+  (グループメンバー管理) as UC_GroupManage
+
+  (予定を登録/共有) as UC_Calendar
+  (問い合わせ送信) as UC_Inquiry
+
+  (管理画面閲覧) as UC_Admin
+  (問い合わせ返信) as UC_InquiryReply
+  (提出日記の閲覧/FB) as UC_DiaryFeedback
+  (管理者権限申請を承認/却下) as UC_AdminRoleAction
+
+  (水泳記録を入力) as UC_SwimInput
+  (水泳記録を分析/閲覧) as UC_SwimAnalyze
+  (水泳練習メニュー作成) as UC_SwimPractice
+
+  (テニス試合を記録) as UC_Tennis
+  (テニス作戦盤を保存) as UC_TennisStrategy
+
+  (バスケ試合を開始/記録) as UC_Basketball
+  (バスケ作戦盤を保存) as UC_BasketballStrategy
+}
+
+User --> UC_Login
+User --> UC_Reg
+User --> UC_Home
+User --> UC_Goal
+User --> UC_PI
+User --> UC_DiaryCRUD
+User --> UC_DiarySubmit
+User --> UC_ChatSend
+User --> UC_ChatRead
+User --> UC_GroupCreate
+User --> UC_GroupManage
+User --> UC_Calendar
+User --> UC_Inquiry
+User --> UC_SwimInput
+User --> UC_SwimAnalyze
+User --> UC_SwimPractice
+User --> UC_Tennis
+User --> UC_TennisStrategy
+User --> UC_Basketball
+User --> UC_BasketballStrategy
+
+Admin --> UC_Admin
+Admin --> UC_InquiryReply
+Admin --> UC_DiaryFeedback
+
+SuperAdmin --> UC_Admin
+SuperAdmin --> UC_AdminRoleAction
+SuperAdmin --> UC_InquiryReply
+
+UC_AdminRoleAction ..> UC_Admin : extends
+UC_DiaryFeedback ..> UC_DiarySubmit : depends
+
+@enduml
