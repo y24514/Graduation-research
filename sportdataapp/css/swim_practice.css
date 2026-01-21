@@ -243,6 +243,45 @@
   padding: 2px 4px;
 }
 
+/* カレンダー hover 詳細（ツールチップ） */
+.practice-tooltip {
+  position: fixed;
+  z-index: 9999;
+  max-width: 320px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.96);
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.practice-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.practice-tooltip__title {
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.practice-tooltip__meta {
+  font-size: 0.74rem;
+  opacity: 0.92;
+  margin-bottom: 6px;
+}
+
+.practice-tooltip__body {
+  white-space: pre-wrap;
+  opacity: 0.96;
+}
+
 @media (max-width: 699px) {
   .practice-list-panel {
     position: static;

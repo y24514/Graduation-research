@@ -79,6 +79,112 @@
 
   const escapeText = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
 
+  const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+      default: return ch;
+    }
+  });
+
+  const clipText = (s, max = 160) => {
+    const t = String(s ?? '').replace(/\r\n/g, '\n').trim();
+    if (!t) return '';
+    return t.length > max ? `${t.slice(0, max)}…` : t;
+  };
+
+  let practiceTooltipEl = null;
+  let practiceTooltipMoveHandler = null;
+  const hidePracticeTooltip = () => {
+    if (practiceTooltipMoveHandler) {
+      document.removeEventListener('mousemove', practiceTooltipMoveHandler);
+      practiceTooltipMoveHandler = null;
+    }
+    if (practiceTooltipEl) {
+      practiceTooltipEl.classList.remove('is-visible');
+      practiceTooltipEl.remove();
+      practiceTooltipEl = null;
+    }
+  };
+
+  const positionPracticeTooltip = (x, y) => {
+    if (!practiceTooltipEl) return;
+
+    const offset = 12;
+    const maxPad = 12;
+    const vw = document.documentElement?.clientWidth || window.innerWidth;
+    const vh = document.documentElement?.clientHeight || window.innerHeight;
+
+    // まずは右下に置き、はみ出す場合に反転
+    let left = x + offset;
+    let top = y + offset;
+
+    // 一旦配置してサイズ取得
+    practiceTooltipEl.style.left = `${left}px`;
+    practiceTooltipEl.style.top = `${top}px`;
+
+    const rect = practiceTooltipEl.getBoundingClientRect();
+
+    if (rect.right > vw - maxPad) {
+      left = Math.max(maxPad, x - rect.width - offset);
+    }
+    if (rect.bottom > vh - maxPad) {
+      top = Math.max(maxPad, y - rect.height - offset);
+    }
+
+    practiceTooltipEl.style.left = `${left}px`;
+    practiceTooltipEl.style.top = `${top}px`;
+  };
+
+  const showPracticeTooltip = (jsEvent, fcEvent) => {
+    if (!jsEvent || !fcEvent) return;
+
+    const id = String(fcEvent.id ?? '').trim();
+    if (!id) return;
+
+    const cache = (globalThis.practiceCache && typeof globalThis.practiceCache === 'object') ? globalThis.practiceCache : null;
+    const p = cache ? cache[id] : null;
+
+    const title = String((p && p.title) ? p.title : (fcEvent.title ?? '')).trim();
+    const date = String((p && p.practice_date) ? p.practice_date : (fcEvent.startStr ?? '')).trim();
+    const menu = clipText(p ? p.menu_text : '', 180);
+    const memo = clipText(p ? p.memo : '', 120);
+
+    const lines = [];
+    if (menu) lines.push(`メニュー: ${menu}`);
+    if (memo) lines.push(`メモ: ${memo}`);
+
+    if (!practiceTooltipEl) {
+      practiceTooltipEl = document.createElement('div');
+      practiceTooltipEl.className = 'practice-tooltip';
+      document.body.appendChild(practiceTooltipEl);
+    }
+
+    practiceTooltipEl.innerHTML = [
+      `<div class="practice-tooltip__title">${escapeHtml(title || '練習')}</div>`,
+      date ? `<div class="practice-tooltip__meta">${escapeHtml(date)}</div>` : '',
+      lines.length ? `<div class="practice-tooltip__body">${escapeHtml(lines.join('\n'))}</div>` : '<div class="practice-tooltip__body">クリックで詳細を表示</div>',
+    ].join('');
+
+    // 初期位置
+    const x = Number(jsEvent.clientX ?? 0);
+    const y = Number(jsEvent.clientY ?? 0);
+    positionPracticeTooltip(x, y);
+    practiceTooltipEl.classList.add('is-visible');
+
+    // 追従
+    if (!practiceTooltipMoveHandler) {
+      practiceTooltipMoveHandler = (e) => {
+        if (!(e instanceof MouseEvent)) return;
+        positionPracticeTooltip(e.clientX, e.clientY);
+      };
+      document.addEventListener('mousemove', practiceTooltipMoveHandler, { passive: true });
+    }
+  };
+
   const parseMaybeNumber = (value, fallback = 0) => {
     const n = Number(String(value ?? '').trim());
     return Number.isFinite(n) ? n : fallback;
@@ -813,13 +919,25 @@
         height: 'auto',
         fixedWeekCount: false,
         events,
+        eventMouseEnter: (info) => {
+          try {
+            showPracticeTooltip(info.jsEvent, info.event);
+          } catch {
+            // ignore
+          }
+        },
+        eventMouseLeave: () => {
+          try { hidePracticeTooltip(); } catch { /* ignore */ }
+        },
         eventClick: (info) => {
           info.jsEvent.preventDefault();
+          try { hidePracticeTooltip(); } catch { /* ignore */ }
           if (info.event && info.event.id) {
             openPracticeCardById(info.event.id);
           }
         },
         dateClick: (info) => {
+          try { hidePracticeTooltip(); } catch { /* ignore */ }
           const hit = events.find((ev) => ev.start === info.dateStr);
           if (hit) openPracticeCardById(hit.id);
         },
