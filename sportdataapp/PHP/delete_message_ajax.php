@@ -17,9 +17,9 @@ if ($message_id <= 0) {
 }
 
 $dbHost = getenv('DB_HOST') ?: 'localhost';
-$dbUser = getenv('DB_USER') ?: 'root';
-$dbPass = getenv('DB_PASS') ?: '';
-$dbName = getenv('DB_NAME') ?: 'sportdata_db';
+$dbUser = getenv('DB_USER') ?: 'sportsdata_user';
+$dbPass = getenv('DB_PASS') ?: 'fujidai14';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 if ($conn->connect_error) {

@@ -129,3 +129,148 @@ body::-webkit-scrollbar {
     height: 0;
 }
 
+/* =====================
+   Loader (0% -> 100%)
+   - Specificity is kept low via :where()
+   - Pages can override with their own CSS
+===================== */
+
+:where(.loader){
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    /* 背景オーバーレイは表示しない（ページはそのまま見せる） */
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: 9999;
+}
+
+/* home: ローディング中はページ本体を非表示 */
+body > :not(.loader){
+    transition: opacity 600ms ease;
+}
+
+body.hide-page-during-loading > :not(.loader){
+    opacity: 0;
+    pointer-events: none;
+}
+
+:where(.loader .spinner){
+    width: min(360px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 20px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: loaderCardIn 220ms ease-out;
+    transform-origin: center;
+}
+
+@keyframes loaderCardIn{
+    from{ opacity: 0; transform: translateY(6px) scale(0.985); }
+    to{ opacity: 1; transform: translateY(0) scale(1); }
+}
+
+:where(.loader .progress-bar-container){
+    width: 100%;
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+:where(.loader .progress-bar){
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #1976d2 0%, #4fc3f7 100%);
+    background-size: 180% 100%;
+    border-radius: 999px;
+    transition: width 120ms linear;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 進捗バーのシマー（流れる光） */
+:where(.loader .progress-bar)::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -35%;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-18deg);
+    animation: loaderShimmer 900ms ease-in-out infinite;
+    opacity: 0.9;
+}
+
+@keyframes loaderShimmer{
+    0%{ left: -35%; }
+    100%{ left: 105%; }
+}
+
+:where(.loader.lag .progress-bar){
+    background: linear-gradient(90deg, #ed8936 0%, #ecc94b 100%);
+}
+
+:where(.loader .progress-percent){
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+    animation: loaderPulse 900ms ease-in-out infinite;
+}
+
+@keyframes loaderPulse{
+    0%, 100%{ transform: translateY(0); }
+    50%{ transform: translateY(-1px); }
+}
+
+:where(.loader .progress-label){
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+:where(.loader .txt){
+    margin: 0;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #374151;
+    text-align: center;
+}
+
+:where(.loader .txt[data-show-on-complete="true"]){
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #111827;
+    margin-top: 14px;
+    opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce){
+    :where(.loader .progress-bar){
+        transition: none;
+    }
+    :where(.loader .spinner){
+        animation: none;
+    }
+    :where(.loader .progress-percent){
+        animation: none;
+    }
+    :where(.loader .progress-bar)::after{
+        animation: none;
+    }
+}
+

@@ -1,4 +1,4 @@
--- Seed data for basketball feature (sportdata_db)
+-- Seed data for basketball feature (sportsdata)
 -- Run after basketball_tables.sql
 
 -- 必要なら一度リセット（運用中は注意）

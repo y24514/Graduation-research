@@ -5,7 +5,7 @@ require_once __DIR__ . '/session_bootstrap.php';
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "sportdata_db";
+$dbname = "sportsdata";
 
 header('Content-Type: application/json');
 

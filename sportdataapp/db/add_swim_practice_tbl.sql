@@ -1,7 +1,7 @@
--- 実行DB: sportdata_db
+-- 実行DB: sportsdata
 -- 水泳: 練習メニュー作成用テーブル
 
-USE sportdata_db;
+USE sportsdata;
 
 CREATE TABLE IF NOT EXISTS swim_practice_tbl (
   id INT AUTO_INCREMENT PRIMARY KEY,

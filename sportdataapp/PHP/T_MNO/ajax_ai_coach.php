@@ -9,9 +9,9 @@ $model_id = 'gemini-2.0-flash-latest';   // 指定された最新モデルID
 
 // データベース接続設定
 $host   = 'localhost';
-$dbname = 'sportdata_db';
-$user   = 'root';
-$pass   = '';
+$dbname = 'sportsdata';
+$user   = getenv('DB_USER') ?: 'sportsdata_user';
+$pass   = getenv('DB_PASS') ?: 'fujidai14';
 
 // --- 2. リクエスト解析 ---
 $gameId = isset($_POST['game_id']) ? intval($_POST['game_id']) : null;

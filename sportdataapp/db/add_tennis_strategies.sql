@@ -1,7 +1,7 @@
 -- テニス作戦ボード保存用テーブル
--- 実行DB: sportdata_db
+-- 実行DB: sportsdata
 
-USE sportdata_db;
+USE sportsdata;
 
 CREATE TABLE IF NOT EXISTS `tennis_strategies` (
   `id` INT NOT NULL AUTO_INCREMENT,

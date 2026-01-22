@@ -2,9 +2,9 @@
 // --- データベース接続設定 ---
 function getDbConnection() {
     $host   = 'localhost';
-    $dbname = 'sportdata_db';
-    $user   = 'root';
-    $pass   = '';
+    $dbname = 'sportsdata';
+    $user   = getenv('DB_USER') ?: 'sportsdata_user';
+    $pass   = getenv('DB_PASS') ?: 'fujidai14';
 
     try {
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";

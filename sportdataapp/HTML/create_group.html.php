@@ -15,14 +15,11 @@
 <body>
 <?php if ($showLoader): ?>
     <div class="loader">
-        <div class="spinner">
-            <div class="progress-bar-container">
+        <div class="spinner" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progress-percent">0%</div>
+            <div class="progress-label">読み込み中</div>
+            <div class="progress-bar-container" aria-hidden="true">
                 <div class="progress-bar"></div>
-            </div>
-            <div class="loading-dots">
-                <span></span>
-                <span></span>
-                <span></span>
             </div>
         </div>
         <p class="txt">読み込み中...</p>

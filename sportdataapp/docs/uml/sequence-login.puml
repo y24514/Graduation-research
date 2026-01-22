@@ -4,7 +4,7 @@ title シーケンス図: ログイン
 actor User as "利用者"
 boundary Browser as "ブラウザ"
 control LoginPHP as "PHP/login.php"
-database DB as "sportdata_db\nlogin_tbl"
+database DB as "sportsdata\nlogin_tbl"
 
 User -> Browser : ログインフォーム入力
 Browser -> LoginPHP : POST(user_id,password,group_id)

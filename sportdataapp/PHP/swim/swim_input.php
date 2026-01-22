@@ -4,7 +4,12 @@ require_once __DIR__ . '/../session_bootstrap.php';
 // ページリロード時にローディングを表示
 $showLoader = false;
 
-$link = mysqli_connect("localhost", "y24514", "Kr96main0303", "sportdata_db");
+$link = mysqli_connect(
+    getenv('DB_HOST') ?: 'localhost',
+    getenv('DB_USER') ?: 'sportsdata_user',
+    getenv('DB_PASS') ?: 'fujidai14',
+    getenv('DB_NAME') ?: 'sportsdata'
+);
 mysqli_set_charset($link, "utf8");
 
 $group_id = $_SESSION['group_id'];

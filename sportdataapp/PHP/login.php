@@ -1,16 +1,24 @@
 <?php 
 require_once __DIR__ . '/session_bootstrap.php';
 
-$usr = 'y24514';
-$pwd = 'Kr96main0303';
+$usr = getenv('DB_USER') ?: 'sportsdata_user';
+$pwd = getenv('DB_PASS') ?: 'fujidai14';
 $host = 'localhost';
 
-$link = mysqli_connect($host, $usr, $pwd);
-if(!$link){
-    die('接続失敗:' . mysqli_connect_error());
+// mysqli が例外を投げる設定の場合でも、画面が Fatal で落ちないようにする
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
+
+try {
+    $link = mysqli_connect($host, $usr, $pwd);
+    mysqli_set_charset($link, 'utf8');
+    mysqli_select_db($link, $dbName);
+} catch (mysqli_sql_exception $e) {
+    http_response_code(500);
+    // ここで落ちる場合は MySQL の権限（GRANT）が原因のことが多い
+    die('DB接続に失敗しました。MySQLユーザーに DB 権限があるか確認してください。');
 }
-mysqli_set_charset($link, 'utf8');
-mysqli_select_db($link, 'sportdata_db');
 
 $errors = [];
 $success_message = '';

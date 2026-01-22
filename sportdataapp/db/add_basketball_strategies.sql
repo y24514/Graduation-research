@@ -1,5 +1,5 @@
 -- バスケ作戦ボード保存用テーブル
--- 実行DB: sportdata_db
+-- 実行DB: sportsdata
 
 CREATE TABLE IF NOT EXISTS `basketball_strategies` (
   `id` INT NOT NULL AUTO_INCREMENT,

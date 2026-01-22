@@ -1,7 +1,7 @@
 <?php
 $pdo = new PDO(
-    'mysql:host=localhost;dbname=sportdata_db;charset=utf8mb4',
-    'y24514',
-    'Kr96main0303',
+    'mysql:host=localhost;dbname=sportsdata;charset=utf8mb4',
+    getenv('DB_USER') ?: 'sportsdata_user',
+    getenv('DB_PASS') ?: 'fujidai14',
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
 );

@@ -1,6 +1,6 @@
--- 既存の sportdata_db にテニス(旧 tennis_db)を追記するための増分SQL
+-- 既存の sportsdata にテニス(旧 tennis_db)を追記するための増分SQL
 -- 対象: MariaDB 10.4.x (XAMPP想定)
--- 1) sportdata_db に tennis_* テーブルを作成
+-- 1) sportsdata に tennis_* テーブルを作成
 -- 2) tennis_db が存在する場合、tennis_db のデータを INSERT IGNORE でコピー
 --
 -- 実行前に推奨: DBバックアップ
@@ -8,7 +8,7 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 
-USE sportdata_db;
+USE sportsdata;
 
 -- 1) テーブル作成（存在しなければ）
 CREATE TABLE IF NOT EXISTS `tennis_games` (
@@ -60,7 +60,7 @@ BEGIN
   DECLARE fk_count INT DEFAULT 0;
   SELECT COUNT(*) INTO fk_count
     FROM information_schema.REFERENTIAL_CONSTRAINTS
-   WHERE CONSTRAINT_SCHEMA = 'sportdata_db'
+  WHERE CONSTRAINT_SCHEMA = 'sportsdata'
      AND TABLE_NAME = 'tennis_actions'
      AND REFERENCED_TABLE_NAME = 'tennis_games'
      AND CONSTRAINT_NAME = 'fk_tennis_actions_game';
@@ -109,16 +109,16 @@ BEGIN
 
   -- tennis_games
   IF has_group_id = 1 AND has_saved_by = 1 THEN
-    SET @sql_games = 'INSERT IGNORE INTO sportdata_db.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
+    SET @sql_games = 'INSERT IGNORE INTO sportsdata.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
                  'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id FROM tennis_db.games';
   ELSEIF has_group_id = 1 AND has_saved_by = 0 THEN
-    SET @sql_games = 'INSERT IGNORE INTO sportdata_db.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
+    SET @sql_games = 'INSERT IGNORE INTO sportsdata.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
                  'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, NULL FROM tennis_db.games';
   ELSEIF has_group_id = 0 AND has_saved_by = 1 THEN
-    SET @sql_games = 'INSERT IGNORE INTO sportdata_db.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
+    SET @sql_games = 'INSERT IGNORE INTO sportsdata.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
                  'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, NULL, saved_by_user_id FROM tennis_db.games';
   ELSE
-    SET @sql_games = 'INSERT IGNORE INTO sportdata_db.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
+    SET @sql_games = 'INSERT IGNORE INTO sportsdata.tennis_games (id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, group_id, saved_by_user_id) '
                  'SELECT id, team_a, team_b, games_a, games_b, player_a1, player_a2, player_b1, player_b2, ai_comment, match_date, NULL, NULL FROM tennis_db.games';
   END IF;
 
@@ -127,14 +127,14 @@ BEGIN
   DEALLOCATE PREPARE stmt_games;
 
   -- tennis_actions
-  SET @sql_actions = 'INSERT IGNORE INTO sportdata_db.tennis_actions (id, game_id, player_name, action_type, score_a, score_b, created_at) '
+  SET @sql_actions = 'INSERT IGNORE INTO sportsdata.tennis_actions (id, game_id, player_name, action_type, score_a, score_b, created_at) '
                  'SELECT id, game_id, player_name, action_type, score_a, score_b, created_at FROM tennis_db.actions';
   PREPARE stmt_actions FROM @sql_actions;
   EXECUTE stmt_actions;
   DEALLOCATE PREPARE stmt_actions;
 
   -- tennis_strategies
-  SET @sql_strat = 'INSERT IGNORE INTO sportdata_db.tennis_strategies (id, group_id, user_id, name, json_data, created_at) '
+  SET @sql_strat = 'INSERT IGNORE INTO sportsdata.tennis_strategies (id, group_id, user_id, name, json_data, created_at) '
                'SELECT id, group_id, user_id, name, json_data, created_at FROM tennis_db.tennis_strategies';
   PREPARE stmt_strat FROM @sql_strat;
   EXECUTE stmt_strat;

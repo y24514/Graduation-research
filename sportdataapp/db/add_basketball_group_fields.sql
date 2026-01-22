@@ -1,5 +1,5 @@
 -- バスケデータを group 単位で扱うための列追加
--- sportdata_db の games テーブルへ group_id / saved_by_user_id を追加します。
+-- sportsdata の games テーブルへ group_id / saved_by_user_id を追加します。
 
 ALTER TABLE games
   ADD COLUMN group_id VARCHAR(64) NULL,

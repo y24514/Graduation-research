@@ -6,7 +6,7 @@ actor Admin as "管理者"
 boundary Browser as "ブラウザ"
 control DiaryAPI as "PHP/diary_api.php"
 control AdminPage as "PHP/admin.php / diary画面"
-database DB as "sportdata_db\ndiary_tbl"
+database DB as "sportsdata\ndiary_tbl"
 
 User -> Browser : 日記を提出(提出ボタン)
 Browser -> DiaryAPI : POST(action=submit, diary_id)

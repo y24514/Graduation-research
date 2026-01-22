@@ -13,9 +13,9 @@ if (empty($_SESSION['is_admin']) && empty($_SESSION['is_super_admin'])) {
 }
 
 $dbHost = getenv('DB_HOST') ?: 'localhost';
-$dbUser = getenv('DB_USER') ?: 'y24514';
-$dbPass = getenv('DB_PASS') ?: 'Kr96main0303';
-$dbName = getenv('DB_NAME') ?: 'sportdata_db';
+$dbUser = getenv('DB_USER') ?: 'sportsdata_user';
+$dbPass = getenv('DB_PASS') ?: 'fujidai14';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 if (!$link) {
@@ -441,17 +441,17 @@ if ($basketballHasGroup) {
     }
 }
 
-// テニス（sportdata_db / tennis_games。group_id列があれば絞る。メンバー名が含まれる試合を優先）
+// テニス（sportsdata / tennis_games。group_id列があれば絞る。メンバー名が含まれる試合を優先）
 $tennisRecent = [];
 $tennisMode = 'global';
 try {
     $tennisDb = null;
-    $tennisDsn = 'mysql:host=localhost;dbname=sportdata_db;charset=utf8mb4';
-    $tennisDb = new PDO($tennisDsn, 'root', '');
+    $tennisDsn = 'mysql:host=localhost;dbname=sportsdata;charset=utf8mb4';
+    $tennisDb = new PDO($tennisDsn, $dbUser, $dbPass);
     $tennisDb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $hasGroupCol = false;
-    $colStmt = $tennisDb->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sportdata_db' AND TABLE_NAME = 'tennis_games' AND COLUMN_NAME IN ('group_id')");
+    $colStmt = $tennisDb->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sportsdata' AND TABLE_NAME = 'tennis_games' AND COLUMN_NAME IN ('group_id')");
     foreach ($colStmt->fetchAll(PDO::FETCH_ASSOC) as $c) {
         if (($c['COLUMN_NAME'] ?? '') === 'group_id') $hasGroupCol = true;
     }
@@ -488,7 +488,7 @@ try {
         $tennisRecent = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (Throwable $e) {
-    // sportdata_db が無い/接続できない場合は空のまま
+    // sportsdata が無い/接続できない場合は空のまま
     $tennisRecent = [];
     $tennisMode = 'unavailable';
 }

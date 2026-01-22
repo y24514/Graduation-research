@@ -1,7 +1,7 @@
 -- 日記を同じ日付で複数登録できるようにする（既存DB用）
--- 対象DB: sportdata_db
+-- 対象DB: sportsdata
 
-USE sportdata_db;
+USE sportsdata;
 
 -- 既存のユニーク制約を削除（同日複数登録を許可）
 ALTER TABLE diary_tbl

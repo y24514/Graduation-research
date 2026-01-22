@@ -20,10 +20,10 @@ if (isset($_SESSION['first_login']) && $_SESSION['first_login'] === true) {
 }
 
 // DB接続処理
-$usr = 'y24514';
-$pwd = 'Kr96main0303';
+$usr = getenv('DB_USER') ?: 'sportsdata_user';
+$pwd = getenv('DB_PASS') ?: 'fujidai14';
 $host = 'localhost';
-$dbName = 'sportdata_db';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($host, $usr, $pwd, $dbName);
 if (!$link) {

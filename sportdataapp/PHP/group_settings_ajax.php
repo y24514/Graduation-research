@@ -20,7 +20,7 @@ if ($chat_group_id <= 0) {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "sportdata_db";
+$dbname = "sportsdata";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {

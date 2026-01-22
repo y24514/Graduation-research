@@ -1,4 +1,4 @@
--- Basketball feature tables for sportdata_db
+-- Basketball feature tables for sportsdata
 -- Charset/engine aligned with the rest of the project.
 
 SET NAMES utf8mb4;

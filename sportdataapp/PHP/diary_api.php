@@ -7,10 +7,10 @@ if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
     exit;
 }
 
-$dbHost = 'localhost';
-$dbUser = 'y24514';
-$dbPass = 'Kr96main0303';
-$dbName = 'sportdata_db';
+$dbHost = getenv('DB_HOST') ?: 'localhost';
+$dbUser = getenv('DB_USER') ?: 'sportsdata_user';
+$dbPass = getenv('DB_PASS') ?: 'fujidai14';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 if (!$link) {

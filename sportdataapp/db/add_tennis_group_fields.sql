@@ -1,5 +1,5 @@
 -- テニスデータを group 単位で扱うための列追加
--- sportdata_db の tennis_games テーブルへ group_id / saved_by_user_id を追加します。
+-- sportsdata の tennis_games テーブルへ group_id / saved_by_user_id を追加します。
 
 ALTER TABLE tennis_games
   ADD COLUMN group_id VARCHAR(64) NULL,

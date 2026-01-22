@@ -78,7 +78,7 @@ require_once __DIR__ . '/header.php';
     <?php if ($noTeams && empty($dbError)): ?>
         <div class="box" style="border: 1px solid #fde68a; background: #fffbeb;">
             <h3 style="margin-top:0; color:#92400e;">チーム/選手が未登録です</h3>
-            <p style="margin:0 0 10px; color:#92400e;">sportdata_db の <code>teams</code> と <code>players</code> にデータを入れると選択できるようになります。</p>
+            <p style="margin:0 0 10px; color:#92400e;">sportsdata の <code>teams</code> と <code>players</code> にデータを入れると選択できるようになります。</p>
             <p style="margin:0; color:#92400e;">同梱の seed SQL（<code>sportdataapp/db/basketball_seed.sql</code>）を phpMyAdmin のSQLタブで実行してください。</p>
         </div>
     <?php endif; ?>
@@ -86,7 +86,7 @@ require_once __DIR__ . '/header.php';
     <?php if (!empty($dbError)): ?>
         <div class="box" style="border: 1px solid #fecaca; background: #fff5f5;">
             <h3 style="margin-top:0; color:#b91c1c;">バスケ用テーブルが未作成です</h3>
-            <p style="margin:0 0 10px; color:#7f1d1d;">sportdata_db に teams / players テーブルを作成してください。</p>
+            <p style="margin:0 0 10px; color:#7f1d1d;">sportsdata に teams / players テーブルを作成してください。</p>
             <pre style="white-space:pre-wrap; background:#fff; border:1px solid #e5e7eb; padding:12px; border-radius:10px; font-size:0.9em;">CREATE TABLE `teams` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL

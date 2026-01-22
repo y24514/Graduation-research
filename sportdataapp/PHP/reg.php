@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/session_bootstrap.php';
 
-$usr = 'y24514';
-$pwd = 'Kr96main0303';
+$usr = getenv('DB_USER') ?: 'sportsdata_user';
+$pwd = getenv('DB_PASS') ?: 'fujidai14';
 $host = 'localhost';
 
 $link = mysqli_connect($host, $usr, $pwd);
@@ -10,7 +10,7 @@ if(!$link){
     die('接続失敗:' . mysqli_connect_error());
 }
 mysqli_set_charset($link, 'utf8');
-mysqli_select_db($link, 'sportdata_db');
+mysqli_select_db($link, 'sportsdata');
 
 $errors = [];
 $success = false;

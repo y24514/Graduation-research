@@ -4,7 +4,7 @@ title シーケンス図: チャット送信（個人/グループ）
 actor User as "利用者"
 boundary Browser as "ブラウザ"
 control ChatPHP as "PHP/chat.php"
-database DB as "sportdata_db\nchat_tbl"
+database DB as "sportsdata\nchat_tbl"
 
 User -> Browser : メッセージ入力/送信
 Browser -> ChatPHP : POST(chat_type, chat_group_id/recipient_id, message, (image))

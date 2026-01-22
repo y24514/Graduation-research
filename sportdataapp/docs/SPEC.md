@@ -118,7 +118,7 @@
   - 作戦盤: `basketball_strategies`
 
 ## 6. データベース（主要テーブル）
-スキーマ基準: `db/sportdata_db.sql`
+スキーマ基準: `db/sportsdata.sql`
 
 - 認証: `login_tbl`
 - 管理者申請: `admin_role_requests`
@@ -136,7 +136,7 @@ ER図は [uml/er.puml](uml/er.puml) を参照。
 
 ## 7. 例外・注意点
 - 互換実装: DB列の存在をチェックして機能ON/OFFする箇所があるため、環境によって画面の挙動が変わる。
-- DB統合: テニスは `tennis_*` テーブルで `sportdata_db` に同居する方針（衝突回避）。
+- DB統合: テニスは `tennis_*` テーブルで `sportsdata` に同居する方針（衝突回避）。
 
 ## 8. UML
 - ユースケース図: [uml/usecase.puml](uml/usecase.puml)

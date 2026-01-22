@@ -28,9 +28,9 @@ if ($id === '' || !ctype_digit($id)) {
 $practiceId = (int)$id;
 
 $dbHost = getenv('DB_HOST') ?: 'localhost';
-$dbUser = getenv('DB_USER') ?: 'y24514';
-$dbPass = getenv('DB_PASS') ?: 'Kr96main0303';
-$dbName = getenv('DB_NAME') ?: 'sportdata_db';
+$dbUser = getenv('DB_USER') ?: 'sportsdata_user';
+$dbPass = getenv('DB_PASS') ?: 'fujidai14';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 if (!$link) {

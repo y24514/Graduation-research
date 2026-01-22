@@ -6,10 +6,10 @@ if(!isset($_SESSION['user_id'], $_SESSION['group_id'])){
     exit();
 }
 
-$usr = 'y24514';
-$pwd = 'Kr96main0303';
+$usr = getenv('DB_USER') ?: 'sportsdata_user';
+$pwd = getenv('DB_PASS') ?: 'fujidai14';
 $host = 'localhost';
-$dbName = 'sportdata_db';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($host, $usr, $pwd, $dbName);
 if(!$link){

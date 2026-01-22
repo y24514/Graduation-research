@@ -6,7 +6,7 @@
 -- 1) Backup your DB.
 -- 2) Run this script in phpMyAdmin (SQL tab) or mysql client.
 --
--- Target DB: sportdata_db
+-- Target DB: sportsdata
 
 START TRANSACTION;
 

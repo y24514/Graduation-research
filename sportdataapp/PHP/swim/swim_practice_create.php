@@ -14,9 +14,9 @@ $group_id = $_SESSION['group_id'];
 $user_id  = $_SESSION['user_id'];
 
 $dbHost = getenv('DB_HOST') ?: 'localhost';
-$dbUser = getenv('DB_USER') ?: 'y24514';
-$dbPass = getenv('DB_PASS') ?: 'Kr96main0303';
-$dbName = getenv('DB_NAME') ?: 'sportdata_db';
+$dbUser = getenv('DB_USER') ?: 'sportsdata_user';
+$dbPass = getenv('DB_PASS') ?: 'fujidai14';
+$dbName = getenv('DB_NAME') ?: 'sportsdata';
 
 $link = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
 if (!$link) {
@@ -158,7 +158,7 @@ $memo = $_POST['memo'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$hasPracticeTable) {
-        $errors[] = '練習メニューテーブルが未作成です。db/add_swim_practice_tbl.sql を sportdata_db にインポートしてください。';
+        $errors[] = '練習メニューテーブルが未作成です。db/add_swim_practice_tbl.sql を sportsdata にインポートしてください。';
     }
 
     $practice_date = trim((string)$practice_date);
