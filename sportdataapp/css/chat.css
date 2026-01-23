@@ -368,7 +368,7 @@
 .btn-send:active {
     transform: scale(0.98);
 }
-LINE風スクロールバー */
+/* LINE風スクロールバー */
 .chat-messages::-webkit-scrollbar {
     width: 6px;
 }

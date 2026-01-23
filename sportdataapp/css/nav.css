@@ -648,6 +648,17 @@
     transform: rotate(-45deg) translate(7px, -7px);
 }
 
+/* 1024px以下: 余白を詰めて“縮小感”を軽減 */
+@media (max-width: 1024px){
+    .meny{
+        padding: 0 24px;
+    }
+
+    .meny .brand{
+        margin-right: 16px;
+    }
+}
+
 /* スマホ（767px以下）: ハンバーガーメニュー */
 @media (max-width: 767px) {
     .hamburger-btn {
@@ -751,8 +762,31 @@
         font-size: 14px;
     }
 
+    /* タイトルが折り返してヘッダーが詰まるのを防ぐ */
+    .app-title{
+        min-width: 0;
+        max-width: 55vw;
+    }
+
+    .app-title span{
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .settings-container {
         order: -1;
+    }
+}
+
+/* 極小画面: ロゴのみ表示（ヘッダーの可読性を優先） */
+@media (max-width: 420px){
+    .app-title span{
+        display: none;
+    }
+
+    .app-title-logo{
+        width: 22px;
+        height: 22px;
     }
 }
 

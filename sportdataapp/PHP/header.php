@@ -267,6 +267,271 @@ function isMobileNav() {
     return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
 }
 
+let __sdCollapseAutoSeq = 0;
+function sdNextId(prefix) {
+    __sdCollapseAutoSeq += 1;
+    return `${prefix}-${__sdCollapseAutoSeq}`;
+}
+
+function sdTextFrom(el) {
+    if (!el) return '';
+    return (el.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function sdGuessTitleForBlock(blockEl) {
+    if (!blockEl) return '';
+
+    // Common patterns
+    const t1 = blockEl.querySelector('.panel-title');
+    if (t1) return sdTextFrom(t1);
+
+    const t2 = blockEl.querySelector('.section-title');
+    if (t2) return sdTextFrom(t2);
+
+    const h = blockEl.querySelector('h2, h3, h4');
+    if (h) return sdTextFrom(h);
+
+    return '';
+}
+
+function sdCreateAutoToggleButton({ collapsedLabel, expandedLabel }) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sd-collapse__btn sd-collapse__btn--compact';
+    btn.dataset.sdAuto = '1';
+    btn.dataset.labelCollapsed = collapsedLabel;
+    btn.dataset.labelExpanded = expandedLabel;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = collapsedLabel;
+    return btn;
+}
+
+function sdWireToggle(btn, panel, { mobileOnly = true } = {}) {
+    if (!btn || !panel) return;
+
+    // 二重登録防止
+    if (btn.dataset.sdInit === '1') return;
+    btn.dataset.sdInit = '1';
+
+    if (!panel.id) panel.id = sdNextId('sd-auto-panel');
+    btn.setAttribute('aria-controls', panel.id);
+
+    const collapsedLabel = btn.dataset.labelCollapsed || sdTextFrom(btn) || '表示';
+    const expandedLabel = btn.dataset.labelExpanded || '隠す';
+
+    function setExpanded(expanded) {
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        panel.hidden = !expanded;
+        btn.textContent = expanded ? expandedLabel : collapsedLabel;
+    }
+
+    btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+    });
+
+    // 初期状態
+    const expandedInit = mobileOnly ? !isMobileNav() : true;
+    setExpanded(expandedInit);
+}
+
+function sdShouldSkipAutoCollapse(el) {
+    if (!el) return true;
+
+    // すでに手動の折りたたみの中ならスキップ
+    if (el.closest('.sd-collapse__panel')) return true;
+    if (el.closest('.sd-collapse')) return true;
+
+    // ナビ/モーダル/ローダー等は触らない
+    if (el.closest('#mobileNav')) return true;
+    if (el.closest('.hamburger-btn')) return true;
+    if (el.closest('.loader')) return true;
+    if (el.closest('#logoutModal') || el.closest('#contactModal')) return true;
+
+    // チャットは基本崩すと困るので除外
+    if (el.closest('.chat-container')) return true;
+
+    return false;
+}
+
+function sportdataInitAutoBlockCollapsibles() {
+    // よくある「重い/縦に長い」ブロックをスマホで折りたたむ
+    const selectors = [
+        '.form-panel',
+        '.info-panel',
+        '.records-card',
+        '.records-full-width',
+        '.chart-card',
+        '.comparison-card',
+        '.records-card',
+        '.practice-list-panel',
+        '.practice-form-panel',
+        '.group-members',
+        '.member-list',
+        '.member-add',
+    ];
+
+    const seen = new Set();
+    document.querySelectorAll(selectors.join(',')).forEach((block) => {
+        if (!block || seen.has(block)) return;
+        seen.add(block);
+
+        if (sdShouldSkipAutoCollapse(block)) return;
+        if (block.dataset.sdAutoCollapsed === '1') return;
+
+        // stats系はサマリーなので折りたたまない
+        if (block.classList.contains('stats-summary') || block.classList.contains('stats-grid')) return;
+
+        // 既に直前に自動ボタンがあるならスキップ
+        const prev = block.previousElementSibling;
+        if (prev && prev.matches('button.sd-collapse__btn[data-sd-auto="1"]')) return;
+
+        const title = sdGuessTitleForBlock(block);
+        const base = title !== '' ? title : '内容';
+        const btn = sdCreateAutoToggleButton({
+            collapsedLabel: `${base}を表示`,
+            expandedLabel: `${base}を隠す`,
+        });
+
+        block.dataset.sdAutoCollapsed = '1';
+        block.parentNode.insertBefore(btn, block);
+        sdWireToggle(btn, block, { mobileOnly: true });
+    });
+}
+
+function sportdataInitAutoSectionCollapsibles() {
+    // section-title の「見出し→本文」のまとまりをスマホで折りたたむ
+    const titles = Array.from(document.querySelectorAll('.section-title'));
+    titles.forEach((titleEl) => {
+        if (!titleEl) return;
+        if (sdShouldSkipAutoCollapse(titleEl)) return;
+        if (titleEl.closest('.sd-collapse')) return;
+
+        // 既に自動ボタンが付いている
+        const next = titleEl.nextElementSibling;
+        if (next && next.matches('button.sd-collapse__btn[data-sd-auto="1"]')) return;
+
+        // 見出しの直後〜次の section-title 直前までをパネルにまとめる
+        const parent = titleEl.parentNode;
+        if (!parent) return;
+
+        const panel = document.createElement('div');
+        panel.className = 'sd-auto-section__panel';
+        panel.dataset.sdAutoPanel = '1';
+
+        let cur = titleEl.nextSibling;
+        let moved = 0;
+        while (cur) {
+            const nextNode = cur.nextSibling;
+            if (cur.nodeType === Node.ELEMENT_NODE) {
+                const el = /** @type {Element} */ (cur);
+                if (el.classList && el.classList.contains('section-title')) break;
+                // 既に別の折りたたみの一部なら対象外
+                if (el.closest && el.closest('.sd-collapse')) {
+                    break;
+                }
+            }
+            panel.appendChild(cur);
+            moved += 1;
+            cur = nextNode;
+        }
+
+        // 何も包めない場合は戻す
+        if (moved === 0) return;
+
+        const label = sdTextFrom(titleEl) || 'セクション';
+        const btn = sdCreateAutoToggleButton({
+            collapsedLabel: `${label}を表示`,
+            expandedLabel: `${label}を隠す`,
+        });
+
+        parent.insertBefore(btn, titleEl.nextSibling);
+        parent.insertBefore(panel, btn.nextSibling);
+        sdWireToggle(btn, panel, { mobileOnly: true });
+    });
+}
+
+function sportdataInitCollapsibles() {
+    const roots = document.querySelectorAll('.sd-collapse');
+    if (!roots || roots.length === 0) return;
+
+    roots.forEach((root, index) => {
+        if (!root) return;
+
+        const btn = root.querySelector(':scope > .sd-collapse__btn');
+        const panel = root.querySelector(':scope > .sd-collapse__panel');
+        if (!btn || !panel) return;
+
+        // 二重登録防止
+        if (root.dataset.sdInit === '1') return;
+        root.dataset.sdInit = '1';
+
+        if (!panel.id) {
+            panel.id = `sd-collapse-panel-${index + 1}`;
+        }
+        btn.setAttribute('aria-controls', panel.id);
+
+        const labelCollapsed = btn.dataset.labelCollapsed || btn.textContent || '表示';
+        const labelExpanded = btn.dataset.labelExpanded || '隠す';
+
+        function setExpanded(expanded) {
+            btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            panel.hidden = !expanded;
+            btn.textContent = expanded ? labelExpanded : labelCollapsed;
+        }
+
+        btn.addEventListener('click', () => {
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            setExpanded(!expanded);
+        });
+
+        // 初期状態: デスクトップは開く / モバイルは閉じる（要望どおり）
+        if (root.dataset.sdCollapse === 'mobile') {
+            setExpanded(!isMobileNav());
+        } else {
+            setExpanded(true);
+        }
+    });
+}
+
+function sportdataUpdateCollapsiblesForViewport() {
+    const roots = document.querySelectorAll('.sd-collapse[data-sd-collapse="mobile"]');
+    if (!roots || roots.length === 0) return;
+
+    roots.forEach((root) => {
+        const btn = root.querySelector(':scope > .sd-collapse__btn');
+        const panel = root.querySelector(':scope > .sd-collapse__panel');
+        if (!btn || !panel) return;
+
+        const labelCollapsed = btn.dataset.labelCollapsed || btn.textContent || '表示';
+        const labelExpanded = btn.dataset.labelExpanded || '隠す';
+
+        const expanded = !isMobileNav();
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        panel.hidden = !expanded;
+        btn.textContent = expanded ? labelExpanded : labelCollapsed;
+    });
+}
+
+function sportdataUpdateAutoCollapsiblesForViewport() {
+    const btns = document.querySelectorAll('button.sd-collapse__btn[data-sd-auto="1"]');
+    if (!btns || btns.length === 0) return;
+
+    btns.forEach((btn) => {
+        const controls = btn.getAttribute('aria-controls');
+        if (!controls) return;
+        const panel = document.getElementById(controls);
+        if (!panel) return;
+
+        const collapsedLabel = btn.dataset.labelCollapsed || sdTextFrom(btn) || '表示';
+        const expandedLabel = btn.dataset.labelExpanded || '隠す';
+        const expanded = !isMobileNav();
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        panel.hidden = !expanded;
+        btn.textContent = expanded ? expandedLabel : collapsedLabel;
+    });
+}
+
 function closeAllDesktopSubmenus() {
     const nav = document.getElementById('mobileNav');
     if (!nav) return;
@@ -572,6 +837,9 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('DOMContentLoaded', function () {
     initMobileSubmenus();
     initDesktopSubmenus();
+    sportdataInitCollapsibles();
+    sportdataInitAutoSectionCollapsibles();
+    sportdataInitAutoBlockCollapsibles();
 
     // お問い合わせ送信（JS有効時はページ遷移せずモーダル内で送信）
     const contactForm = document.getElementById('contactModalForm');
@@ -638,6 +906,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 再初期化
         initMobileSubmenus();
         initDesktopSubmenus();
+
+        // モバイル⇄デスクトップを跨いだら、折りたたみも表示状態を更新
+        sportdataUpdateCollapsiblesForViewport();
+        sportdataUpdateAutoCollapsiblesForViewport();
     });
 });
 </script>

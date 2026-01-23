@@ -753,6 +753,18 @@ body {
 @media (max-width: 768px) {
   .home {
     padding: 12px;
+    margin-top: 14px;
+  }
+
+  .home-container{
+    gap: 14px;
+  }
+
+  /* フィルタ/タイトルが横に詰まりすぎないように */
+  .card-header{
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
   }
   
   .card-header {

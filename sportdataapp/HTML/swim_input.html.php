@@ -57,8 +57,17 @@
 
     <!-- コンテンツグリッド -->
     <div class="content-grid">
-        <!-- 左側: 入力フォーム -->
-        <div class="form-panel">
+      <!-- 左側: 入力フォーム（モバイルは折りたたみ） -->
+      <div class="sd-collapse" data-sd-collapse="mobile">
+        <button
+          type="button"
+          class="sd-collapse__btn"
+          data-label-collapsed="記録入力を表示"
+          data-label-expanded="記録入力を隠す"
+          aria-expanded="true"
+        >記録入力を隠す</button>
+        <div class="sd-collapse__panel">
+          <div class="form-panel">
             <h2 class="panel-title">記録入力</h2>
             <form method="post" id="swim-form">
 
@@ -243,12 +252,23 @@
       <input type="submit" value="保存">
     </div>
 
-  </div>
-</form>
+    </div>
+  </form>
+          </div>
         </div>
+      </div>
 
-        <!-- 右側: 統計情報 -->
-        <div class="info-panel">
+      <!-- 右側: 統計情報（モバイルは折りたたみ） -->
+      <div class="sd-collapse" data-sd-collapse="mobile">
+        <button
+          type="button"
+          class="sd-collapse__btn"
+          data-label-collapsed="統計情報を表示"
+          data-label-expanded="統計情報を隠す"
+          aria-expanded="true"
+        >統計情報を隠す</button>
+        <div class="sd-collapse__panel">
+          <div class="info-panel">
             <!-- ベスト記録 -->
             <div class="info-section">
                 <h3 class="section-title">ベストタイム</h3>
@@ -336,6 +356,8 @@
                 <?php endif; ?>
             </div>
         </div>
+            </div>
+          </div>
     </div>
 
     </div>

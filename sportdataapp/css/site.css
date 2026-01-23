@@ -91,10 +91,6 @@ body{
 }
 
 @media (max-width: 767px){
-    html{
-        font-size: 15px;
-    }
-
     :where(.container){
         padding-left: 12px;
         padding-right: 12px;
@@ -271,6 +267,91 @@ body.hide-page-during-loading > :not(.loader){
     }
     :where(.loader .progress-bar)::after{
         animation: none;
+    }
+}
+
+/* =====================
+   Collapsible (mobile-first UI blocks)
+   - Default: panels are visible (no-JS safe)
+   - JS can set [hidden] on mobile to collapse
+===================== */
+
+:where(.sd-collapse){
+    margin: 12px 0;
+}
+
+:where(.sd-collapse__btn){
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.06);
+    color: #111827;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+}
+
+:where(.sd-collapse__btn)::after{
+    content: "▾";
+    font-weight: 900;
+    line-height: 1;
+    transform: rotate(0deg);
+    transition: transform 160ms ease;
+    opacity: 0.75;
+}
+
+:where(.sd-collapse__btn[aria-expanded="true"])::after{
+    transform: rotate(180deg);
+}
+
+:where(.sd-collapse__panel){
+    margin-top: 10px;
+}
+
+:where(.sd-collapse__panel[hidden]){
+    display: none !important;
+}
+
+@media (min-width: 768px){
+    :where(.sd-collapse[data-sd-collapse="mobile"] .sd-collapse__btn){
+        display: none;
+    }
+    :where(.sd-collapse[data-sd-collapse="mobile"] .sd-collapse__panel){
+        margin-top: 0;
+    }
+}
+
+/* Auto-generated toggles (inserted by header.php)
+   - Visible on mobile only
+*/
+
+:where(.sd-collapse__btn[data-sd-auto="1"]){
+    margin: 10px 0;
+}
+
+:where(.sd-collapse__btn.sd-collapse__btn--compact){
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-weight: 800;
+}
+
+:where(.sd-auto-section__panel){
+    margin-top: 10px;
+}
+
+:where(.sd-auto-section__panel[hidden]){
+    display: none !important;
+}
+
+@media (min-width: 768px){
+    :where(.sd-collapse__btn[data-sd-auto="1"]){
+        display: none;
     }
 }
 

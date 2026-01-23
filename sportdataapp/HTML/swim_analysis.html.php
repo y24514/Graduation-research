@@ -213,105 +213,138 @@
             </div>
 
             <!-- ラップタイム比較 -->
-            <div class="chart-card lap-comparison-section">
-                <h3>ラップタイム比較（最新 / 前回）</h3>
-                <?php if (count($lap_comparison_data) > 0): ?>
-                <div class="comparison-grid">
-                    <?php foreach ($lap_comparison_data as $key => $data): 
-                        if (!isset($data['time_diff'])) continue;
-                        
-                        $is_improved = $data['time_diff'] < 0;
-                        $stroke_changed = $data['stroke_diff'] != 0;
-                    ?>
-                    <div class="comparison-card <?= $is_improved ? 'improved' : 'declined' ?>">
-                        <div class="comparison-header">
-                            <h4><?= $event_map[$data['event']] ?? $data['event'] ?> <?= $data['distance'] ?>m</h4>
-                            <span class="record-badge"><?= $data['record_count'] ?>回記録</span>
-                        </div>
-                        <div class="comparison-body">
-                            <div class="time-comparison">
-                                <div class="time-item previous">
-                                    <span class="label">前回</span>
-                                    <span class="value"><?= number_format($data['previous_time'], 2) ?>秒</span>
-                                    <span class="stroke-info"><?= $data['previous_stroke'] ?>St</span>
-                                </div>
-                                <div class="arrow">→</div>
-                                <div class="time-item latest">
-                                    <span class="label">最新</span>
-                                    <span class="value"><?= number_format($data['latest_time'], 2) ?>秒</span>
-                                    <span class="stroke-info"><?= $data['latest_stroke'] ?>St</span>
-                                </div>
-                            </div>
-                            <div class="diff-display <?= $is_improved ? 'better' : 'worse' ?>">
-                                <?php if ($is_improved): ?>
-                                    <span class="diff-icon">↓</span>
-                                    <span class="diff-value"><?= number_format(abs($data['time_diff']), 2) ?>秒差</span>
-                                <?php else: ?>
-                                    <span class="diff-icon">↑</span>
-                                    <span class="diff-value"><?= number_format(abs($data['time_diff']), 2) ?>秒差</span>
-                                <?php endif; ?>
+            <div class="sd-collapse" data-sd-collapse="mobile">
+                <button
+                    type="button"
+                    class="sd-collapse__btn"
+                    data-label-collapsed="ラップ比較を表示"
+                    data-label-expanded="ラップ比較を隠す"
+                    aria-expanded="true"
+                >ラップ比較を隠す</button>
+                <div class="sd-collapse__panel">
+                    <div class="chart-card lap-comparison-section">
+                        <h3>ラップタイム比較（最新 / 前回）</h3>
+                        <?php if (count($lap_comparison_data) > 0): ?>
+                        <div class="comparison-grid">
+                            <?php foreach ($lap_comparison_data as $key => $data): 
+                                if (!isset($data['time_diff'])) continue;
                                 
-                                <?php if ($stroke_changed): ?>
-                                    <span class="stroke-diff">
-                                        (<?= $data['stroke_diff'] > 0 ? '+' : '' ?><?= $data['stroke_diff'] ?>St)
-                                    </span>
-                                <?php endif; ?>
+                                $is_improved = $data['time_diff'] < 0;
+                                $stroke_changed = $data['stroke_diff'] != 0;
+                            ?>
+                            <div class="comparison-card <?= $is_improved ? 'improved' : 'declined' ?>">
+                                <div class="comparison-header">
+                                    <h4><?= $event_map[$data['event']] ?? $data['event'] ?> <?= $data['distance'] ?>m</h4>
+                                    <span class="record-badge"><?= $data['record_count'] ?>回記録</span>
+                                </div>
+                                <div class="comparison-body">
+                                    <div class="time-comparison">
+                                        <div class="time-item previous">
+                                            <span class="label">前回</span>
+                                            <span class="value"><?= number_format($data['previous_time'], 2) ?>秒</span>
+                                            <span class="stroke-info"><?= $data['previous_stroke'] ?>St</span>
+                                        </div>
+                                        <div class="arrow">→</div>
+                                        <div class="time-item latest">
+                                            <span class="label">最新</span>
+                                            <span class="value"><?= number_format($data['latest_time'], 2) ?>秒</span>
+                                            <span class="stroke-info"><?= $data['latest_stroke'] ?>St</span>
+                                        </div>
+                                    </div>
+                                    <div class="diff-display <?= $is_improved ? 'better' : 'worse' ?>">
+                                        <?php if ($is_improved): ?>
+                                            <span class="diff-icon">↓</span>
+                                            <span class="diff-value"><?= number_format(abs($data['time_diff']), 2) ?>秒差</span>
+                                        <?php else: ?>
+                                            <span class="diff-icon">↑</span>
+                                            <span class="diff-value"><?= number_format(abs($data['time_diff']), 2) ?>秒差</span>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($stroke_changed): ?>
+                                            <span class="stroke-diff">
+                                                (<?= $data['stroke_diff'] > 0 ? '+' : '' ?><?= $data['stroke_diff'] ?>St)
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
+                            <?php endforeach; ?>
                         </div>
+                        <?php else: ?>
+                        <p class="no-data">比較できる記録がありません</p>
+                        <?php endif; ?>
                     </div>
-                    <?php endforeach; ?>
                 </div>
-                <?php else: ?>
-                <p class="no-data">比較できる記録がありません</p>
-                <?php endif; ?>
             </div>
         </div>
 
         <div class="right-col">
-            <!-- 推移グラフ -->
-            <div class="chart-card">
-                <h3>タイム推移</h3>
-                <canvas id="timeChart"></canvas>
-            </div>
+            <div class="sd-collapse" data-sd-collapse="mobile">
+                <button
+                    type="button"
+                    class="sd-collapse__btn"
+                    data-label-collapsed="グラフを表示"
+                    data-label-expanded="グラフを隠す"
+                    aria-expanded="true"
+                >グラフを隠す</button>
+                <div class="sd-collapse__panel">
+                    <!-- 推移グラフ -->
+                    <div class="chart-card">
+                        <h3>タイム推移</h3>
+                        <canvas id="timeChart"></canvas>
+                    </div>
 
-            <!-- 比較チャート（前回 / 今回, ベスト / 今回） -->
-            <div class="compare-charts">
-                <div class="chart-card small">
-                    <h3>前回 / 今回</h3>
-                    <canvas id="prevNowChart"></canvas>
-                </div>
-                <div class="chart-card small">
-                    <h3>ベスト / 今回</h3>
-                    <canvas id="bestNowChart"></canvas>
-                </div>
-            </div>
+                    <!-- 比較チャート（前回 / 今回, ベスト / 今回） -->
+                    <div class="compare-charts">
+                        <div class="chart-card small">
+                            <h3>前回 / 今回</h3>
+                            <canvas id="prevNowChart"></canvas>
+                        </div>
+                        <div class="chart-card small">
+                            <h3>ベスト / 今回</h3>
+                            <canvas id="bestNowChart"></canvas>
+                        </div>
+                    </div>
 
-            <!-- ペース分析 -->
-            <div class="chart-card">
-                <h3>100mあたりのペース分析</h3>
-                <canvas id="paceChart"></canvas>
+                    <!-- ペース分析 -->
+                    <div class="chart-card">
+                        <h3>100mあたりのペース分析</h3>
+                        <canvas id="paceChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 全記録一覧（フル幅） -->
-    <div class="records-full-width">
-        <div class="records-card">
-            <h3>全記録一覧</h3>
-            <div class="records-table-wrapper">
-                <table class="records-table">
-                    <thead>
-                        <tr>
-                            <th>日付</th>
-                            <th>タイム</th>
-                            <th>コンディション</th>
-                            <th>詳細</th>
-                        </tr>
-                    </thead>
-                    <tbody id="records-tbody">
-                        <!-- JavaScriptで生成 -->
-                    </tbody>
-                </table>
+    <div class="sd-collapse" data-sd-collapse="mobile">
+        <button
+            type="button"
+            class="sd-collapse__btn"
+            data-label-collapsed="全記録一覧を表示"
+            data-label-expanded="全記録一覧を隠す"
+            aria-expanded="true"
+        >全記録一覧を隠す</button>
+        <div class="sd-collapse__panel">
+            <div class="records-full-width">
+                <div class="records-card">
+                    <h3>全記録一覧</h3>
+                    <div class="records-table-wrapper">
+                        <table class="records-table">
+                            <thead>
+                                <tr>
+                                    <th>日付</th>
+                                    <th>タイム</th>
+                                    <th>コンディション</th>
+                                    <th>詳細</th>
+                                </tr>
+                            </thead>
+                            <tbody id="records-tbody">
+                                <!-- JavaScriptで生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
