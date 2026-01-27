@@ -85,7 +85,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
 <!-- 共通ナビ -->
 <div class="meny">
     <div class="meny-inner">
-    <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー">
+    <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー" aria-controls="mobileNav" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>
@@ -209,6 +209,9 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
     </div>
 </div>
 
+<!-- モバイルメニュー背景（タップで閉じる） -->
+<div class="meny-backdrop" id="mobileNavBackdrop" aria-hidden="true" onclick="closeMobileNav()"></div>
+
 <!-- ログアウト確認モーダル（JS表示） -->
 <div class="logout-modal" id="logoutModal" aria-hidden="true" style="display:none">
     <div class="logout-modal__backdrop" onclick="closeLogoutModal()"></div>
@@ -263,30 +266,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
     </div>
 </div>
 <script>
-(function applyForceMobileNav() {
-    try {
-        const path = (location && location.pathname) ? String(location.pathname) : '';
-        const isStrategyBoard = path.includes('/T_board/') || path.includes('/B_board/');
-        if (isStrategyBoard) return;
-
-        const uaDataMobile = (navigator.userAgentData && navigator.userAgentData.mobile) ? true : false;
-        const ua = String(navigator.userAgent || '');
-        const isMobileUA = uaDataMobile || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-        if (!isMobileUA) return;
-
-        if (document.body && document.body.classList) {
-            document.body.classList.add('force-mobile-nav');
-        }
-    } catch (_) {
-        // ignore
-    }
-})();
-
 function isMobileNav() {
-    // 特定ページで「縮小表示 + ハンバーガー」を強制したい場合
-    if (document.body && document.body.classList && document.body.classList.contains('force-mobile-nav')) {
-        return true;
-    }
     return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
 }
 
@@ -568,8 +548,14 @@ function closeAllDesktopSubmenus() {
 function toggleMobileMenu() {
     const nav = document.getElementById('mobileNav');
     const hamburger = document.querySelector('.hamburger-btn');
+    const backdrop = document.getElementById('mobileNavBackdrop');
+    if (!nav || !hamburger) return;
     nav.classList.toggle('active');
     hamburger.classList.toggle('active');
+
+    const isOpen = nav.classList.contains('active');
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (backdrop) backdrop.classList.toggle('active', isOpen);
 
     // 閉じたときはサブメニューも閉じる
     if (!nav.classList.contains('active')) {
@@ -591,9 +577,12 @@ function closeAllMobileSubmenus() {
 function closeMobileNav() {
     const nav = document.getElementById('mobileNav');
     const hamburger = document.querySelector('.hamburger-btn');
+    const backdrop = document.getElementById('mobileNavBackdrop');
     if (!nav || !hamburger) return;
     nav.classList.remove('active');
     hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    if (backdrop) backdrop.classList.remove('active');
     closeAllMobileSubmenus();
 }
 
@@ -715,6 +704,7 @@ function initDesktopSubmenus() {
 function toggleSettingsMenu(event) {
     event.stopPropagation();
     const menu = document.getElementById('settingsMenu');
+    if (!menu) return;
     menu.classList.toggle('show');
 }
 
@@ -722,7 +712,7 @@ function toggleSettingsMenu(event) {
 document.addEventListener('click', function(event) {
     const menu = document.getElementById('settingsMenu');
     const settingsBtn = document.querySelector('.settings-btn');
-    if (!settingsBtn.contains(event.target)) {
+    if (menu && settingsBtn && !settingsBtn.contains(event.target)) {
         menu.classList.remove('show');
     }
 

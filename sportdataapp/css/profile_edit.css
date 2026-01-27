@@ -794,7 +794,16 @@ input.error:focus {
 
 @media (max-width: 600px) {
   body {
-    padding: 80px 10px 20px;
+    padding: 0 10px 16px;
+  }
+
+  .profile-edit-container {
+    margin-top: 12px;
+    padding: 12px;
+  }
+
+  .profile-edit-header{
+    margin-bottom: 24px;
   }
   
   .profile-form {

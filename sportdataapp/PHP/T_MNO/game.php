@@ -93,7 +93,7 @@ $acts = ['サービスエース', 'スマッシュ', 'ボレー', 'ストロー�
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=1024">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>試合記録</title>
     <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <style>

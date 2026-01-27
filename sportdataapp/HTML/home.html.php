@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=1024">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホームページ</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/home.css">
@@ -313,7 +313,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../js/loading.js"></script>
 
-<script src="../js/fullcalendar/dist/index.global.min.js"></script>
+<script src="../js/fullcalendar/dist/index.global.js"></script>
 <script src="../js/calendar.js"></script>
 
 <script>

@@ -632,15 +632,17 @@ body {
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .chat-unified-container {
-        padding: 12px;
+        margin-top: 10px;
+        padding: 10px;
         gap: 12px;
+        height: calc(100svh - var(--nav-height, 60px) - 20px);
     }
     
     .chat-sidebar {
         width: 100%;
         position: absolute;
         z-index: 10;
-        height: calc(100vh - 80px);
+        height: calc(100svh - var(--nav-height, 60px) - 20px);
     }
     
     .chat-sidebar.hidden {

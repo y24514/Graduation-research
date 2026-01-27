@@ -1,5 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar-area');
+  if (!calendarEl) return;
+
+  function sdIsTouchDevice() {
+    try {
+      return (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function sdAddOneDay(dateStr) {
+    var parts = String(dateStr).split('-');
+    if (parts.length !== 3) return dateStr;
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    d.setDate(d.getDate() + 1);
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  var isTouch = sdIsTouchDevice();
 
   // 2025年の日本の祝日
   var holidays = [
@@ -45,7 +67,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'ja',
     initialView: 'dayGridMonth',
-    selectable: true,
+    // タッチ端末でのドラッグ選択はスクロールと競合しやすく、
+    // Chromeの[Intervention]警告の原因になりやすいので無効化（タップで登録に寄せる）
+    selectable: !isTouch,
+    height: 'auto',
+    fixedWeekCount: false,
+    dayMaxEvents: true,
+
+    headerToolbar: { left: 'title', right: 'prev,next today' },
+
+    titleFormat: { year: 'numeric', month: 'long' },
+
+    buttonText: {
+      today: '今日',
+      month: '月'
+    },
 
     // 土日の背景色
     dayCellClassNames: function(arg) {
@@ -69,7 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
       return classes;
     },
 
-    events: eventsFromPHP,
+    events: (typeof eventsFromPHP !== 'undefined' ? eventsFromPHP : []),
+
+    // タッチ端末はタップで登録（PCはドラッグ選択のままでもOK）
+    dateClick: function(info) {
+      if (!isTouch) return;
+      if (typeof openEventModal !== 'function') return;
+      openEventModal({
+        startStr: info.dateStr,
+        endStr: sdAddOneDay(info.dateStr)
+      });
+    },
 
     select: function(info) {
       // モーダルを開く

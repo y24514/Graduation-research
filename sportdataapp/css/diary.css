@@ -776,7 +776,7 @@ body::-webkit-scrollbar-thumb {
 /* レスポンシブ */
 @media (max-width: 768px) {
     .diary-container {
-        margin-top: 70px;
+        margin-top: 12px;
         padding: 0 16px;
     }
 
@@ -822,6 +822,31 @@ body::-webkit-scrollbar-thumb {
     .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .diary-list-section{
+        padding: 20px;
+    }
+
+    .diary-list{
+        gap: 16px;
+    }
+
+    .diary-item{
+        padding: 16px;
+    }
+
+    .empty-state{
+        padding: 44px 16px;
+    }
+
+    .form-group{
+        margin-bottom: 16px;
+    }
+
+    .form-actions{
+        margin-top: 20px;
+        gap: 12px;
     }
 }
 

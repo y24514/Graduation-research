@@ -57,11 +57,15 @@ body {
 .admin-subtitle {
   margin: 0;
   color: var(--muted);
+
+  .calendar-area .fc{
+    --sd-day-size: min(56px, calc((100vw - 40px) / 7));
+  }
 }
 
 .admin-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+    height: var(--sd-day-size) !important;
+    min-height: var(--sd-day-size) !important;
   gap: 16px;
 }
 
@@ -79,6 +83,34 @@ body {
 @media (max-width: 980px) {
   .admin-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  /* FullCalendar: 月表示セルを正方形に寄せる */
+  .calendar-area .fc .fc-daygrid-day-frame{
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .calendar-area .fc .fc-daygrid-day-events{
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 767px) {
+  .admin-page {
+    padding: 12px;
+    margin-top: 10px;
+  }
+
+  .admin-container {
+    gap: 12px;
+  }
+
+  .admin-title {
+    font-size: 1.35rem;
   }
 }
 

@@ -10231,7 +10231,7 @@ var FullCalendar = (function (exports) {
         }
     }
     function onWindowTouchMove(ev) {
-        if (isWindowTouchMoveCancelled) {
+        if (isWindowTouchMoveCancelled && ev.cancelable) {
             ev.preventDefault();
         }
     }

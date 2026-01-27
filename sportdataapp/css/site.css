@@ -91,6 +91,10 @@ body{
 }
 
 @media (max-width: 767px){
+    body{
+        line-height: 1.55;
+    }
+
     :where(.container){
         padding-left: 12px;
         padding-right: 12px;

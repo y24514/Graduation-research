@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1024">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>水泳｜練習作成</title>
     <link rel="icon" type="image/svg+xml" href="../../img/favicon.svg">
     <!-- 既存の水泳記録ページのレイアウト/トーンに寄せて再利用 -->
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../css/swim_practice.css">
     <link rel="stylesheet" href="../../css/site.css">
 
-    <script src="../../js/fullcalendar/dist/index.global.min.js" defer></script>
+    <script src="../../js/fullcalendar/dist/index.global.js" defer></script>
     <script src="../../js/swim_practice_create.js" defer></script>
 
     <script>
