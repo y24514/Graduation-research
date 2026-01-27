@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <title>ホームページ</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/home.css">
@@ -14,7 +14,7 @@
         const canShareCalendar = <?= !empty($canShareCalendar) ? 'true' : 'false' ?>;
     </script>
 </head>
-<body<?= $showLoader ? ' class="hide-page-during-loading"' : '' ?>>
+<body class="<?= $showLoader ? 'hide-page-during-loading' : '' ?>">
 <?php if ($showLoader): ?>
     <div class="loader" data-hide-page="true" style="display:flex">
         <div class="spinner" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">

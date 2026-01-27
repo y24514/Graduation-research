@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>チーム・選手登録</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="../css/site.css">
     <link rel="stylesheet" href="../css/team_player_register.css">

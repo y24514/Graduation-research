@@ -26,7 +26,7 @@ $qB = $analysis['B']['points'];
     <meta charset="UTF-8">
     <title>分析結果 - Q<?= $q ?></title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <style>
         body { font-family: sans-serif; background: #eee; padding: 0; margin: 0; }
         .page-pad { padding: 15px; }

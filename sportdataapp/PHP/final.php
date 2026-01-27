@@ -93,7 +93,7 @@ $jsonTeams = json_encode($game['teams']);
     <meta charset="UTF-8">
     <title>試合結果レポート</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --teamA: #3498db; --teamB: #e74c3c; --dark: #2c3e50; }

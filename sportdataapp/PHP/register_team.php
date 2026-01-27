@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>新規チーム作成</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <style>
         body { font-family: sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
         .wrap { padding: 20px; }

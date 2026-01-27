@@ -263,7 +263,30 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
     </div>
 </div>
 <script>
+(function applyForceMobileNav() {
+    try {
+        const path = (location && location.pathname) ? String(location.pathname) : '';
+        const isStrategyBoard = path.includes('/T_board/') || path.includes('/B_board/');
+        if (isStrategyBoard) return;
+
+        const uaDataMobile = (navigator.userAgentData && navigator.userAgentData.mobile) ? true : false;
+        const ua = String(navigator.userAgent || '');
+        const isMobileUA = uaDataMobile || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+        if (!isMobileUA) return;
+
+        if (document.body && document.body.classList) {
+            document.body.classList.add('force-mobile-nav');
+        }
+    } catch (_) {
+        // ignore
+    }
+})();
+
 function isMobileNav() {
+    // 特定ページで「縮小表示 + ハンバーガー」を強制したい場合
+    if (document.body && document.body.classList && document.body.classList.contains('force-mobile-nav')) {
+        return true;
+    }
     return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
 }
 

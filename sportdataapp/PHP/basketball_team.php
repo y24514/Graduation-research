@@ -14,7 +14,7 @@ if ($tabId !== '' && !preg_match('/^[A-Za-z0-9_-]{8,64}$/', $tabId)) {
     <meta charset="UTF-8">
     <title>バスケ｜チーム管理</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <style>
         body { font-family: sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
         .wrap { padding: 20px; }
