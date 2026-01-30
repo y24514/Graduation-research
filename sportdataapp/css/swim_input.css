@@ -1046,10 +1046,15 @@ table tbody tr:last-child td {
     font-size: 2.5rem;
   }
 
-  /* 3列グリッドを1列に */
+  /* 記録入力（スマホは2列）：基本情報は全幅、ストローク/ラップを横並び */
   .form-items {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .form-basic,
+  .form-submit {
+    grid-column: 1 / -1;
   }
 
   .form-basic,
@@ -1057,6 +1062,12 @@ table tbody tr:last-child td {
   .form-lap {
     padding: 1.25rem;
     gap: 0.75rem;
+  }
+
+  /* id指定（#stroke_area/#lap_time_area）が優先されるため、スマホ向けに詰める */
+  #stroke_area,
+  #lap_time_area {
+    padding: 16px;
   }
 
   /* 体調選択の顔アイコン */

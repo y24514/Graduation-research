@@ -209,7 +209,7 @@ require_once __DIR__ . '/header.php';
 </div>
 
     <div style="text-align:center; margin-top: 30px; padding-bottom: 50px;">
-    <form action="save_to_db.php" method="POST" onsubmit="return confirm('この内容でDBに保存し、終了しますか？');">
+    <form action="<?= htmlspecialchars(sportdata_add_tab_id('save_to_db.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>" method="POST" onsubmit="return confirm('この内容でDBに保存し、終了しますか？');">
         <button type="submit" style="width:100%; padding:20px; border-radius:15px; border:none; background:#27ae60; color:white; font-weight:bold; font-size:1.2em; cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
              データを保存して終了
         </button>

@@ -38,29 +38,56 @@ try {
     $gameId = $pdo->lastInsertId();
 
     // 2. game_actionsテーブルに全アクションを挿入
+    // ※フロントの action 形式は { q, team, player, type, point, result, ... }
     $stmtAct = $pdo->prepare("INSERT INTO game_actions (game_id, quarter, team, player_id, player_name, action_type, point, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
     foreach ($game['actions'] as $a) {
-        if ($a['type'] === 'sub') continue; // 交代は除外（必要なら追加可能）
+        if (!is_array($a)) continue;
 
-        $playerName = $game['teams'][$a['team']]['names'][$a['player']] ?? 'Unknown';
-        
+        $type = (string)($a['type'] ?? ($a['action_type'] ?? ''));
+        if ($type === '') continue;
+        if ($type === 'sub') continue; // 交代は除外（必要なら追加可能）
+
+        $team = (string)($a['team'] ?? '');
+        if ($team !== 'A' && $team !== 'B') continue;
+
+        // quarter は `q` が正。互換で `quarter` も許容。
+        $quarter = (int)($a['q'] ?? ($a['quarter'] ?? 0));
+        if ($quarter <= 0) {
+            // 万一欠落している場合は、最低限 1 を入れてNULLを回避
+            $quarter = 1;
+        }
+
+        $playerId = (int)($a['player'] ?? ($a['player_id'] ?? 0));
+        if ($playerId <= 0) continue;
+
+        $playerName = $game['teams'][$team]['names'][$playerId] ?? ($a['playerName'] ?? ($a['player_name'] ?? 'Unknown'));
+        $playerName = (string)$playerName;
+
+        $point = (int)($a['point'] ?? 0);
+        $result = (string)($a['result'] ?? 'success');
+
         $stmtAct->execute([
             $gameId,
-            $a['quarter'],
-            $a['team'],
-            $a['player'],
+            $quarter,
+            $team,
+            $playerId,
             $playerName,
-            $a['type'],
-            $a['point'] ?? 0,
-            $a['result'] ?? 'success'
+            $type,
+            $point,
+            $result
         ]);
     }
 
     $pdo->commit();
     // 保存が終わったらセッションを消して、履歴画面やTOPへ
     unset($_SESSION['game']);
-    header("Location: history.php?msg=saved"); 
+    $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? ($_POST['tab_id'] ?? '')));
+    if ($tabId !== '' && !preg_match('/^[A-Za-z0-9_-]{8,64}$/', $tabId)) {
+        $tabId = '';
+    }
+    $target = 'history.php?msg=saved' . ($tabId !== '' ? ('&tab_id=' . rawurlencode($tabId)) : '');
+    header('Location: ' . $target);
 
 } catch (Exception $e) {
     $pdo->rollBack();

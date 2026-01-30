@@ -45,7 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $teams = [];
 try {
-    $teams = $pdo->query('SELECT id, name, created_at FROM teams ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+    // 互換: created_at が無いDBもあるためフォールバック
+    try {
+        $teams = $pdo->query('SELECT id, name, created_at FROM teams ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $teams = $pdo->query('SELECT id, name FROM teams ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+    }
 } catch (PDOException $e) {
     $teams = [];
     $msg = '<div class="flash flash--error">teams テーブルの読み込みに失敗しました。</div>';
