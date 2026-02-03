@@ -80,7 +80,7 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 <div id="col-B" class="team-column"><div id="p-list-B"></div></div>
 
 <div class="bottom-nav-area">
-    <button onclick="goAnalysis()" class="btn-bottom btn-analysis-bottom">📊 スタッツ分析</button>
+    <button onclick="goAnalysis()" class="btn-bottom btn-analysis-bottom">📊 Qアクション統計</button>
     <button class="btn-bottom btn-q-end-bottom" onclick="nextQuarter()">⏱️ 次のQへ</button>
 </div>
 
@@ -118,7 +118,6 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
 
     let game = { state: <?=$gameData?>, curT: 'A', selId: null };
 
-    // --- 既存のrender, switchT, selectP, resetS, record, openSub, toggleDrawer, undo はそのまま ---
     function render() {
         const s = game.state;
         document.getElementById('s-A').innerText = s.score.A;
@@ -186,14 +185,13 @@ $gameData = json_encode($_SESSION['game'], JSON_UNESCAPED_UNICODE);
         render();
     }
 
-    // --- ここからが修正・追加された重要ロジック ---
 
     // サーバー保存処理
     async function saveState() {
     await fetch(withTabId('save_game.php'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(game.state) });
     }
 
-// 📊 スタッツ分析ボタン
+// 📊 アクション統計ボタン
 async function goAnalysis() {
     await saveState();
     // Q4なら直接finalへ、それ以外ならanalysisへ
