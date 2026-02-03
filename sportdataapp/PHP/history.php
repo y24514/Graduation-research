@@ -71,7 +71,7 @@ require_once __DIR__ . '/header.php';
                     <span class="score"><?= (int)$g['score_a'] ?> - <?= (int)$g['score_b'] ?></span>
                     <span class="team-name" style="text-align:left;"><?= htmlspecialchars((string)$g['team_b_name'], ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
-                <div style="text-align:right; font-size:0.8em; color:#3498db; margin-top:5px;">詳細スタッツを見る ➔</div>
+                <div style="text-align:right; font-size:0.8em; color:#3498db; margin-top:5px;">詳細を見る ➔</div>
             </a>
         <?php endforeach; ?>
     <?php endif; ?>
