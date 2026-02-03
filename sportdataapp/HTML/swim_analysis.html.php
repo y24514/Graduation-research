@@ -43,6 +43,8 @@
     <div class="filter-section">
         <h2 class="filter-title">データフィルター</h2>
         <form method="get" class="filter-form">
+            <?php $tab_id = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')); ?>
+            <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tab_id, ENT_QUOTES, 'UTF-8') ?>">
             <!-- 種目・距離選択（ボタン式） -->
             <div class="event-selection-analysis">
                 <?php
@@ -121,7 +123,7 @@
                 <?php if ($selected_combo): ?>
                 <button type="submit" class="filter-btn primary-btn">絞り込み</button>
                 <?php endif; ?>
-                <a href="?" class="filter-btn reset-btn">リセット</a>
+                <a href="<?= ($tab_id !== '') ? ('?tab_id=' . rawurlencode($tab_id)) : '?' ?>" class="filter-btn reset-btn">リセット</a>
             </div>
         </form>
     </div>

@@ -1,6 +1,17 @@
 <?php
 require_once __DIR__ . '/../session_bootstrap.php';
 
+/* ---------------------
+   セッションチェック
+--------------------- */
+if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
+    header('Location: ../login.php');
+    exit;
+}
+
+// タブごとのセッション分離用 tab_id（リダイレクト時に維持する）
+$tabId = (string)($_GET['tab_id'] ?? ($_POST['tab_id'] ?? ($GLOBALS['SPORTDATA_TAB_ID'] ?? '')));
+
 // ページリロード時にローディングを表示
 $showLoader = false;
 
@@ -72,9 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_stmt_close($best_stmt);
 
     // 新記録かチェック
-    if ($current_best === null || $total_time < $current_best) {
-        $isNewBest = true;
-    }
+    $isNewBest = ($current_best === null || $total_time < $current_best);
 
     /* ===== ストローク ===== */
     $stroke_data = [];
@@ -134,7 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     mysqli_stmt_execute($stmt);
 
-    header("Location: swim_input.php?success=1");
+    $redirect = 'swim_input.php?success=1';
+    if ($tabId !== '') {
+        $redirect .= '&tab_id=' . rawurlencode($tabId);
+    }
+    header('Location: ' . $redirect);
     exit;
 }
 

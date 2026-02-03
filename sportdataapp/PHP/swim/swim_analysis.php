@@ -1,11 +1,18 @@
 <?php
 require_once __DIR__ . '/../session_bootstrap.php';
 
+// タブごとのセッション分離用 tab_id（遷移で維持する）
+$tabId = (string)($_GET['tab_id'] ?? ($_POST['tab_id'] ?? ($GLOBALS['SPORTDATA_TAB_ID'] ?? '')));
+
 /* ---------------------
    セッションチェック
 --------------------- */
 if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
-    header('Location: ../login.php');
+    $target = '../login.php';
+    if ($tabId !== '') {
+        $target .= '?tab_id=' . rawurlencode($tabId);
+    }
+    header('Location: ' . $target);
     exit;
 }
 
@@ -117,7 +124,11 @@ if ($combo_stmt) {
 
 // 記録が1件もない場合は、入力を促して記録画面へ誘導
 if (empty($combos)) {
-    render_no_data_alert('swim_input.php', '水泳の記録データがありません。先に記録を入力してください。');
+    $redirect = 'swim_input.php';
+    if ($tabId !== '') {
+        $redirect .= '?tab_id=' . rawurlencode($tabId);
+    }
+    render_no_data_alert($redirect, '水泳の記録データがありません。先に記録を入力してください。');
 }
 
 /* =====================
@@ -170,7 +181,11 @@ $res = mysqli_stmt_get_result($stmt);
 $current = mysqli_fetch_assoc($res);
 
 if (!$current) {
-    render_no_data_alert('swim_input.php', '水泳の記録データがありません。先に記録を入力してください。');
+    $redirect = 'swim_input.php';
+    if ($tabId !== '') {
+        $redirect .= '?tab_id=' . rawurlencode($tabId);
+    }
+    render_no_data_alert($redirect, '水泳の記録データがありません。先に記録を入力してください。');
 }
 
 $pool     = $current['pool'];
