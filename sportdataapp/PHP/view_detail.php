@@ -3,7 +3,6 @@ require_once __DIR__ . '/session_bootstrap.php';
 require_once __DIR__ . '/basketball_logic/db_config.php';
 
 $NAV_BASE = '.';
-require_once __DIR__ . '/header.php';
 
 $gameIdRaw = $_GET['id'] ?? null;
 $gameId = is_string($gameIdRaw) ? (int)$gameIdRaw : 0;
@@ -86,7 +85,8 @@ foreach ($actions as $a) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --teamA: #3498db; --teamB: #e74c3c; --dark: #2c3e50; }
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        .page-content { padding: 15px; }
         .container { max-width: 700px; margin: auto; }
 
         .final-header { background: var(--dark); color: white; padding: 30px 20px; border-radius: 20px; text-align: center; margin-bottom: 20px; }
@@ -110,6 +110,12 @@ foreach ($actions as $a) {
     </style>
 </head>
 <body>
+
+<?php
+require_once __DIR__ . '/header.php';
+?>
+
+<main class="page-content">
 
 <div class="container">
     <div class="final-header">
@@ -220,6 +226,8 @@ function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 </script>
+
+</main>
 
 </body>
 </html>

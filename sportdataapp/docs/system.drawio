@@ -1,0 +1,61 @@
+<mxfile host="65bd71144e">
+    <diagram id="sportdataapp-system" name="System">
+        <mxGraphModel dx="712" dy="723" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="browser" value="User Browser&#xa;(Chrome/Edge)&#xa;&#xa;UI: HTML/CSS/JS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="260" width="170" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="local" value="Local Environment (Windows + XAMPP)" style="swimlane;horizontal=0;startSize=34;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="70" width="880" height="600" as="geometry"/>
+                </mxCell>
+                <mxCell id="apache" value="Apache HTTP Server&#xa;(XAMPP)&#xa;&#xa;Serves static assets&#xa;and routes *.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="local" vertex="1">
+                    <mxGeometry x="40" y="70" width="260" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="phpapp" value="SportDataApp (PHP)&#xa;sportdataapp/PHP/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" parent="local" vertex="1">
+                    <mxGeometry x="330" y="10" width="500" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="mod_auth" value="Auth &amp; Session&#xa;- login.php / reg.php&#xa;- session_bootstrap.php&#xa;&#xa;tab_id → session_name" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="phpapp" vertex="1">
+                    <mxGeometry x="20" y="50" width="220" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="mod_core" value="Core Features&#xa;- home.php (calendar)&#xa;- pi.php&#xa;- diary.php + diary_api.php&#xa;- profile_edit.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="phpapp" vertex="1">
+                    <mxGeometry x="260" y="50" width="220" height="145" as="geometry"/>
+                </mxCell>
+                <mxCell id="mod_chat" value="Chat / Group&#xa;- chat_list.php / chat.php&#xa;- chat_messages.php&#xa;- mark_as_read.php&#xa;- create_group*.php&#xa;- add/remove_member_ajax.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="phpapp" vertex="1">
+                    <mxGeometry x="20" y="190" width="220" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="mod_admin" value="Admin&#xa;- admin.php&#xa;- contact.php&#xa;- contact_submit_ajax.php&#xa;&#xa;Roles: admin / super admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="phpapp" vertex="1">
+                    <mxGeometry x="260" y="215" width="220" height="125" as="geometry"/>
+                </mxCell>
+                <mxCell id="mod_sports" value="Sports Modules&#xa;- swim/*&#xa;- basketball_*&#xa;- T_MNO/* (tennis)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;" parent="phpapp" vertex="1">
+                    <mxGeometry x="20" y="350" width="460" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="db" value="MySQL / MariaDB&#xa;(XAMPP)&#xa;&#xa;DB: sportsdata&#xa;Init: db/sportsdata.sql&#xa;+ db/add_*.sql" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="local" vertex="1">
+                    <mxGeometry x="360" y="470" width="240" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="fs" value="File System (Server)&#xa;&#xa;- uploads/ (images etc.)&#xa;- PHP sessions (file-based)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="local" vertex="1">
+                    <mxGeometry x="630" y="470" width="210" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="static" value="Static Assets&#xa;- HTML/*.html.php&#xa;- css/*&#xa;- js/* (Ajax, calendar, chat)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="local" vertex="1">
+                    <mxGeometry x="40" y="210" width="260" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" value="Serve CSS/JS/HTML" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="local" source="apache" target="static" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="Execute PHP&#xa;(page + Ajax)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="local" source="apache" target="phpapp" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="SQL queries" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="local" source="phpapp" target="db" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" value="Read/Write&#xa;uploads + sessions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="local" source="phpapp" target="fs" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="HTTP(S)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="1" source="browser" target="apache" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

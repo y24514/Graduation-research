@@ -164,7 +164,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/index.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/history.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合履歴</a></li>
-                    <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/personal_stats.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">個人スタッツ</a></li>
+                    <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/personal_stats.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">個人戦績</a></li>
                                 <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_board/T_board.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">作戦ボード</a></li>
                 </ul>
             </li>

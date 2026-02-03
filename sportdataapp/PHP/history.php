@@ -3,7 +3,6 @@ require_once __DIR__ . '/session_bootstrap.php';
 require_once __DIR__ . '/basketball_logic/db_config.php';
 
 $NAV_BASE = '.';
-require_once __DIR__ . '/header.php';
 
 try {
     // created_at があるが、ID降順の方が確実に新しい順
@@ -23,7 +22,8 @@ try {
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; margin: 0; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 0; margin: 0; }
+        .page-content { padding: 20px; }
         .container { max-width: 600px; margin: auto; }
         h1 { text-align: center; color: #2c3e50; }
         .game-card {
@@ -42,6 +42,11 @@ try {
     </style>
 </head>
 <body>
+<?php
+require_once __DIR__ . '/header.php';
+?>
+
+<main class="page-content">
 <div class="container">
     <h1>📅 試合履歴</h1>
 
@@ -73,5 +78,6 @@ try {
 
     <a href="<?= htmlspecialchars(sportdata_add_tab_id('basketball_index.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>" class="btn-back">← 試合設定に戻る</a>
 </div>
+</main>
 </body>
 </html>

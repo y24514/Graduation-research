@@ -1,0 +1,187 @@
+<mxfile host="65bd71144e">
+    <diagram id="sportdataapp-page-transitions" name="Page Transitions">
+        <mxGraphModel dx="2965" dy="2314" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1250" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="lane_public" value="未ログイン（Public）" style="swimlane;horizontal=0;startSize=34;rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="320" height="1080" as="geometry"/>
+                </mxCell>
+                <mxCell id="p_login" value="ログイン&#xa;PHP/login.php&#xa;&#xa;(tab_id 推奨)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" parent="lane_public" vertex="1">
+                    <mxGeometry x="50" y="70" width="220" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="p_reg" value="新規登録&#xa;PHP/reg.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" parent="lane_public" vertex="1">
+                    <mxGeometry x="50" y="190" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="p_router" value="ロール判定&#xa;&amp; リダイレクト" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=12;fontStyle=1;" parent="lane_public" vertex="1">
+                    <mxGeometry x="60" y="290" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_reg" value="登録画面へ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="lane_public" source="p_login" target="p_reg" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_login_router" value="ログイン成功" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="lane_public" source="p_login" target="p_router" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="lane_user" value="一般ユーザー（ログイン後）" style="swimlane;horizontal=0;startSize=34;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="40" width="360" height="1050" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_home" value="ホーム（ダッシュボード）&#xa;PHP/home.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="30" width="240" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_menu" value="メニュー / ナビ&#xa;(ヘッダ)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="120" width="240" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_pi" value="PI（コンディション）&#xa;PHP/pi.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="200" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_diary" value="日記&#xa;PHP/diary.php&#xa;(+ diary_api.php)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="280" width="240" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_chat_list" value="チャット一覧&#xa;PHP/chat_list.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="380" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_chat" value="チャット&#xa;PHP/chat.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="460" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_group_create" value="グループ作成&#xa;PHP/create_group.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="540" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_group_settings" value="グループ設定&#xa;PHP/group_settings.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="620" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_profile" value="プロフィール編集&#xa;PHP/profile_edit.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="695" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_contact" value="問い合わせ&#xa;PHP/contact.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="770" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_swim_input" value="水泳 入力&#xa;PHP/swim/swim_input.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="850" width="240" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_basketball" value="バスケ&#xa;PHP/basketball_index.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="920" width="240" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="u_tennis" value="テニス&#xa;PHP/T_MNO/index.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="lane_user" vertex="1">
+                    <mxGeometry x="60" y="980" width="240" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_home_menu" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="lane_user" source="u_home" target="u_menu" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_menu_pi" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366;" parent="lane_user" source="u_menu" target="u_pi" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="310" y="178"/>
+                            <mxPoint x="310" y="255"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_diary" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#b85450;" parent="lane_user" source="u_menu" target="u_diary" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="320" y="178"/>
+                            <mxPoint x="320" y="335"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_chatlist" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;" parent="lane_user" source="u_menu" target="u_chat_list" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="330" y="178"/>
+                            <mxPoint x="330" y="425"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_contact" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#d6b656;" parent="lane_user" source="u_menu" target="u_contact" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="320" y="178"/>
+                            <mxPoint x="320" y="800"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_swim" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366;" parent="lane_user" source="u_menu" target="u_swim_input" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="330" y="178"/>
+                            <mxPoint x="330" y="890"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_basketball" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366;" parent="lane_user" source="u_menu" target="u_basketball" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="340" y="178"/>
+                            <mxPoint x="340" y="955"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_menu_tennis" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#82b366;" parent="lane_user" source="u_menu" target="u_tennis" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="350" y="178"/>
+                            <mxPoint x="350" y="1020"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_chatlist_chat" value="相手/グループ選択" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#6c8ebf;" parent="lane_user" source="u_chat_list" target="u_chat" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_router_user" value="一般" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="p_router" target="u_home" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="lane_admin" value="管理者（Admin）" style="swimlane;horizontal=0;startSize=34;rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="40" width="300" height="1080" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_admin" value="管理画面&#xa;PHP/admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" parent="lane_admin" vertex="1">
+                    <mxGeometry x="40" y="70" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_inquiries" value="問い合わせ対応&#xa;(一覧/返信)&#xa;admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="lane_admin" vertex="1">
+                    <mxGeometry x="40" y="160" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="a_diary_review" value="日記提出の確認/FB&#xa;admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="lane_admin" vertex="1">
+                    <mxGeometry x="40" y="260" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="lane_super" value="スーパー管理者（Super Admin）" style="swimlane;horizontal=0;startSize=34;rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="1090" y="40" width="290" height="1080" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_admin" value="管理画面&#xa;PHP/admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;" parent="lane_super" vertex="1">
+                    <mxGeometry x="50" y="70" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_requests" value="管理者申請 承認/却下&#xa;admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" parent="lane_super" vertex="1">
+                    <mxGeometry x="50" y="160" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_inquiries" value="問い合わせ対応&#xa;(返信)&#xa;admin.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" parent="lane_super" vertex="1">
+                    <mxGeometry x="50" y="250" width="220" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_router_admin" value="管理者" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="1" source="p_router" target="a_admin" edge="1">
+                    <mxGeometry x="0.2566" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="330" y="335"/>
+                            <mxPoint x="330" y="30"/>
+                            <mxPoint x="750" y="30"/>
+                            <mxPoint x="750" y="145"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_router_super" value="スーパー管理者" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#666666;" parent="1" source="p_router" target="s_admin" edge="1">
+                    <mxGeometry x="0.1745" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="330" y="335"/>
+                            <mxPoint x="330" y="20"/>
+                            <mxPoint x="1070" y="20"/>
+                            <mxPoint x="1070" y="145"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="note" value="注: 画面間の遷移は、&#xa;(1) ログイン後のリダイレクト（ロール判定）&#xa;(2) ヘッダ/メニューからのページ遷移&#xa;(3) 一部はAjax（ページ遷移なし）&#xa;を混在します。&#xa;&#xa;本図は主要導線の代表です。" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="1140" width="1320" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Text" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="-1225" y="-692" width="50" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
