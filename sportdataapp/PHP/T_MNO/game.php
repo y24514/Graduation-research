@@ -74,8 +74,9 @@ elseif (isset($_POST['action_btn'])) {
     if (($d['scoreA'] >= $targetP || $d['scoreB'] >= $targetP) && abs($d['scoreA'] - $d['scoreB']) >= 2) {
         if ($d['scoreA'] > $d['scoreB']) $d['gamesA']++; else $d['gamesB']++;
         $d['scoreA'] = 0; $d['scoreB'] = 0;
-        if ($d['gamesA'] == $targetG || $d['gamesB'] == $targetG) {
-            header('Location: result.php');
+            if ($d['gamesA'] == $targetG || $d['gamesB'] == $targetG) {
+            $nextUrl = 'result.php?tab_id=' . rawurlencode($GLOBALS['SPORTDATA_TAB_ID']);
+            header('Location: ' . $nextUrl);
             exit;
         }
     }
