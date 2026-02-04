@@ -15,19 +15,25 @@ $db = getDbConnection();
 
 // DBセットアップ（変更なし）
 try {
-    $db->exec("CREATE TABLE IF NOT EXISTS games (
+    // 保存/表示ロジック（db.php）は tennis_games / tennis_actions を参照する
+    $db->exec("CREATE TABLE IF NOT EXISTS tennis_games (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        team_a VARCHAR(255), team_b VARCHAR(255), 
-        games_a INT, games_b INT, 
+        team_a VARCHAR(255), team_b VARCHAR(255),
+        games_a INT, games_b INT,
         player_a1 VARCHAR(255), player_a2 VARCHAR(255),
         player_b1 VARCHAR(255), player_b2 VARCHAR(255),
+        group_id VARCHAR(64) NULL,
+        saved_by_user_id VARCHAR(64) NULL,
         match_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
-    $db->exec("CREATE TABLE IF NOT EXISTS actions (
-        id INT AUTO_INCREMENT PRIMARY KEY, 
-        game_id INT, player_name VARCHAR(255), action_type VARCHAR(255), 
-        score_a INT, score_b INT,
-        FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+    $db->exec("CREATE TABLE IF NOT EXISTS tennis_actions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        game_id INT,
+        player_name VARCHAR(255),
+        action_type VARCHAR(255),
+        score_a INT,
+        score_b INT,
+        FOREIGN KEY (game_id) REFERENCES tennis_games(id) ON DELETE CASCADE
     )");
 } catch (Exception $e) {}
 ?>

@@ -74,8 +74,35 @@ elseif (isset($_POST['action_btn'])) {
     if (($d['scoreA'] >= $targetP || $d['scoreB'] >= $targetP) && abs($d['scoreA'] - $d['scoreB']) >= 2) {
         if ($d['scoreA'] > $d['scoreB']) $d['gamesA']++; else $d['gamesB']++;
         $d['scoreA'] = 0; $d['scoreB'] = 0;
-            if ($d['gamesA'] == $targetG || $d['gamesB'] == $targetG) {
-            $nextUrl = 'result.php?tab_id=' . rawurlencode($GLOBALS['SPORTDATA_TAB_ID']);
+        if ($d['gamesA'] == $targetG || $d['gamesB'] == $targetG) {
+            // 試合終了：DBへ保存して id 付きで結果(分析)へ
+            $params = [];
+            $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? '');
+            if ($tabId !== '') {
+                $params['tab_id'] = $tabId;
+            }
+
+            try {
+                require_once __DIR__ . '/db.php';
+                $db = getDbConnection();
+
+                if (!isset($d['group_id']) && isset($_SESSION['group_id'])) {
+                    $d['group_id'] = (string)$_SESSION['group_id'];
+                }
+                if (!isset($d['saved_by_user_id']) && isset($_SESSION['user_id'])) {
+                    $d['saved_by_user_id'] = (string)$_SESSION['user_id'];
+                }
+
+                $savedId = saveGameResult($db, $d);
+                $_SESSION['last_saved_id'] = $savedId;
+                $params['id'] = $savedId;
+            } catch (Throwable $e) {
+                // DB保存に失敗した場合でも、結果画面へは遷移して表示を試みる
+                error_log('T_MNO/game.php saveGameResult failed: ' . $e->getMessage());
+            }
+
+            $query = http_build_query($params);
+            $nextUrl = 'result.php' . ($query !== '' ? ('?' . $query) : '');
             header('Location: ' . $nextUrl);
             exit;
         }
