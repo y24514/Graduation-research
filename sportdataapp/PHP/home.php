@@ -159,17 +159,14 @@ try {
     mysqli_stmt_close($stmt);
 
     // スケジュール表示
+    // information_schema を参照するクエリは環境によって mysqld クラッシュの引き金になることがあるため避ける。
+    // 実際のSQLのprepare可否で is_shared 列の有無を判定する。
     $calendarHasIsShared = false;
     try {
-        $res = mysqli_query(
-            $link,
-            "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'calendar_tbl' AND COLUMN_NAME = 'is_shared'"
-        );
-        if ($res && mysqli_fetch_assoc($res)) {
+        $probe = mysqli_prepare($link, "SELECT is_shared FROM calendar_tbl LIMIT 0");
+        if ($probe !== false) {
             $calendarHasIsShared = true;
-        }
-        if ($res) {
-            mysqli_free_result($res);
+            mysqli_stmt_close($probe);
         }
     } catch (Throwable $e) {
         if (sportdata_mysqli_is_disconnect_error($e)) {
