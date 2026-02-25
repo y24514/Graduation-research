@@ -47,7 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_stmt_close($stmt);
 
     if ($success) {
-        header("Location: " . $_SERVER['PHP_SELF'] . "?success=1");
+        $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_POST['tab_id'] ?? ($_GET['tab_id'] ?? '')));
+        $target = (string)($_SERVER['PHP_SELF'] ?? 'pi.php');
+        $target .= '?success=1';
+        if ($tabId !== '') {
+            $target .= '&tab_id=' . rawurlencode($tabId);
+        }
+        header('Location: ' . $target);
         exit();
     } else {
         error_log('Insert error: ' . mysqli_error($link));

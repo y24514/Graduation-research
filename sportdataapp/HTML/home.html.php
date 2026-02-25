@@ -324,6 +324,7 @@
 <script>
 // 目標管理のJavaScript処理
 document.addEventListener('DOMContentLoaded', function() {
+    const tabId = <?= json_encode((string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ''), JSON_UNESCAPED_SLASHES) ?>;
     const editBtn = document.getElementById('edit-goal-btn');
     const saveBtn = document.getElementById('save-goal-btn');
     const cancelBtn = document.getElementById('cancel-goal-btn');
@@ -374,10 +375,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
                 },
-                body: 'goal=' + encodeURIComponent(goalValue)
+                body: 'goal=' + encodeURIComponent(goalValue) + '&tab_id=' + encodeURIComponent(tabId)
             })
-            .then(response => response.json())
+            .then(async (response) => {
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    const text = await response.text();
+                    throw new Error('Non-JSON response: ' + text.slice(0, 120));
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     // 成功時の処理

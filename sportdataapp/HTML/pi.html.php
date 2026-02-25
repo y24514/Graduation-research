@@ -132,6 +132,8 @@
                     データ登録
                 </h2>
                 <form method="POST" class="pi-form">
+                    <?php $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')); ?>
+                    <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tabId, ENT_QUOTES, 'UTF-8') ?>">
                     <div class="form-group">
                         <label for="height">
                             身長 (cm)

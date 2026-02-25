@@ -3,8 +3,21 @@ require_once __DIR__ . '/session_bootstrap.php';
 
 require_once __DIR__ . '/user_icon_helper.php';
 
+// Ajaxリクエストの判定（未ログイン時の応答分岐にも使う）
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+          strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 // ログインチェック
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
+    if ($isAjax) {
+        http_response_code(401);
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode([
+            'success' => false,
+            'errors' => ['ログインが切れました。ページを再読み込みしてログインし直してください。'],
+        ], JSON_UNESCAPED_UNICODE);
+        exit();
+    }
     header('Location: login.php');
     exit();
 }
@@ -53,8 +66,8 @@ if(!$user_data){
     exit();
 }
 
-// アカウント削除（退会）
-if (isset($_POST['delete_account'])) {
+// アカウント削除（退会）: hidden input は常にPOSTに含まれるため、値が'1'のときだけ実行
+if (((string)($_POST['delete_account'] ?? '')) === '1') {
     $postedToken = (string)($_POST['csrf_token'] ?? '');
     $deletePassword = (string)($_POST['delete_password'] ?? '');
 
@@ -178,10 +191,6 @@ if ($colSportRes && mysqli_num_rows($colSportRes) > 0) {
 if ($colSportRes) {
     mysqli_free_result($colSportRes);
 }
-
-// Ajaxリクエストの判定
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
 // POSTデータ取得
 $name = isset($_POST['name']) ? trim((string)$_POST['name']) : (string)$user_data['name'];
@@ -327,9 +336,12 @@ if(isset($_POST['update'])){
     }
 
     if ($hasSportColumn) {
+        // 空欄は「変更なし」として既存値を維持（パスワードだけ変更したい等）
         if ($sport === '') {
-            $errors[] = '種目を選択してください';
-        } elseif (!in_array($sport, $sportAllowed, true)) {
+            $sport = (string)($user_data['sport'] ?? '');
+        }
+
+        if ($sport !== '' && !in_array($sport, $sportAllowed, true)) {
             $errors[] = '種目の値が不正です';
         }
     }

@@ -1,7 +1,17 @@
 <?php
 require_once __DIR__ . '/session_bootstrap.php';
 
-if(!isset($_SESSION['user_id'], $_SESSION['group_id'])){
+$isPost = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST');
+if ($isPost) {
+    header('Content-Type: application/json; charset=UTF-8');
+}
+
+if (!isset($_SESSION['user_id'], $_SESSION['group_id'])) {
+    if ($isPost) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'ログインが切れました。ページを再読み込みしてログインし直してください。'], JSON_UNESCAPED_UNICODE);
+        exit();
+    }
     header('Location: login.php');
     exit();
 }
@@ -26,8 +36,6 @@ $monthStart = date('Y-m-01 00:00:00');
 $monthEnd = date('Y-m-01 00:00:00', strtotime('+1 month'));
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-header('Content-Type: application/json');
-
 $goal = $_POST['goal'] ?? '';
 
 if (empty(trim($goal))) {

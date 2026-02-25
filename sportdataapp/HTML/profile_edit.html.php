@@ -42,6 +42,8 @@
     <?php endif; ?>
 
     <form action="" method="post" id="profileEditForm" class="profile-form" enctype="multipart/form-data">
+        <?php $tabId = (string)($GLOBALS['SPORTDATA_TAB_ID'] ?? ($_GET['tab_id'] ?? '')); ?>
+        <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tabId, ENT_QUOTES, 'UTF-8') ?>">
         <div class="form-sections">
             <!-- 基本情報セクション -->
             <div class="form-section">
@@ -161,7 +163,7 @@
                     </label>
                     <?php if (!empty($hasSportColumn)): ?>
                         <?php $currentSport = (string)($user_data['sport'] ?? ''); ?>
-                        <select id="sport" name="sport" required>
+                        <select id="sport" name="sport">
                             <option value="" <?= $currentSport === '' ? 'selected' : '' ?>>選択してください</option>
                             <option value="swim" <?= $currentSport === 'swim' ? 'selected' : '' ?>>水泳</option>
                             <option value="basketball" <?= $currentSport === 'basketball' ? 'selected' : '' ?>>バスケ</option>
