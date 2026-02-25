@@ -38,6 +38,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $password = $_POST['password'] ?? '';
     $remember_me = isset($_POST['remember_me']);
 
+    // CSRFチェック
+    $postedCsrf = (string)($_POST['csrf_token'] ?? '');
+    $sessionCsrf = (string)($_SESSION['csrf_token'] ?? '');
+    if ($postedCsrf === '' || $sessionCsrf === '' || !hash_equals($sessionCsrf, $postedCsrf)) {
+        $errors[] = '不正なリクエストです。ページを再読み込みしてから、もう一度お試しください。';
+    }
+
     if(isset($_POST['send'])){
         // バリデーション
         if(empty($group_id)){
@@ -86,13 +93,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                         $_SESSION['login_time'] = time();
 
                         // ログイン情報を記憶（クッキー）
+                        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                            || (isset($_SERVER['SERVER_PORT']) && (string)$_SERVER['SERVER_PORT'] === '443');
+                        $cookieBase = [
+                            'path' => '/',
+                            'secure' => $isHttps,
+                            'httponly' => true,
+                            'samesite' => 'Lax',
+                        ];
+
                         if($remember_me){
-                            setcookie('saved_group_id', $group_id, time() + (86400 * 30), '/'); // 30日間
-                            setcookie('saved_user_id', $user_id, time() + (86400 * 30), '/');
+                            setcookie('saved_group_id', $group_id, $cookieBase + ['expires' => time() + (86400 * 30)]); // 30日間
+                            setcookie('saved_user_id', $user_id, $cookieBase + ['expires' => time() + (86400 * 30)]);
                         } else {
                             // クッキーを削除
-                            setcookie('saved_group_id', '', time() - 3600, '/');
-                            setcookie('saved_user_id', '', time() - 3600, '/');
+                            setcookie('saved_group_id', '', $cookieBase + ['expires' => time() - 3600]);
+                            setcookie('saved_user_id', '', $cookieBase + ['expires' => time() - 3600]);
                         }
 
                         mysqli_stmt_close($stmt);

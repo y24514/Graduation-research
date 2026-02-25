@@ -65,6 +65,13 @@ $is_admin = ($canSetAdmin && !empty($_POST['is_admin'])) ? 1 : 0;
 
 try {
 if(isset($_POST['reg'])){
+    // CSRFチェック
+    $postedCsrf = (string)($_POST['csrf_token'] ?? '');
+    $sessionCsrf = (string)($_SESSION['csrf_token'] ?? '');
+    if ($postedCsrf === '' || $sessionCsrf === '' || !hash_equals($sessionCsrf, $postedCsrf)) {
+        $errors[] = '不正なリクエストです。ページを再読み込みしてから、もう一度お試しください。';
+    }
+
     // バリデーション
     if(empty($group_id)){
         $errors[] = '団体IDを入力してください';

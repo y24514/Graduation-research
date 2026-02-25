@@ -33,6 +33,11 @@
     <?php endif; ?>
 
     <form action="" method="post" id="registrationForm" novalidate>
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)($_SESSION['csrf_token'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+        <?php $tabIdForPost = (string)($_GET['tab_id'] ?? ($GLOBALS['SPORTDATA_TAB_ID'] ?? '')); ?>
+        <?php if ($tabIdForPost !== ''): ?>
+            <input type="hidden" name="tab_id" value="<?= htmlspecialchars($tabIdForPost, ENT_QUOTES, 'UTF-8') ?>">
+        <?php endif; ?>
         <div class="reg-form">
             <div class="inner-reg-form">
 
