@@ -31,6 +31,12 @@ if(isset($_SESSION['registration_success'])){
     unset($_SESSION['registration_success']);
 }
 
+// パスワード再設定成功メッセージの表示
+if(isset($_SESSION['password_reset_success'])){
+    $success_message = 'パスワードを再設定しました。新しいパスワードでログインしてください。';
+    unset($_SESSION['password_reset_success']);
+}
+
 // POSTデータ取得
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $group_id = trim($_POST['group_id'] ?? '');

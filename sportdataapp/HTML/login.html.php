@@ -119,6 +119,11 @@
                                 <span class="checkbox-custom"></span>
                                 <span class="checkbox-text">ログイン情報を記憶する</span>
                             </label>
+
+                            <?php $tabIdForLink = (string)($_GET['tab_id'] ?? ($GLOBALS['SPORTDATA_TAB_ID'] ?? '')); ?>
+                            <a class="forgot-password-link" href="password_forgot.php<?= $tabIdForLink !== '' ? ('?tab_id=' . urlencode($tabIdForLink)) : '' ?>">
+                                パスワードを忘れた方
+                            </a>
                         </div>
 
                         <!-- ログインボタン -->

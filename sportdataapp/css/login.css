@@ -273,7 +273,8 @@ body::before {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="date"] {
   width: 100%;
   padding: 15px 18px;
   border: 2px solid var(--border);
@@ -285,7 +286,8 @@ input[type="password"] {
 }
 
 input[type="text"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="date"]:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.1);
@@ -293,7 +295,8 @@ input[type="password"]:focus {
 }
 
 input[type="text"]:hover,
-input[type="password"]:hover {
+input[type="password"]:hover,
+input[type="date"]:hover {
   border-color: var(--border-focus);
 }
 
@@ -358,6 +361,31 @@ input.has-value {
 /* フォームオプション */
 .form-options {
   margin: 20px 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.forgot-password-link{
+  display: inline-block;
+  margin-top: 0;
+  font-size: 0.9rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.forgot-password-link:hover{
+  text-decoration: underline;
+}
+
+.forgot-password-link:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.25);
+  border-radius: 6px;
 }
 
 .checkbox-label {
