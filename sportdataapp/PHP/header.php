@@ -85,14 +85,14 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
 <!-- 共通ナビ -->
 <div class="meny">
     <div class="meny-inner">
-    <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー" aria-controls="mobileNav" aria-expanded="false">
+    <button type="button" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="メニュー" aria-controls="mobileNav" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>
     </button>
     
     <div class="settings-container">
-        <button class="settings-btn" onclick="toggleSettingsMenu(event)">
+        <button type="button" class="settings-btn" onclick="toggleSettingsMenu(event)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
@@ -129,7 +129,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
         <ul class="menu-root">
             <?php if (!empty($_SESSION['is_super_admin'])): ?>
             <li class="has-sub active">
-                <button>管理</button>
+                <button type="button">管理</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/admin.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">管理者</a></li>
                 </ul>
@@ -137,11 +137,11 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
             <?php else: ?>
             <?php if (!empty($_SESSION['is_admin']) && empty($_SESSION['is_super_admin'])): ?>
             <li class="<?= (basename($_SERVER['PHP_SELF']) === 'admin.php') ? 'active' : '' ?>">
-                <button><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/admin.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">管理</a></button>
+                <a class="menu-link" href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/admin.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">管理</a>
             </li>
             <?php endif; ?>
             <li class="has-sub <?= (basename($_SERVER['PHP_SELF']) === 'home.php' || basename($_SERVER['PHP_SELF']) === 'diary.php' || basename($_SERVER['PHP_SELF']) === 'chat_list.php' || basename($_SERVER['PHP_SELF']) === 'chat.php') ? 'active' : '' ?>">
-                <button>ホーム</button>
+                <button type="button">ホーム</button>
                 <ul class="sub-menu">
                     <?php if (empty($_SESSION['is_admin'])): ?>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/home.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">ダッシュボード</a></li>
@@ -151,7 +151,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
                 </ul>
             </li>
             <?php if (empty($_SESSION['is_admin'])): ?>
-            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><button><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/pi.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">身体情報</a></button></li>
+            <li class="<?= (basename($_SERVER['PHP_SELF']) === 'pi.php') ? 'active' : '' ?>"><a class="menu-link" href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/pi.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">身体情報</a></li>
             <?php endif; ?>
 
             <?php
@@ -160,7 +160,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
             ?>
             <?php if ($canShowTennis): ?>
             <li class="has-sub <?= $isTennisPage ? 'active' : '' ?>">
-                <button>テニス</button>
+                <button type="button">テニス</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/index.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/T_MNO/history.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合履歴</a></li>
@@ -173,7 +173,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
 
             <?php if ($canShowSwim): ?>
             <li class="has-sub <?= (strpos($_SERVER['PHP_SELF'], 'swim') !== false) ? 'active' : '' ?>">
-                <button>水泳</button>
+                <button type="button">水泳</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/swim/swim_input.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">記録</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/swim/swim_practice_create.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">練習作成</a></li>
@@ -188,7 +188,7 @@ $img_depth = (strpos($_SERVER['REQUEST_URI'], '/swim/') !== false || strpos($_SE
             ?>
             <?php if ($canShowBasketball): ?>
             <li class="has-sub <?= ($isBasketballPage) ? 'active' : '' ?>">
-                <button>バスケ</button>
+                <button type="button">バスケ</button>
                 <ul class="sub-menu">
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/basketball_index.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">試合設定</a></li>
                     <li><a href="<?= htmlspecialchars(sportdata_add_tab_id($NAV_BASE . '/basketball_team.php', $__tabId), ENT_QUOTES, 'UTF-8') ?>">チーム管理</a></li>
@@ -277,6 +277,14 @@ function sdNextId(prefix) {
 function sdTextFrom(el) {
     if (!el) return '';
     return (el.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function sdDirectChild(parent, selector) {
+    if (!parent || !parent.children) return null;
+    for (const child of parent.children) {
+        if (child && child.matches && child.matches(selector)) return child;
+    }
+    return null;
 }
 
 function sdGuessTitleForBlock(blockEl) {
@@ -459,8 +467,8 @@ function sportdataInitCollapsibles() {
     roots.forEach((root, index) => {
         if (!root) return;
 
-        const btn = root.querySelector(':scope > .sd-collapse__btn');
-        const panel = root.querySelector(':scope > .sd-collapse__panel');
+        const btn = sdDirectChild(root, '.sd-collapse__btn');
+        const panel = sdDirectChild(root, '.sd-collapse__panel');
         if (!btn || !panel) return;
 
         // 二重登録防止
@@ -500,8 +508,8 @@ function sportdataUpdateCollapsiblesForViewport() {
     if (!roots || roots.length === 0) return;
 
     roots.forEach((root) => {
-        const btn = root.querySelector(':scope > .sd-collapse__btn');
-        const panel = root.querySelector(':scope > .sd-collapse__panel');
+        const btn = sdDirectChild(root, '.sd-collapse__btn');
+        const panel = sdDirectChild(root, '.sd-collapse__panel');
         if (!btn || !panel) return;
 
         const labelCollapsed = btn.dataset.labelCollapsed || btn.textContent || '表示';
@@ -538,7 +546,7 @@ function closeAllDesktopSubmenus() {
     if (!nav) return;
     nav.querySelectorAll('.menu-root > li.has-sub.open').forEach((li) => {
         li.classList.remove('open');
-        const btn = li.querySelector(':scope > button');
+        const btn = sdDirectChild(li, 'button');
         if (btn) btn.setAttribute('aria-expanded', 'false');
     });
 }
@@ -567,7 +575,7 @@ function closeAllMobileSubmenus() {
 
     nav.querySelectorAll('.menu-root > li.has-sub.open').forEach((li) => {
         li.classList.remove('open');
-        const btn = li.querySelector(':scope > button');
+        const btn = sdDirectChild(li, 'button');
         if (btn) btn.setAttribute('aria-expanded', 'false');
     });
 }
@@ -584,119 +592,101 @@ function closeMobileNav() {
     closeAllMobileSubmenus();
 }
 
-function initMobileSubmenus() {
-    const nav = document.getElementById('mobileNav');
+function sportdataEnsureNavSubmenuAria(nav) {
     if (!nav) return;
 
-    if (!isMobileNav()) return;
-
-    // 二重登録防止
-    if (nav.dataset.submenusInit === '1') return;
-    nav.dataset.submenusInit = '1';
-
-    // aria-controls 用に submenu にID付与
-    let submenuIndex = 0;
     nav.querySelectorAll('.menu-root > li.has-sub').forEach((li) => {
-        const btn = li.querySelector(':scope > button');
-        const submenu = li.querySelector(':scope > .sub-menu');
+        const btn = sdDirectChild(li, 'button');
+        const submenu = sdDirectChild(li, '.sub-menu');
         if (!btn || !submenu) return;
-        if (!submenu.id) {
-            submenuIndex += 1;
-            submenu.id = `submenu-${submenuIndex}`;
-        }
+
+        if (!submenu.id) submenu.id = sdNextId('submenu');
         btn.setAttribute('aria-haspopup', 'true');
         btn.setAttribute('aria-controls', submenu.id);
         btn.setAttribute('aria-expanded', li.classList.contains('open') ? 'true' : 'false');
     });
+}
 
-    const items = nav.querySelectorAll('.menu-root > li.has-sub > button');
-    items.forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-            // モバイル時は親ボタンでサブメニュー開閉
+function sportdataInitNavEvents() {
+    const nav = document.getElementById('mobileNav');
+    if (!nav) return;
+
+    // aria 属性は viewport に依存しないので毎回整える
+    sportdataEnsureNavSubmenuAria(nav);
+
+    // 二重登録防止（resize/orientationchange でも増えないように）
+    if (nav.dataset.navEventsInit === '1') return;
+    nav.dataset.navEventsInit = '1';
+
+    // Click delegation: サブメニュー開閉とリンクタップ時のクローズ
+    nav.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!target) return;
+
+        const btn = target.closest('.menu-root > li.has-sub > button');
+        if (btn && nav.contains(btn)) {
             e.preventDefault();
             const li = btn.closest('li');
             if (!li) return;
 
-            // アコーディオン（他は閉じる）
+            // 他を閉じる（モバイルはアコーディオン、デスクトップも一つだけ開く）
             nav.querySelectorAll('.menu-root > li.has-sub.open').forEach((other) => {
                 if (other === li) return;
                 other.classList.remove('open');
-                const otherBtn = other.querySelector(':scope > button');
+                const otherBtn = sdDirectChild(other, 'button');
                 if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
             });
 
             const willOpen = !li.classList.contains('open');
             li.classList.toggle('open');
             btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
+            return;
+        }
+
+        const link = target.closest('.sub-menu a, .menu-root > li > a.menu-link');
+        if (link && nav.contains(link)) {
+            if (isMobileNav()) {
+                closeMobileNav();
+            } else {
+                closeAllDesktopSubmenus();
+            }
+        }
     });
 
-    // サブメニューのリンクを押したらナビ全体を閉じる
-    nav.querySelectorAll('.sub-menu a').forEach((a) => {
-        a.addEventListener('click', () => {
-            closeMobileNav();
-        });
+    // キーボード操作: Enter/Space で開閉
+    nav.addEventListener('keydown', (e) => {
+        if (!e || (e.key !== 'Enter' && e.key !== ' ')) return;
+        const target = e.target;
+        if (!target) return;
+        const btn = target.closest('.menu-root > li.has-sub > button');
+        if (!btn || !nav.contains(btn)) return;
+        e.preventDefault();
+        btn.click();
     });
+}
+
+function initMobileSubmenus() {
+    const nav = document.getElementById('mobileNav');
+    if (!nav) return;
+
+    // 互換: 旧関数名を残しつつ、イベントは委譲で1回だけ登録
+    if (!isMobileNav()) {
+        sportdataEnsureNavSubmenuAria(nav);
+        return;
+    }
+    sportdataInitNavEvents();
 }
 
 function initDesktopSubmenus() {
     const nav = document.getElementById('mobileNav');
     if (!nav) return;
-    if (isMobileNav()) return;
 
-    // 二重登録防止
-    if (nav.dataset.desktopSubmenusInit === '1') return;
-    nav.dataset.desktopSubmenusInit = '1';
-
-    // aria-controls 用にsubmenuにID付与（未設定のものだけ）
-    let submenuIndex = 0;
-    nav.querySelectorAll('.menu-root > li.has-sub').forEach((li) => {
-        const btn = li.querySelector(':scope > button');
-        const submenu = li.querySelector(':scope > .sub-menu');
-        if (!btn || !submenu) return;
-        if (!submenu.id) {
-            submenuIndex += 1;
-            submenu.id = `submenu-${submenuIndex}`;
-        }
-        btn.setAttribute('aria-haspopup', 'true');
-        btn.setAttribute('aria-controls', submenu.id);
-        btn.setAttribute('aria-expanded', li.classList.contains('open') ? 'true' : 'false');
-    });
-
-    nav.querySelectorAll('.menu-root > li.has-sub > button').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-            // 親ボタンはリンクではないので常に開閉
-            e.preventDefault();
-            const li = btn.closest('li');
-            if (!li) return;
-
-            const willOpen = !li.classList.contains('open');
-            // 他を閉じる
-            nav.querySelectorAll('.menu-root > li.has-sub.open').forEach((other) => {
-                if (other === li) return;
-                other.classList.remove('open');
-                const otherBtn = other.querySelector(':scope > button');
-                if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-            });
-
-            li.classList.toggle('open');
-            btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
-
-        // キーボード操作: Enter/Spaceで開閉
-        btn.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter' && e.key !== ' ') return;
-            e.preventDefault();
-            btn.click();
-        });
-    });
-
-    // サブメニュー項目を押したら閉じる
-    nav.querySelectorAll('.sub-menu a').forEach((a) => {
-        a.addEventListener('click', () => {
-            closeAllDesktopSubmenus();
-        });
-    });
+    // 互換: 旧関数名を残しつつ、イベントは委譲で1回だけ登録
+    if (isMobileNav()) {
+        sportdataEnsureNavSubmenuAria(nav);
+        return;
+    }
+    sportdataInitNavEvents();
 }
 
 function toggleSettingsMenu(event) {
@@ -846,8 +836,8 @@ document.addEventListener('keydown', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    initMobileSubmenus();
-    initDesktopSubmenus();
+    // ナビのイベントは委譲で1回だけ（リサイズ等で多重登録しない）
+    sportdataInitNavEvents();
     sportdataInitCollapsibles();
     sportdataInitAutoSectionCollapsibles();
     sportdataInitAutoBlockCollapsibles();
@@ -901,22 +891,20 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', () => {
         const nav = document.getElementById('mobileNav');
         if (!nav) return;
-        // フラグを落として再初期化（イベント多重付与のリスクはあるため、状態切替のときだけ）
-        // ここでは閾値を跨いだときだけ再初期化
+
+        // URLバーの伸縮/回転などで閾値を跨ぐときだけ、開いているものを閉じる
         const nowMobile = isMobileNav();
         const prevMobile = nav.dataset.prevMobile === '1';
+        if (nav.dataset.prevMobile === undefined) {
+            nav.dataset.prevMobile = nowMobile ? '1' : '0';
+            return;
+        }
         if (nowMobile === prevMobile) return;
         nav.dataset.prevMobile = nowMobile ? '1' : '0';
 
-        // 状態リセット
         closeMobileNav();
         closeAllDesktopSubmenus();
-        nav.dataset.submenusInit = '0';
-        nav.dataset.desktopSubmenusInit = '0';
-
-        // 再初期化
-        initMobileSubmenus();
-        initDesktopSubmenus();
+        sportdataEnsureNavSubmenuAria(nav);
 
         // モバイル⇄デスクトップを跨いだら、折りたたみも表示状態を更新
         sportdataUpdateCollapsiblesForViewport();

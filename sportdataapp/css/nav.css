@@ -195,6 +195,11 @@
     border-radius: 4px;
 }
 
+/* ページ側の a / a:visited 色指定（例: tennis.css / basketball.css）をナビに持ち込まない */
+.meny .settings-menu a:visited{
+    color: var(--nav-text);
+}
+
 .settings-menu a:hover {
     background: rgba(49, 130, 206, 0.08);
     color: #3182ce;
@@ -213,6 +218,10 @@
 
 /* ログアウトリンク */
 .settings-menu a.logout-link {
+    color: #e53e3e;
+}
+
+.settings-menu a.logout-link:visited{
     color: #e53e3e;
 }
 
@@ -446,7 +455,8 @@
    Menu buttons
 ===================== */
 
-.menu-root li button{
+.menu-root li button,
+.menu-root li > a.menu-link{
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -460,43 +470,42 @@
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
+    text-decoration: none;
 }
 
-.menu-root li button:hover{
+.menu-root li button:hover,
+.menu-root li > a.menu-link:hover{
     color: var(--nav-accent);
     background: rgba(49, 130, 206, 0.08);
 }
 
-.menu-root li button:active{
+.menu-root li button:active,
+.menu-root li > a.menu-link:active{
     transform: none;
 }
 
-.menu-root li button:focus{
+.menu-root li button:focus,
+.menu-root li > a.menu-link:focus{
     outline: none;
 }
 
-.menu-root li button:focus-visible{
+.menu-root li button:focus-visible,
+.menu-root li > a.menu-link:focus-visible{
     box-shadow: var(--nav-ring);
 }
 
-.menu-root li button a{
-    color: inherit;
-    text-decoration: none;
+/* スポーツページ側の a 色指定に負けないようにナビ内は上書き */
+.meny .menu-root li > a.menu-link,
+.meny .menu-root li > a.menu-link:visited{
+    color: var(--nav-text);
 }
 
-/*
-  Sport pages (e.g. basketball.css / tennis.css) set global anchor colors on body.
-  Their selectors can outrank generic nav selectors, causing nav links to turn blue.
-  Force nav-area link colors with higher specificity.
-*/
-.meny .menu-root li button a{
-    color: inherit;
-}
-
-.menu-root li.active button{
-    color: var(--nav-accent);
-    font-weight: 600;
-    background: rgba(49, 130, 206, 0.12);
+.menu-root li.active button,
+.menu-root li.active > a.menu-link{
+    /* 現在地は青文字にせず、見分けは背景/太字で行う */
+    color: var(--nav-text);
+    font-weight: 700;
+    background: rgba(26, 32, 44, 0.06);
 }
 
 /* Submenu toggle indicator (caret)
@@ -546,7 +555,8 @@
     transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.meny .sub-menu li a{
+.meny .meny-nav .sub-menu li a,
+.meny .meny-nav .sub-menu li a:visited{
     display: block;
     padding: 11px 14px;
     border-radius: 8px;
@@ -745,7 +755,8 @@
         width: 100%;
     }
 
-    .menu-root li button {
+    .menu-root li button,
+    .menu-root li > a.menu-link{
         width: 100%;
         justify-content: flex-start;
         padding: 14px 16px;
@@ -808,7 +819,7 @@
     /* open時は矢印を上向きに */
     .menu-root li.open.has-sub > button::before{
         transform: translateY(-40%) rotate(-135deg);
-        border-color: var(--nav-accent);
+        border-color: var(--nav-muted);
     }
 
     .sub-menu li a {
@@ -966,7 +977,7 @@ body.force-mobile-nav .menu-root li.open > .sub-menu{
 
 body.force-mobile-nav .menu-root li.open.has-sub > button::before{
     transform: translateY(-40%) rotate(-135deg);
-    border-color: var(--nav-accent);
+    border-color: var(--nav-muted);
 }
 
 body.force-mobile-nav .sub-menu li a{
