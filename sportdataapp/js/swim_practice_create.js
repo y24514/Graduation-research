@@ -267,37 +267,37 @@
         const total = rowTotalDistance(row);
         return `
           <tr class="lane-row" data-row-index="${idx}" data-lane="${lane}">
-            <td>
+            <td data-label="種類">
               <select class="lane-cell" data-field="kind">
                 ${kindOptionsHtml(row.kind)}
               </select>
             </td>
-            <td>
+            <td data-label="距離">
               <input class="lane-cell lane-cell--num" data-field="dist" inputmode="numeric" value="${row.dist || ''}" placeholder="m" />
             </td>
-            <td>
+            <td data-label="本数">
               <input class="lane-cell lane-cell--num" data-field="reps" inputmode="numeric" value="${row.reps || ''}" placeholder="回" />
             </td>
-            <td>
+            <td data-label="サイクル">
               <input class="lane-cell" data-field="cycle" value="${escapeText(row.cycle)}" placeholder="例: 1:30" />
             </td>
-            <td>
+            <td data-label="セット間">
               <input class="lane-cell" data-field="setRest" value="${escapeText(row.setRest)}" placeholder="例: 2:00" />
             </td>
-            <td>
+            <td data-label="種目">
               <select class="lane-cell" data-field="stroke">
                 ${['Choice', 'Fr', 'Br', 'Ba', 'Fly', 'IM'].map((s) => `<option value="${s}" ${row.stroke === s ? 'selected' : ''}>${s}</option>`).join('')}
               </select>
             </td>
-            <td>
+            <td data-label="内容">
               <input class="lane-cell" data-field="note" value="${escapeText(row.note)}" placeholder="例: 体を動かす" />
             </td>
-            <td>
+            <td data-label="強度">
               <select class="lane-cell" data-field="intensity">
                 ${['', 'A1', 'EN1', 'EN2', 'EN3', 'Max'].map((s) => `<option value="${s}" ${row.intensity === s ? 'selected' : ''}>${s || '—'}</option>`).join('')}
               </select>
             </td>
-            <td class="lane-total-cell" data-row-total>${total ? `${total}m` : ''}</td>
+            <td class="lane-total-cell" data-row-total data-label="折距離">${total ? `${total}m` : ''}</td>
           </tr>
         `;
       })

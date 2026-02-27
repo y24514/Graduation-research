@@ -772,6 +772,93 @@
   min-width: 980px;
 }
 
+/* スマホでは横スクロール依存を減らす（行をカード化） */
+@media (max-width: 520px) {
+  .lane-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lane-toolbar__left,
+  .lane-toolbar__right {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .lane-tab {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+
+  .lane-table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  .lane-table {
+    min-width: 0;
+  }
+
+  .lane-table thead {
+    display: none;
+  }
+
+  .lane-table,
+  .lane-table tbody,
+  .lane-table tr,
+  .lane-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .lane-table tbody td {
+    border-top: 0;
+    padding: 6px 0;
+    background: transparent;
+  }
+
+  .lane-table tbody tr.lane-row {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .lane-row.is-selected {
+    border-color: rgba(49, 130, 206, 0.55);
+    box-shadow: 0 2px 12px rgba(49, 130, 206, 0.12);
+  }
+
+  .lane-table tbody td[data-label] {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+  }
+
+  .lane-table tbody td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .lane-table .lane-cell {
+    font-size: 0.95rem;
+    padding: 10px 10px;
+  }
+
+  .lane-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .lane-table thead th {
   position: sticky;
   top: 0;
